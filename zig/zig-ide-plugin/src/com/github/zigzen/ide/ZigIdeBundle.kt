@@ -4,12 +4,12 @@ package com.github.zigzen.ide
 import com.intellij.DynamicBundle
 
 class ZigIdeBundle(private val bundle: DynamicBundle) {
+  fun getMessage(key: String, vararg args: Any) = bundle.getMessage(key, args)
+
   companion object {
     val UI_BUNDLE = createInstance("messages.ZigUIBundle")
 
     @Suppress("SameParameterValue")
     private fun createInstance(bundleName: String): ZigIdeBundle = ZigIdeBundle(DynamicBundle(ZigIdeBundle::class.java, bundleName))
   }
-
-  fun getMessage(key: String, vararg args: Any) = bundle.getMessage(key, args)
 }

@@ -4,11 +4,11 @@ package com.github.zigzen.lang
 import com.intellij.lang.Language
 
 class ZigLanguage : Language("ZIG") {
-  companion object {
-    val INSTANCE = ZigLanguage()
-  }
-
   override fun getDisplayName(): String = "Zig"
 
   override fun isCaseSensitive(): Boolean = true
+
+  companion object {
+    val INSTANCE = ZigLanguage()
+  }
 }
