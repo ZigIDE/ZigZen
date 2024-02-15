@@ -7,5 +7,5 @@
   <icon svg="/zigzen.svg" svg-small="/zigzen_16.svg"/>
   <names product="ZigZen" fullname="ZigZen" script="zigzen" motto="Powerful IDE for Zig"/>
 
-  <essential-plugin>com.github.zigzen</essential-plugin>
+  <essential-plugin>com.github.zigzen.zig</essential-plugin>
 </component>
