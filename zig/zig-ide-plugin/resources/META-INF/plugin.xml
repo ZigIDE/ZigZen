@@ -1,8 +1,6 @@
 <!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+<idea-plugin>
   <id>com.github.zigzen.ide</id>
 
   <depends>com.github.zigzen.zig</depends>
-
-  <xi:include href="/META-INF/ZigIdePlugin.xml"/>
 </idea-plugin>
