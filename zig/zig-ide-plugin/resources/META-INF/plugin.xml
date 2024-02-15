@@ -3,4 +3,12 @@
   <id>com.github.zigzen.ide</id>
 
   <depends>com.github.zigzen.zig</depends>
+
+  <actions>
+    <group id="WelcomeScreen.QuickStart.IDEA">
+      <action id="WelcomeScreen.CreateNewProject" class="com.github.zigzen.ide.actions.NewProjectAction"/>
+      <action id="WelcomeScreen.OpenProject" class="com.intellij.ide.actions.OpenFileAction$OnWelcomeScreen"/>
+      <add-to-group group-id="WelcomeScreen.QuickStart" anchor="first"/>
+    </group>
+  </actions>
 </idea-plugin>
