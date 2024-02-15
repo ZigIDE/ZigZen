@@ -1,8 +1,0 @@
-<!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
-<idea-plugin>
-  <id>com.github.zigzen</id>
-  <name>ZigZen</name>
-  <description>Support for the Zig programming language in the IntelliJ Platform.</description>
-
-  <vendor url="https://github.com/ZigIDE">ZigIDE</vendor>
-</idea-plugin>
