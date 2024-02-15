@@ -6,8 +6,8 @@
 
   <actions>
     <group id="WelcomeScreen.QuickStart.IDEA">
-      <action id="WelcomeScreen.CreateNewProject" class="com.github.zigzen.ide.actions.NewProjectAction"/>
-      <action id="WelcomeScreen.OpenProject" class="com.intellij.ide.actions.OpenFileAction$OnWelcomeScreen"/>
+      <action id="WelcomeScreen.CreateDirectoryProject" class="com.github.zigzen.ide.actions.NewProjectAction"/>
+      <reference ref="WelcomeScreen.OpenDirectoryProject"/>
       <add-to-group group-id="WelcomeScreen.QuickStart" anchor="first"/>
     </group>
   </actions>
