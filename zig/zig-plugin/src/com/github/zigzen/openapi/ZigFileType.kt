@@ -6,11 +6,6 @@ import com.intellij.openapi.fileTypes.LanguageFileType
 import javax.swing.Icon
 
 class ZigFileType : LanguageFileType(ZigLanguage.INSTANCE) {
-  companion object {
-    @JvmField
-    val INSTANCE = ZigFileType()
-  }
-
   override fun getName(): String = "Zig File"
 
   override fun getDescription(): String = "Zig file"
@@ -19,5 +14,10 @@ class ZigFileType : LanguageFileType(ZigLanguage.INSTANCE) {
 
   override fun getIcon(): Icon {
     TODO("Not yet implemented")
+  }
+
+  companion object {
+    @JvmField
+    val INSTANCE = ZigFileType()
   }
 }
