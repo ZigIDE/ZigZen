@@ -8,4 +8,5 @@
   <names product="ZigZen" fullname="ZigZen" script="zigzen" motto="Powerful IDE for Zig"/>
 
   <essential-plugin>com.github.zigzen.zig</essential-plugin>
+  <essential-plugin>com.github.zigzen.ide</essential-plugin>
 </component>

@@ -4,10 +4,11 @@
     <exclude-output />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="com.github.zigzen.ide" />
-    <orderEntry type="module" module-name="com.github.zigzen.zig" />
-    <orderEntry type="module" module-name="com.github.zigzen.resources" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.bootstrap" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.main" />
+    <orderEntry type="module" module-name="intellij.platform.resources" scope="RUNTIME" />
+    <orderEntry type="module" module-name="com.github.zigzen.ide" scope="RUNTIME" />
+    <orderEntry type="module" module-name="com.github.zigzen.zig" scope="RUNTIME" />
+    <orderEntry type="module" module-name="com.github.zigzen.resources" scope="RUNTIME" />
   </component>
 </module>
