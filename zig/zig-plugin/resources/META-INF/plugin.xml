@@ -1,4 +1,8 @@
 <!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
 <idea-plugin>
   <id>com.github.zigzen.zig</id>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileType extensions="zig" fieldName="INSTANCE" implementationClass="com.github.zigzen.openapi.ZigFileType" language="ZIG" name="Zig File"/>
+  </extensions>
 </idea-plugin>
