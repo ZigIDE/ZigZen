@@ -3,7 +3,7 @@ package com.github.zigzen.lang.toolchain
 
 import java.io.File
 import java.nio.file.Path
-import java.nio.file.pathToBinary
+import javax.nio.file.pathToBinary
 
 class ZigLocalToolchain(location: Path) : AbstractZigToolchain(location) {
   override val fileSeparator: String = File.separator

@@ -10,7 +10,7 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
     val process = commandLine.createProcess()
     process.waitFor()
 
-    return process.outputStream.toString()
+    return String(process.inputStream.readAllBytes())
   }
 }
 
