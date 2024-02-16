@@ -29,7 +29,7 @@ class ZigToolchainFileChooserComboBox(onTextChanged: () -> Unit = {})
   private val pathTextField
     get() = childComponent.editor.editorComponent as ExtendableTextField
 
-  private var selectedPath: Path?
+  var selectedPath: Path?
     get() = try {
       Paths.get(pathTextField.text)
     } catch (e: Exception) {
@@ -54,7 +54,11 @@ class ZigToolchainFileChooserComboBox(onTextChanged: () -> Unit = {})
     pathTextField.addTextChangeListener { onTextChanged() }
   }
 
-  fun addToolchainsAsync(toolchainObtainer: () -> List<Path>, callback: () -> Unit) {
+  fun addToolchainsAsync(toolchainObtainer: () -> List<Path>) {
+    addToolchainsAsync(toolchainObtainer) {}
+  }
+
+  private fun addToolchainsAsync(toolchainObtainer: () -> List<Path>, callback: () -> Unit) {
     setBusy(true)
     ApplicationManager.getApplication().executeOnPooledThread {
       var toolchains = emptyList<Path>()

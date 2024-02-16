@@ -8,6 +8,11 @@ interface ZigToolchainProvider {
   fun provideToolchain(path: Path): AbstractZigToolchain?
 
   companion object {
-    val EP_NAME = ExtensionPointName<ZigToolchainProvider>("com.github.zigzen.toolchainProvider")
+    private val EP_NAME = ExtensionPointName<ZigToolchainProvider>("com.github.zigzen.zig.toolchainProvider")
+
+    fun provideToolchain(homePath: Path): AbstractZigToolchain? =
+      EP_NAME.extensionList.asSequence()
+        .mapNotNull { it.provideToolchain(homePath) }
+        .firstOrNull()
   }
 }

@@ -19,7 +19,7 @@ abstract class AbstractZigToolchainFlavour {
   companion object {
     private val EP_NAME = ExtensionPointName<AbstractZigToolchainFlavour>("com.github.zigzen.zig.toolchainFlavour")
 
-    private fun getApplicableFlavors(): List<AbstractZigToolchainFlavour> =
+    fun getApplicableFlavors(): List<AbstractZigToolchainFlavour> =
       EP_NAME.extensionList.filter { it.isApplicable() }
 
     fun getFlavor(path: Path): AbstractZigToolchainFlavour? =
