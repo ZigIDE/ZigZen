@@ -21,5 +21,7 @@
     <orderEntry type="module" module-name="intellij.platform.resources" scope="RUNTIME" />
     <orderEntry type="module" module-name="com.github.zigzen.icons" />
     <orderEntry type="module" module-name="com.github.zigzen.ide" />
+    <orderEntry type="module" module-name="com.github.zigzen.zig" />
+    <orderEntry type="module" module-name="intellij.platform.ide.core" />
   </component>
 </module>

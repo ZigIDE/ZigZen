@@ -7,7 +7,9 @@
 
   <actions>
     <group id="WelcomeScreen.Platform.NewProject">
-      <action id="WelcomeScreen.CreateDirectoryProject" class="com.github.zigzen.ide.util.projectWizard.ZigZenNewProjectStep"/>
+      <action id="WelcomeScreen.CreateDirectoryProject"
+              class="com.github.zigzen.ide.util.projectWizard.ZigZenNewProjectStep"
+              text="New Project"/>
       <reference ref="WelcomeScreen.OpenDirectoryProject"/>
       <add-to-group group-id="WelcomeScreen.QuickStart" anchor="first"/>
     </group>
