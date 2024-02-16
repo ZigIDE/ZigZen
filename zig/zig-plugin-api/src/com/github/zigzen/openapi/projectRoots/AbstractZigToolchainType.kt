@@ -18,8 +18,6 @@ abstract class AbstractZigToolchainType(@NotNull val toolchainName: String) : Sd
 
   override fun getName(): String = toolchainName
 
-  override fun getVersionString(sdk: Sdk): String? = null
-
   override fun loadAdditionalData(currentSdk: Sdk, additional: Element): SdkAdditionalData? = null
 
   fun relevantForFile(@NotNull project: Project, @NotNull file: VirtualFile): Boolean = true
