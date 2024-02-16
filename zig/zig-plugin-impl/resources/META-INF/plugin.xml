@@ -6,6 +6,10 @@
     <fileType extensions="zig" fieldName="INSTANCE" implementationClass="com.github.zigzen.openapi.ZigFileType" language="ZIG" name="Zig File"/>
   </extensions>
 
+  <extensions defaultExtensionNs="com.github.zigzen">
+    <toolchainType implementation="com.github.zigzen.openapi.projectRoots.ZigToolchainType" />
+  </extensions>
+
   <extensionPoints>
     <extensionPoint qualifiedName="com.github.zigzen.toolchainType"
                     interface="com.github.zigzen.openapi.projectRoots.AbstractZigToolchainType"
