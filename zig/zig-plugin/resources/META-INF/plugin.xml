@@ -1,0 +1,20 @@
+<!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
+<idea-plugin>
+  <id>com.github.zigzen.zig</id>
+  <name>Zig Language</name>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileType extensions="zig" fieldName="INSTANCE" implementationClass="com.github.zigzen.openapi.ZigFileType" language="ZIG" name="Zig File"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.github.zigzen.zig">
+    <toolchainProvider implementation="com.github.zigzen.lang.toolchain.ZigLocalToolchainProvider"/>
+  </extensions>
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="com.github.zigzen.zig.toolchainFlavour"
+                    interface="com.github.zigzen.lang.toolchain.flavour.AbstractZigToolchainFlavour"/>
+    <extensionPoint qualifiedName="com.github.zigzen.zig.toolchainProvider"
+                    interface="com.github.zigzen.lang.toolchain.ZigToolchainProvider"/>
+  </extensionPoints>
+</idea-plugin>
