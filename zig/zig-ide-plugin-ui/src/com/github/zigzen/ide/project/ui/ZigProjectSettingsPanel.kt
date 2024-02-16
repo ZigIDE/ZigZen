@@ -5,6 +5,7 @@ import com.github.zigzen.lang.toolchain.AbstractZigToolchain
 import com.github.zigzen.lang.toolchain.ZigToolchainProvider
 import com.github.zigzen.lang.toolchain.flavour.AbstractZigToolchainFlavour
 import com.github.zigzen.openapi.ZigZenBundle
+import com.github.zigzen.openapi.ui.TaskDebouncer
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.ZigToolchainFileChooserComboBox
@@ -18,6 +19,8 @@ class ZigProjectSettingsPanel : Disposable {
   )
 
   private val toolchainVersion = JLabel()
+
+  private val versionUpdateDebouncer = TaskDebouncer(this)
 
   private val pathToToolchainComboBox = ZigToolchainFileChooserComboBox { update() }
 
@@ -51,5 +54,12 @@ class ZigProjectSettingsPanel : Disposable {
     }
   }
 
-  private fun update() {}
+  private fun update() {
+    versionUpdateDebouncer.run(
+      onPooledThread = {
+      },
+      onUiThread =  {
+      }
+    )
+  }
 }
