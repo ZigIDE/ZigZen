@@ -12,9 +12,7 @@ class ZigEmptyProjectGenerator : AbstractZigProjectGenerator() {
     baseDir: VirtualFile,
     settings: ZigNewProjectSettings,
     module: Module
-  ) {
-    TODO("Not yet implemented")
-  }
+  ) {}
 
   override fun getProjectPrefix(): String = "zigProject"
 }
