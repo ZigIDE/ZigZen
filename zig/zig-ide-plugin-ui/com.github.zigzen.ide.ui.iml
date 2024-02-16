@@ -24,5 +24,6 @@
     <orderEntry type="module" module-name="com.github.zigzen.zig" />
     <orderEntry type="module" module-name="intellij.platform.ide.core" />
     <orderEntry type="module" module-name="com.github.zigzen.openapi" />
+    <orderEntry type="module" module-name="com.github.zigzen.zig.impl" />
   </component>
 </module>

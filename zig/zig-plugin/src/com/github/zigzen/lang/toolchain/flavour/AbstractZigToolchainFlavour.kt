@@ -22,7 +22,7 @@ abstract class AbstractZigToolchainFlavour {
     fun getApplicableFlavors(): List<AbstractZigToolchainFlavour> =
       EP_NAME.extensionList.filter { it.isApplicable() }
 
-    fun getFlavor(path: Path): AbstractZigToolchainFlavour? =
+    fun getFlavour(path: Path): AbstractZigToolchainFlavour? =
       getApplicableFlavors().find { flavor -> flavor.isValidToolchainPath(path) }
   }
 }

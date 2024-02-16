@@ -4,14 +4,18 @@ package com.github.zigzen.ide.project.ui
 import com.github.zigzen.lang.toolchain.AbstractZigToolchain
 import com.github.zigzen.lang.toolchain.ZigToolchainProvider
 import com.github.zigzen.lang.toolchain.flavour.AbstractZigToolchainFlavour
+import com.github.zigzen.lang.toolchain.tool.zig
 import com.github.zigzen.openapi.ZigZenBundle
 import com.github.zigzen.openapi.ui.TaskDebouncer
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.util.Disposer
+import com.intellij.ui.JBColor
 import com.intellij.ui.components.ZigToolchainFileChooserComboBox
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.Panel
 import javax.swing.JLabel
+import kotlin.jvm.Throws
 
 class ZigProjectSettingsPanel : Disposable {
   data class ProjectSettingsData(
@@ -24,7 +28,7 @@ class ZigProjectSettingsPanel : Disposable {
 
   private val pathToToolchainComboBox = ZigToolchainFileChooserComboBox { update() }
 
-  var data: ProjectSettingsData
+  private var data: ProjectSettingsData
     get() {
       val toolchain = pathToToolchainComboBox.selectedPath?.let { ZigToolchainProvider.provideToolchain(it) }
       return ProjectSettingsData(
@@ -54,11 +58,32 @@ class ZigProjectSettingsPanel : Disposable {
     }
   }
 
+  @Throws(ConfigurationException::class)
+  fun validateSettings() {
+    val toolchain = data.toolchain ?: return
+    if (!toolchain.seeminglyValid()) {
+      throw ConfigurationException(ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.invalid.toolchain", toolchain.location))
+    }
+  }
+
   private fun update() {
+    val pathToToolchain = pathToToolchainComboBox.selectedPath
+
     versionUpdateDebouncer.run(
       onPooledThread = {
+        val toolchain = pathToToolchain?.let { ZigToolchainProvider.provideToolchain(it) }
+        val zigVersion = toolchain?.zig?.queryVersion()
+
+        zigVersion
       },
-      onUiThread =  {
+      onUiThread = {
+        if (it == null) {
+          toolchainVersion.text = ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.toolchain.version.unknown")
+          toolchainVersion.foreground = JBColor.RED
+        } else {
+          toolchainVersion.text = it
+          toolchainVersion.foreground = JBColor.foreground()
+        }
       }
     )
   }
