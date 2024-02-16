@@ -75,7 +75,7 @@ class ZigZenProjectSpecificSettingsStep<T>(
   private fun updateHint(): String =
     try {
       val projectPath = Path.of(projectLocation.get(), projectName.get())
-      ZigIdeBundle.UI_BUNDLE.getMessage("com.github.zigzen.new.project.project.location.hint", projectPath)
+      ZigIdeBundle.UI_BUNDLE.getMessage("com.github.zigzen.new.project.project.location.hint", projectPath.toString())
     }
     catch (e: InvalidPathException) {
       ""
