@@ -16,6 +16,7 @@ class ZigFileType : LanguageFileType(ZigLanguage.INSTANCE) {
     TODO("Not yet implemented")
   }
 
+  @Suppress("CompanionObjectInExtension")
   companion object {
     @JvmField
     val INSTANCE = ZigFileType()
