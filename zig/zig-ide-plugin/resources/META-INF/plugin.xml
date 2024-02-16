@@ -1,14 +1,25 @@
 <!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
 <idea-plugin>
   <id>com.github.zigzen.ide</id>
+  <name>ZigZen</name>
 
   <depends>com.github.zigzen.zig</depends>
 
   <actions>
-    <group id="WelcomeScreen.QuickStart.IDEA">
-      <action id="WelcomeScreen.CreateDirectoryProject" class="com.github.zigzen.ide.actions.NewProjectAction"/>
+    <group id="WelcomeScreen.Platform.NewProject">
+      <action id="WelcomeScreen.CreateDirectoryProject" class="com.github.zigzen.ide.util.projectWizard.ZigZenNewProjectStep"/>
       <reference ref="WelcomeScreen.OpenDirectoryProject"/>
       <add-to-group group-id="WelcomeScreen.QuickStart" anchor="first"/>
     </group>
+
+    <action id="NewProject" class="com.github.zigzen.ide.actions.ZigZenNewProjectAction">
+      <override-text place="ProjectWidgetPopup"/>
+      <add-to-group group-id="NewProjectOrModuleGroup"/>
+      <add-to-group group-id="ProjectWidget.Actions" anchor="first"/>
+    </action>
   </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <directoryProjectGenerator implementation="com.github.zigzen.platform.ZigDirectoryProjectGenerator"/>
+  </extensions>
 </idea-plugin>

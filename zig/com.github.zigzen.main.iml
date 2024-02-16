@@ -5,6 +5,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="com.github.zigzen.ide" scope="RUNTIME" />
+    <orderEntry type="module" module-name="com.github.zigzen.ide.ui" scope="RUNTIME" />
     <orderEntry type="module" module-name="com.github.zigzen.zig" scope="RUNTIME" />
     <orderEntry type="module" module-name="com.github.zigzen.zig.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="com.github.zigzen.resources" scope="RUNTIME" />
