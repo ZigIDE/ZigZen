@@ -3,6 +3,7 @@ package com.github.zigzen.platform
 
 import com.github.zigzen.ide.util.projectWizard.ZigNewProjectConfigurationData
 import com.github.zigzen.ide.util.projectWizard.ZigNewProjectPanel
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.platform.GeneratorPeerImpl
