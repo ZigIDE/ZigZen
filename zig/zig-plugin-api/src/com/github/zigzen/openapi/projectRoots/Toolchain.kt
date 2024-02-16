@@ -3,4 +3,4 @@ package com.github.zigzen.openapi.projectRoots
 
 import com.intellij.openapi.projectRoots.Sdk
 
-interface ZigToolchain : Sdk
+typealias Toolchain = Sdk
