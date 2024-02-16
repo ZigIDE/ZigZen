@@ -5,6 +5,7 @@ import com.github.zigzen.icons.ZigZenIcons
 import com.github.zigzen.ide.util.projectWizard.ZigNewProjectConfigurationData
 import com.github.zigzen.ide.util.projectWizard.ZigProjectSettingsStep
 import com.github.zigzen.openapi.ZigZenBundle
+import com.intellij.facet.ui.ValidationResult
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep
 import com.intellij.ide.util.projectWizard.CustomStepProjectGenerator
 import com.intellij.openapi.module.Module
