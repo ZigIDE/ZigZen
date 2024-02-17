@@ -17,7 +17,7 @@ import com.intellij.ui.dsl.builder.Panel
 import javax.swing.JLabel
 import kotlin.jvm.Throws
 
-class ZigProjectSettingsPanel : Disposable {
+class ZigProjectSettingsPanel(private val updateListener: (() -> Unit)? = null) : Disposable {
   data class ProjectSettingsData(
     val toolchain: AbstractZigToolchain?
   )
@@ -28,7 +28,7 @@ class ZigProjectSettingsPanel : Disposable {
 
   private val pathToToolchainComboBox = ZigToolchainFileChooserComboBox { update() }
 
-  private var data: ProjectSettingsData
+  var data: ProjectSettingsData
     get() {
       val toolchain = pathToToolchainComboBox.selectedPath?.let { ZigToolchainProvider.provideToolchain(it) }
       return ProjectSettingsData(
@@ -72,7 +72,7 @@ class ZigProjectSettingsPanel : Disposable {
     versionUpdateDebouncer.run(
       onPooledThread = {
         val toolchain = pathToToolchain?.let { ZigToolchainProvider.provideToolchain(it) }
-        val zigVersion = toolchain?.zig?.queryVersion()
+        val zigVersion = toolchain?.zig?.version
 
         zigVersion
       },
@@ -81,9 +81,11 @@ class ZigProjectSettingsPanel : Disposable {
           toolchainVersion.text = ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.toolchain.version.unknown")
           toolchainVersion.foreground = JBColor.RED
         } else {
-          toolchainVersion.text = it
+          toolchainVersion.text = it.rawVersion
           toolchainVersion.foreground = JBColor.foreground()
         }
+
+        updateListener?.invoke()
       }
     )
   }
