@@ -12,22 +12,34 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import kotlinx.collections.immutable.persistentMapOf
 
+@Suppress("CompanionObjectInExtension")
 class ZonSyntaxHighlighter : SyntaxHighlighterBase() {
   private val textAttributeKeyMap = persistentMapOf(
-    Pair(TokenType.BAD_CHARACTER, arrayOf(TextAttributesKey.createTextAttributesKey("ZON_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER))),
-    Pair(ZonTypes.COMMENT, arrayOf(TextAttributesKey.createTextAttributesKey("ZON_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT))),
-    Pair(ZonTypes.COMMA, arrayOf(TextAttributesKey.createTextAttributesKey("ZON_COMMA", DefaultLanguageHighlighterColors.COMMA))),
-    Pair(ZonTypes.DOT, arrayOf(TextAttributesKey.createTextAttributesKey("ZON_DOT", DefaultLanguageHighlighterColors.DOT))),
-    Pair(ZonTypes.EQUAL, arrayOf(TextAttributesKey.createTextAttributesKey("ZON_EQUAL", DefaultLanguageHighlighterColors.OPERATION_SIGN))),
-    Pair(ZonTypes.IDENTIFIER, arrayOf(TextAttributesKey.createTextAttributesKey("ZON_IDENTIFIER", DefaultLanguageHighlighterColors.INSTANCE_FIELD))),
-    Pair(ZonTypes.LBRACE, arrayOf(TextAttributesKey.createTextAttributesKey("ZON_LBRACE", DefaultLanguageHighlighterColors.BRACES))),
-    Pair(ZonTypes.LINE_STRING, arrayOf(TextAttributesKey.createTextAttributesKey("ZON_STRING", DefaultLanguageHighlighterColors.STRING))),
-    Pair(ZonTypes.RBRACE, arrayOf(TextAttributesKey.createTextAttributesKey("ZON_RBRACE", DefaultLanguageHighlighterColors.BRACES))),
-    Pair(ZonTypes.STRING_LITERAL_SINGLE, arrayOf(TextAttributesKey.createTextAttributesKey("ZON_STRING", DefaultLanguageHighlighterColors.STRING))),
+    Pair(TokenType.BAD_CHARACTER, arrayOf(badCharacterTextAttributesKey)),
+    Pair(ZonTypes.COMMENT, arrayOf(commentTextAttributesKey)),
+    Pair(ZonTypes.COMMA, arrayOf(commaTextAttributesKey)),
+    Pair(ZonTypes.DOT, arrayOf(dotTextAttributesKey)),
+    Pair(ZonTypes.EQUAL, arrayOf(equalTextAttributesKey)),
+    Pair(ZonTypes.IDENTIFIER, arrayOf(identifierTextAttributesKey)),
+    Pair(ZonTypes.LBRACE, arrayOf(bracesTextAttributesKey)),
+    Pair(ZonTypes.LINE_STRING, arrayOf(stringTextAttributesKey)),
+    Pair(ZonTypes.RBRACE, arrayOf(bracesTextAttributesKey)),
+    Pair(ZonTypes.STRING_LITERAL_SINGLE, arrayOf(stringTextAttributesKey)),
   )
 
   override fun getHighlightingLexer(): Lexer = ZonLexerAdapter()
 
   override fun getTokenHighlights(tokenType: IElementType?): Array<TextAttributesKey> =
     textAttributeKeyMap[tokenType] ?: TextAttributesKey.EMPTY_ARRAY
+
+  companion object {
+    val badCharacterTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER)
+    val commentTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT)
+    val commaTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_COMMA", DefaultLanguageHighlighterColors.COMMA)
+    val dotTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_DOT", DefaultLanguageHighlighterColors.DOT)
+    val equalTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_EQUAL", DefaultLanguageHighlighterColors.OPERATION_SIGN)
+    val identifierTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_IDENTIFIER", DefaultLanguageHighlighterColors.INSTANCE_FIELD)
+    val bracesTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_LBRACE", DefaultLanguageHighlighterColors.BRACES)
+    val stringTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_STRING", DefaultLanguageHighlighterColors.STRING)
+  }
 }

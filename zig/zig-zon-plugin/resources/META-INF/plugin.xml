@@ -4,6 +4,7 @@
   <name>Zon Language</name>
 
   <extensions defaultExtensionNs="com.intellij">
+    <colorSettingsPage implementation="com.github.zigzen.openapi.options.ZonColorSettingsPage"/>
     <fileType extensions="zon" fieldName="INSTANCE" implementationClass="com.github.zigzen.openapi.ZonFileType" language="ZON" name="Zon File"/>
   </extensions>
 
