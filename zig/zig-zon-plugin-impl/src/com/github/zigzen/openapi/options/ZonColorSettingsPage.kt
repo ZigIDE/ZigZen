@@ -12,12 +12,13 @@ import javax.swing.Icon
 
 class ZonColorSettingsPage : ColorSettingsPage {
   override fun getAttributeDescriptors(): Array<AttributesDescriptor> = arrayOf(
-    AttributesDescriptor("Bad character", ZonSyntaxHighlighter.badCharacterTextAttributesKey),
-    AttributesDescriptor("Braces", ZonSyntaxHighlighter.bracesTextAttributesKey),
-    AttributesDescriptor("Comment", ZonSyntaxHighlighter.commentTextAttributesKey),
-    AttributesDescriptor("Equal", ZonSyntaxHighlighter.equalTextAttributesKey),
-    AttributesDescriptor("Field", ZonSyntaxHighlighter.identifierTextAttributesKey),
-    AttributesDescriptor("String", ZonSyntaxHighlighter.stringTextAttributesKey),
+    AttributesDescriptor("Braces and Operators//Braces", ZonSyntaxHighlighter.bracesTextAttributesKey),
+    AttributesDescriptor("Braces and Operators//Comma", ZonSyntaxHighlighter.commaTextAttributesKey),
+    AttributesDescriptor("Braces and Operators//Dot", ZonSyntaxHighlighter.dotTextAttributesKey),
+    AttributesDescriptor("Braces and Operators//Operator sign", ZonSyntaxHighlighter.equalTextAttributesKey),
+    AttributesDescriptor("Comments//Line comment", ZonSyntaxHighlighter.commentTextAttributesKey),
+    AttributesDescriptor("Struct fields//Field", ZonSyntaxHighlighter.identifierTextAttributesKey),
+    AttributesDescriptor("String//String text", ZonSyntaxHighlighter.stringTextAttributesKey),
   )
 
   override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
