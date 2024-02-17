@@ -24,6 +24,8 @@ class ZigProjectGeneratorPeer : GeneratorPeerImpl<ZigNewProjectConfigurationData
     return super.getComponent(myLocationField, checkValid)
   }
 
+  override fun getSettings(): ZigNewProjectConfigurationData = newProjectPanel.data
+
   override fun validate(): ValidationInfo? = try {
     newProjectPanel.validateSettings()
     null
