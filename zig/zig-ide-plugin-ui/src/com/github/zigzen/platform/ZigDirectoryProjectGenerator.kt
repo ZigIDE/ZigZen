@@ -14,6 +14,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.toNioPathOrNull
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.AbstractActionWithPanel
 import com.intellij.platform.DirectoryProjectGenerator
@@ -46,7 +47,7 @@ class ZigDirectoryProjectGenerator : DirectoryProjectGeneratorBase<ZigNewProject
     val projectName = project.name.replace(' ', '-')
 
     val projectFiles = ProgressManager.getInstance().runProcessWithProgressSynchronously<ZigToolchainZigTool.ZigToolchainZigToolGeneratedProjectFiles, Exception>(
-      { zig.initializeProject(baseDir, baseDir.path, settings.isBinary) },
+      { zig.initializeProject(baseDir, baseDir.path.toNioPathOrNull(), settings.isBinary) },
       ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.project.creating", projectName),
       true,
       project,

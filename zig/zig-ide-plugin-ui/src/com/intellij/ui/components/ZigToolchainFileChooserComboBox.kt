@@ -8,12 +8,12 @@ import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ui.ComboBoxWithWidePopup
 import com.intellij.openapi.ui.ComponentWithBrowseButton
+import com.intellij.openapi.util.io.toNioPathOrNull
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.ComboboxSpeedSearch
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
 import java.nio.file.Path
-import java.nio.file.Paths
 import javax.swing.addTextChangeListener
 import javax.swing.plaf.basic.BasicComboBoxEditor
 
@@ -31,7 +31,7 @@ class ZigToolchainFileChooserComboBox(onTextChanged: () -> Unit = {})
 
   var selectedPath: Path?
     get() = try {
-      Paths.get(pathTextField.text)
+      pathTextField.text.toNioPathOrNull()
     } catch (e: Exception) {
       null
     }
@@ -47,7 +47,7 @@ class ZigToolchainFileChooserComboBox(onTextChanged: () -> Unit = {})
     addActionListener {
       val descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
       FileChooser.chooseFile(descriptor, null, null) { file ->
-        childComponent.selectedItem = Paths.get(file.path)
+        childComponent.selectedItem = file.path.toNioPathOrNull()
       }
     }
 
