@@ -4,6 +4,7 @@
   <name>ZigZen</name>
 
   <depends>com.github.zigzen.zig</depends>
+  <depends>com.github.zigzen.zon</depends>
 
   <actions>
     <group id="WelcomeScreen.Platform.NewProject">
