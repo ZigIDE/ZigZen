@@ -384,6 +384,7 @@
       <module fileurl="file://$PROJECT_DIR$/zig/zig-plugin/com.github.zigzen.zig.iml" filepath="$PROJECT_DIR$/zig/zig-plugin/com.github.zigzen.zig.iml" />
       <module fileurl="file://$PROJECT_DIR$/zig/zig-plugin-impl/com.github.zigzen.zig.impl.iml" filepath="$PROJECT_DIR$/zig/zig-plugin-impl/com.github.zigzen.zig.impl.iml" />
       <module fileurl="file://$PROJECT_DIR$/zig/zig-zon-plugin/com.github.zigzen.zon.iml" filepath="$PROJECT_DIR$/zig/zig-zon-plugin/com.github.zigzen.zon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-zon-plugin-impl/com.github.zigzen.zon.impl.iml" filepath="$PROJECT_DIR$/zig/zig-zon-plugin-impl/com.github.zigzen.zon.impl.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/feature-usage-database/plugin-community/intellij.ae.database.community.iml" filepath="$PROJECT_DIR$/plugins/feature-usage-database/plugin-community/intellij.ae.database.community.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/feature-usage-database/core/intellij.ae.database.core.iml" filepath="$PROJECT_DIR$/plugins/feature-usage-database/core/intellij.ae.database.core.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/feature-usage-database/counters/intellij.ae.database.counters.community.iml" filepath="$PROJECT_DIR$/plugins/feature-usage-database/counters/intellij.ae.database.counters.community.iml" />

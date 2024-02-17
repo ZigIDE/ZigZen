@@ -6,4 +6,8 @@
   <extensions defaultExtensionNs="com.intellij">
     <fileType extensions="zon" fieldName="INSTANCE" implementationClass="com.github.zigzen.openapi.ZonFileType" language="ZON" name="Zon File"/>
   </extensions>
+
+  <extensions defaultExtensionNs="com.intellij.lang">
+    <parserDefinition language="ZON" implementationClass="com.github.zigzen.lang.parser.ZonParserDefinition"/>
+  </extensions>
 </idea-plugin>
