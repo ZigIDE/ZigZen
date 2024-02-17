@@ -22,7 +22,7 @@ class ZonColorSettingsPage : ColorSettingsPage {
 
   override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 
-  override fun getDisplayName(): String = "Zon"
+  override fun getDisplayName(): String = "ZON"
 
   override fun getIcon(): Icon = ZigZenIcons.Zon
 
@@ -30,7 +30,7 @@ class ZonColorSettingsPage : ColorSettingsPage {
 
   override fun getDemoText(): String = """
     .{
-      // Zon Color Settings
+      // ZON Color Settings
       .name = "zon-color-settings",
       .version = "0.1.0",
       .dependencies = .{

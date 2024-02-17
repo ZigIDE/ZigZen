@@ -7,9 +7,9 @@ import com.intellij.openapi.fileTypes.LanguageFileType
 import javax.swing.Icon
 
 class ZonFileType : LanguageFileType(ZonLanguage.INSTANCE) {
-  override fun getName(): String = "Zon File"
+  override fun getName(): String = "ZON File"
 
-  override fun getDescription(): String = "Zon file"
+  override fun getDescription(): String = "ZON file"
 
   override fun getDefaultExtension(): String = "zon"
 
