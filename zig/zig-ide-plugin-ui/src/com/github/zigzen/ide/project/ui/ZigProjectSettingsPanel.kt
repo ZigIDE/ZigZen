@@ -45,11 +45,11 @@ class ZigProjectSettingsPanel(private val updateListener: (() -> Unit)? = null) 
   }
 
   fun attachSelfTo(panel: Panel) = with(panel) {
-    row(ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.toolchain.location")) {
+    row(ZigZenBundle.IDE_UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.toolchain.location")) {
       cell(pathToToolchainComboBox)
         .align(AlignX.FILL)
     }
-    row(ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.toolchain.version")) {
+    row(ZigZenBundle.IDE_UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.toolchain.version")) {
       cell(toolchainVersion)
     }
 
@@ -62,7 +62,7 @@ class ZigProjectSettingsPanel(private val updateListener: (() -> Unit)? = null) 
   fun validateSettings() {
     val toolchain = data.toolchain ?: return
     if (!toolchain.seeminglyValid()) {
-      throw ConfigurationException(ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.invalid.toolchain", toolchain.location))
+      throw ConfigurationException(ZigZenBundle.IDE_UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.invalid.toolchain", toolchain.location))
     }
   }
 
@@ -78,7 +78,7 @@ class ZigProjectSettingsPanel(private val updateListener: (() -> Unit)? = null) 
       },
       onUiThread = {
         if (it == null) {
-          toolchainVersion.text = ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.toolchain.version.unknown")
+          toolchainVersion.text = ZigZenBundle.IDE_UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.toolchain.version.unknown")
           toolchainVersion.foreground = JBColor.RED
         } else {
           toolchainVersion.text = it.rawVersion
