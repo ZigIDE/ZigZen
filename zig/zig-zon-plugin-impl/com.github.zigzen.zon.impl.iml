@@ -12,9 +12,10 @@
     <orderEntry type="jdk" jdkName="jbr-17" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="TEST" name="kotlin-stdlib" level="project" />
+    <orderEntry type="module" module-name="com.github.zigzen.zon" />
     <orderEntry type="module" module-name="intellij.platform.core" />
     <orderEntry type="module" module-name="intellij.platform.core.impl" />
-    <orderEntry type="module" module-name="com.github.zigzen.zon" />
     <orderEntry type="module" module-name="intellij.platform.analysis.impl" />
+    <orderEntry type="module" module-name="intellij.platform.editor" />
   </component>
 </module>
