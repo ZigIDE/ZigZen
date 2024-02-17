@@ -2,22 +2,22 @@
 package com.github.zigzen.lang.toolchain.tool
 
 import com.github.zigzen.lang.toolchain.AbstractZigToolchain
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDirectory
 import com.intellij.util.text.SemVer
 import java.nio.file.Path
+import kotlinx.lazyWithThisReference
 
 class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchainTool("zig", toolchain) {
   val version by lazy { queryVersion() }
 
-  fun initializeProject(workingDirectoryVfs: VirtualFile, workingDirectory: String, isBinary: Boolean): ZigToolchainZigToolGeneratedProjectFiles {
-    val command = if (version < ZIG_VERSION_0_12_0) {
+  fun initializeProject(workingDirectoryVfs: VirtualFile, workingDirectory: Path? = null, isBinary: Boolean): ZigToolchainZigToolGeneratedProjectFiles {
+    val command = if (version < ZIG_VERSION_0_12_0_WITH_MERGED_INIT) {
       if (isBinary) "init-exe" else "init-lib"
     } else "init"
 
-    val commandLine = GeneralCommandLine(command, workingDirectory)
+    val commandLine = createBaseCommandLine(command, workingDirectory = workingDirectory)
     val process = commandLine.createProcess()
     process.waitFor()
 
@@ -35,7 +35,7 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
     val process = commandLine.createProcess()
     process.waitFor()
 
-    val versionString = String(process.inputStream.readAllBytes())
+    val versionString = String(process.inputStream.readAllBytes()).substringBeforeLast('+')
 
     return SemVer.parseFromText(versionString)!!
   }
@@ -47,9 +47,8 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
   )
 
   companion object {
-    val ZIG_VERSION_0_12_0 = SemVer("0.12.0", 0, 12, 0)
+    val ZIG_VERSION_0_12_0_WITH_MERGED_INIT = SemVer.parseFromText("0.12.0-dev.1684")
   }
 }
 
-val AbstractZigToolchain.zig
-  get() = ZigToolchainZigTool(this)
+val AbstractZigToolchain.zig by lazyWithThisReference { ZigToolchainZigTool(this as AbstractZigToolchain) }
