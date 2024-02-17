@@ -374,6 +374,7 @@
       <module fileurl="file://$PROJECT_DIR$/android/android/prebuilts/sdktools/android.sdktools.wizardTemplate.impl.iml" filepath="$PROJECT_DIR$/android/android/prebuilts/sdktools/android.sdktools.wizardTemplate.impl.iml" />
       <module fileurl="file://$PROJECT_DIR$/android/android/prebuilts/sdktools/android.sdktools.wizardTemplate.plugin.iml" filepath="$PROJECT_DIR$/android/android/prebuilts/sdktools/android.sdktools.wizardTemplate.plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/android/android/prebuilts/sdktools/android.sdktools.zipflinger.iml" filepath="$PROJECT_DIR$/android/android/prebuilts/sdktools/android.sdktools.zipflinger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-build/com.github.zigzen.build.iml" filepath="$PROJECT_DIR$/zig/zig-build/com.github.zigzen.build.iml" />
       <module fileurl="file://$PROJECT_DIR$/zig/zig-icons/com.github.zigzen.icons.iml" filepath="$PROJECT_DIR$/zig/zig-icons/com.github.zigzen.icons.iml" />
       <module fileurl="file://$PROJECT_DIR$/zig/zig-ide-plugin/com.github.zigzen.ide.iml" filepath="$PROJECT_DIR$/zig/zig-ide-plugin/com.github.zigzen.ide.iml" />
       <module fileurl="file://$PROJECT_DIR$/zig/zig-ide-plugin-ui/com.github.zigzen.ide.ui.iml" filepath="$PROJECT_DIR$/zig/zig-ide-plugin-ui/com.github.zigzen.ide.ui.iml" />

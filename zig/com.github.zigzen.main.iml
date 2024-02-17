@@ -5,7 +5,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="com.github.zigzen.ide" scope="RUNTIME" />
-    <orderEntry type="module" module-name="com.github.zigzen.ide.ui" scope="RUNTIME" />
+    <orderEntry type="module" module-name="com.github.zigzen.ide.ui" />
     <orderEntry type="module" module-name="com.github.zigzen.zig" scope="RUNTIME" />
     <orderEntry type="module" module-name="com.github.zigzen.zig.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="com.github.zigzen.resources" scope="RUNTIME" />
@@ -19,5 +19,6 @@
     <orderEntry type="module" module-name="intellij.vcs.git" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.vcs.github" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.vcs.github.community" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.xml" scope="RUNTIME" />
   </component>
 </module>
