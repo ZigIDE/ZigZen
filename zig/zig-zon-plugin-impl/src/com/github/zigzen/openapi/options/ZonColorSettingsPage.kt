@@ -2,6 +2,7 @@
 package com.github.zigzen.openapi.options
 
 import com.github.zigzen.icons.ZigZenIcons
+import com.github.zigzen.openapi.ZigZenBundle
 import com.github.zigzen.openapi.fileTypes.ZonSyntaxHighlighter
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighter
@@ -12,13 +13,13 @@ import javax.swing.Icon
 
 class ZonColorSettingsPage : ColorSettingsPage {
   override fun getAttributeDescriptors(): Array<AttributesDescriptor> = arrayOf(
-    AttributesDescriptor("Braces and Operators//Braces", ZonSyntaxHighlighter.bracesTextAttributesKey),
-    AttributesDescriptor("Braces and Operators//Comma", ZonSyntaxHighlighter.commaTextAttributesKey),
-    AttributesDescriptor("Braces and Operators//Dot", ZonSyntaxHighlighter.dotTextAttributesKey),
-    AttributesDescriptor("Braces and Operators//Operator sign", ZonSyntaxHighlighter.equalTextAttributesKey),
-    AttributesDescriptor("Comments//Line comment", ZonSyntaxHighlighter.commentTextAttributesKey),
-    AttributesDescriptor("Struct fields//Field", ZonSyntaxHighlighter.identifierTextAttributesKey),
-    AttributesDescriptor("String//String text", ZonSyntaxHighlighter.stringTextAttributesKey),
+    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.braces"), ZonSyntaxHighlighter.bracesTextAttributesKey),
+    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.comma"), ZonSyntaxHighlighter.commaTextAttributesKey),
+    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.dot"), ZonSyntaxHighlighter.dotTextAttributesKey),
+    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.operator.sign"), ZonSyntaxHighlighter.equalTextAttributesKey),
+    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.comments"), ZonSyntaxHighlighter.commentTextAttributesKey),
+    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.field"), ZonSyntaxHighlighter.identifierTextAttributesKey),
+    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.string.text"), ZonSyntaxHighlighter.stringTextAttributesKey),
   )
 
   override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY

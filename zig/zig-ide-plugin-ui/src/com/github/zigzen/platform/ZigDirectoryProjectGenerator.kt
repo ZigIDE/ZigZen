@@ -32,7 +32,7 @@ class ZigDirectoryProjectGenerator : DirectoryProjectGeneratorBase<ZigNewProject
     callback: AbstractNewProjectStep.AbstractCallback<ZigNewProjectConfigurationData>
   ): AbstractActionWithPanel = ZigProjectSettingsStep(projectGenerator, callback)
 
-  override fun getName(): String = ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.ui.zig")
+  override fun getName(): String = ZigZenBundle.IDE_UI_BUNDLE.getMessage("com.github.zigzen.ide.ui.zig")
 
   override fun getLogo(): Icon = ZigZenIcons.Zig
 
@@ -48,7 +48,7 @@ class ZigDirectoryProjectGenerator : DirectoryProjectGeneratorBase<ZigNewProject
 
     val projectFiles = ProgressManager.getInstance().runProcessWithProgressSynchronously<ZigToolchainZigTool.ZigToolchainZigToolGeneratedProjectFiles, Exception>(
       { zig.initializeProject(baseDir, baseDir.path.toNioPathOrNull(), settings.isBinary) },
-      ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.project.creating", projectName),
+      ZigZenBundle.IDE_UI_BUNDLE.getMessage("com.github.zigzen.ide.project.creating", projectName),
       true,
       project,
     )

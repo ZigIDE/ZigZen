@@ -19,7 +19,7 @@ class ZigNewProjectPanel(updateListener: (() -> Unit)? = null) : Disposable {
   }
 
   fun attachSelfTo(panel: Panel) = with(panel) {
-    row(ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.project.type")) {
+    row(ZigZenBundle.IDE_UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.project.type")) {
       segmentedButton(listOf("Binary", "Library")) {
         this.text = it
         this.toolTipText = when (it) {
