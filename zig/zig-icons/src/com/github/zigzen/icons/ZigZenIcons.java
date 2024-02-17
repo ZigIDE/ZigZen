@@ -15,4 +15,5 @@ public final class ZigZenIcons {
     return IconManager.getInstance().loadRasterizedIcon(path, ZigZenIcons.class.getClassLoader(), cacheKey, flags);
   }
   /** 16x16 */ public static final @NotNull Icon Zig = load("icons/com/github/zigzen/zig.svg", 794600452, 0);
+  /** 16x16 */ public static final @NotNull Icon Zon = load("icons/com/github/zigzen/zon.svg", -1976367343, 0);
 }

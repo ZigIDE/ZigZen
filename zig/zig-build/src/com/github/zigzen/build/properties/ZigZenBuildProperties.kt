@@ -3,6 +3,7 @@ package com.github.zigzen.build.properties
 
 import com.github.zigzen.build.plugins.ZigIdePluginLayout
 import com.github.zigzen.build.plugins.ZigLanguagePluginLayout
+import com.github.zigzen.build.plugins.ZonLanguagePluginLayout
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.plus
 import org.jetbrains.intellij.build.ApplicationInfoProperties
@@ -34,6 +35,7 @@ class ZigZenBuildProperties(private val home: Path) : JetBrainsProductProperties
       CommunityRepositoryModules.githubPlugin("intellij.vcs.github.community"),
       ZigIdePluginLayout.zigIdePlugin(),
       ZigLanguagePluginLayout.zigLanguagePlugin(),
+      ZonLanguagePluginLayout.zonLanguagePlugin(),
     ))
     productLayout.mainModules = listOf("com.github.zigzen.main")
     productLayout.productImplementationModules = listOf(
