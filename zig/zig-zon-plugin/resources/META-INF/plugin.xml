@@ -10,6 +10,7 @@
 
   <extensions defaultExtensionNs="com.intellij.lang">
     <braceMatcher language="ZON" implementationClass="com.github.zigzen.lang.ZonBraceMatcher"/>
+    <foldingBuilder language="ZON" implementationClass="com.github.zigzen.lang.folding.ZonFoldingBuilder"/>
     <parserDefinition language="ZON" implementationClass="com.github.zigzen.lang.parser.ZonParserDefinition"/>
     <syntaxHighlighter language="ZON" implementationClass="com.github.zigzen.openapi.fileTypes.ZonSyntaxHighlighter"/>
     <syntaxHighlighterFactory language="ZON" implementationClass="com.github.zigzen.openapi.fileTypes.ZonSyntaxHighlighterFactory"/>
