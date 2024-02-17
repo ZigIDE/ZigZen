@@ -4,11 +4,15 @@ package com.github.zigzen.platform
 import com.github.zigzen.icons.ZigZenIcons
 import com.github.zigzen.ide.util.projectWizard.ZigNewProjectConfigurationData
 import com.github.zigzen.ide.util.projectWizard.ZigProjectSettingsStep
+import com.github.zigzen.lang.toolchain.tool.ZigToolchainZigTool
+import com.github.zigzen.lang.toolchain.tool.zig
 import com.github.zigzen.openapi.ZigZenBundle
-import com.intellij.facet.ui.ValidationResult
+import com.intellij.ide.util.PsiNavigationSupport
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep
 import com.intellij.ide.util.projectWizard.CustomStepProjectGenerator
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.module.Module
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.AbstractActionWithPanel
@@ -37,5 +41,27 @@ class ZigDirectoryProjectGenerator : DirectoryProjectGeneratorBase<ZigNewProject
     settings: ZigNewProjectConfigurationData,
     module: Module
   ) {
+    val toolchain = settings.settings.toolchain
+    val zig = toolchain?.zig ?: return
+    val projectName = project.name.replace(' ', '-')
+
+    val projectFiles = ProgressManager.getInstance().runProcessWithProgressSynchronously<ZigToolchainZigTool.ZigToolchainZigToolGeneratedProjectFiles, Exception>(
+      { zig.initializeProject(baseDir, baseDir.path, settings.isBinary) },
+      ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.project.creating", projectName),
+      true,
+      project,
+    )
+
+    if (!ApplicationManager.getApplication().isHeadlessEnvironment) {
+      val navigation = PsiNavigationSupport.getInstance()
+      navigation.createNavigatable(project, projectFiles.buildZig, -1).navigate(false)
+
+      if (projectFiles.buildZigZon != null)
+        navigation.createNavigatable(project, projectFiles.buildZigZon!!, -1).navigate(false)
+
+      projectFiles.sourceFiles.forEach {
+        navigation.createNavigatable(project, it, -1).navigate(true)
+      }
+    }
   }
 }

@@ -2,22 +2,36 @@
 package com.github.zigzen.ide.util.projectWizard
 
 import com.github.zigzen.ide.project.ui.ZigProjectSettingsPanel
+import com.github.zigzen.openapi.ZigZenBundle
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.dsl.builder.Panel
 import kotlin.jvm.Throws
 
-class ZigNewProjectPanel(private val updateListener: (() -> Unit)? = null) : Disposable {
-  val data: ZigNewProjectConfigurationData get() = ZigNewProjectConfigurationData(394)
+class ZigNewProjectPanel(updateListener: (() -> Unit)? = null) : Disposable {
+  private val zigProjectSettingsPanel = ZigProjectSettingsPanel(updateListener)
 
-  private val zigProjectSettingsPanel = ZigProjectSettingsPanel()
+  private var data: ZigNewProjectConfigurationData = ZigNewProjectConfigurationData(zigProjectSettingsPanel.data, true)
 
   override fun dispose() {
     Disposer.dispose(zigProjectSettingsPanel)
   }
 
   fun attachSelfTo(panel: Panel) = with(panel) {
+    row(ZigZenBundle.UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.project.type")) {
+      segmentedButton(listOf("Binary", "Library")) {
+        this.text = it
+        this.toolTipText = when (it) {
+          "Binary" -> "Create a Zig binary project"
+          "Library" -> "Create a Zig library project"
+          else -> throw IllegalStateException("unexpected project type to present in segmented button")
+        }
+      }.whenItemSelectedFromUi {
+        data.isBinary = it == "Binary"
+      }
+    }
+
     zigProjectSettingsPanel.attachSelfTo(this)
   }
 
