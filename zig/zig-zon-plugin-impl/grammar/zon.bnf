@@ -1,0 +1,39 @@
+// Copyright Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
+{
+  parserClass="com.github.zigzen.lang.parser.ZonParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Zon"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.github.zigzen.psi"
+  psiImplPackage="com.github.zigzen.psi.impl"
+
+  elementTypeHolderClass="com.github.zigzen.psi.ZonTypes"
+  elementTypeClass="com.github.zigzen.psi.ZonElementType"
+  tokenTypeClass="com.github.zigzen.psi.ZonTokenType"
+  tokens=[
+    DOT='.'
+    LBRACE='{'
+    RBRACE='}'
+    EQUAL='='
+    COMMA=','
+    COMMENT='comment'
+    IDENTIFIER='identifier'
+    STRING_LITERAL_SINGLE='string'
+    LINE_STRING='multiline string'
+    BAD_STRING='unterminated string'
+  ]
+}
+
+Root ::= ZonStruct
+
+ZonStruct ::= DOT LBRACE (ZonStructPropertyMap | ZonStructStringArrayElement)? RBRACE
+
+ZonStructPropertyMap ::= (ZonStructProperty) (COMMA ZonStructPropertyMap)* COMMA?
+
+ZonStructStringArrayElement ::= (STRING_LITERAL_SINGLE | LINE_STRING+) (COMMA ZonStructStringArrayElement)* COMMA?
+
+ZonStructProperty ::= DOT IDENTIFIER EQUAL ZonStructPropertyValue
+
+private ZonStructPropertyValue ::= ZonStruct | (STRING_LITERAL_SINGLE | LINE_STRING+)

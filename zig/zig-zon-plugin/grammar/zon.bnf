@@ -1,9 +1,0 @@
-// Copyright Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
-{
-  parserClass="com.github.zigzen.lang.parser.ZonParser"
-
-  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
-
-  psiClassPrefix="Zon"
-  psiImplClassSuffix="Impl"
-}
