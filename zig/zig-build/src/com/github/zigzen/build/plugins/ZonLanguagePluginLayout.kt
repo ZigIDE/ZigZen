@@ -7,7 +7,9 @@ object ZonLanguagePluginLayout {
   fun zonLanguagePlugin(): PluginLayout {
     return PluginLayout.plugin("com.github.zigzen.zon") { spec ->
       spec.withModules(
-        listOf()
+        listOf(
+          "com.github.zigzen.zon.impl"
+        )
       )
     }
   }
