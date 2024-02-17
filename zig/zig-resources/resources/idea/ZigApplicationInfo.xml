@@ -9,4 +9,5 @@
 
   <essential-plugin>com.github.zigzen.zig</essential-plugin>
   <essential-plugin>com.github.zigzen.ide</essential-plugin>
+  <essential-plugin>com.github.zigzen.zon</essential-plugin>
 </component>
