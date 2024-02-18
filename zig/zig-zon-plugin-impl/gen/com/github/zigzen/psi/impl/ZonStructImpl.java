@@ -35,8 +35,8 @@ public class ZonStructImpl extends ZonStructMixinImpl implements ZonStruct {
 
   @Override
   @Nullable
-  public ZonStructStringArrayElement getStructStringArrayElement() {
-    return findChildByClass(ZonStructStringArrayElement.class);
+  public ZonStructStringArray getStructStringArray() {
+    return findChildByClass(ZonStructStringArray.class);
   }
 
 }

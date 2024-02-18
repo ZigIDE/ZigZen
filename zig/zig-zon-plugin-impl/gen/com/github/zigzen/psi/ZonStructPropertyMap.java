@@ -8,9 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface ZonStructPropertyMap extends PsiElement {
 
   @NotNull
-  ZonStructProperty getStructProperty();
+  List<ZonIncompleteStructProperty> getIncompleteStructPropertyList();
 
   @NotNull
-  List<ZonStructPropertyMap> getStructPropertyMapList();
+  List<ZonStructProperty> getStructPropertyList();
 
 }

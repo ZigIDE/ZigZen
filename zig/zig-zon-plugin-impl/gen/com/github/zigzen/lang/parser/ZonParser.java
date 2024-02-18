@@ -48,13 +48,61 @@ public class ZonParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // DOT? COMPLETION_DUMMY
+  public static boolean IncompleteStructProperty(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "IncompleteStructProperty")) return false;
+    if (!nextTokenIs(b, "<incomplete struct property>", COMPLETION_DUMMY, DOT)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, INCOMPLETE_STRUCT_PROPERTY, "<incomplete struct property>");
+    r = IncompleteStructProperty_0(b, l + 1);
+    r = r && consumeToken(b, COMPLETION_DUMMY);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // DOT?
+  private static boolean IncompleteStructProperty_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "IncompleteStructProperty_0")) return false;
+    consumeToken(b, DOT);
+    return true;
+  }
+
+  /* ********************************************************** */
   // Struct
   static boolean Root(PsiBuilder b, int l) {
     return Struct(b, l + 1);
   }
 
   /* ********************************************************** */
-  // DOT LBRACE (StructPropertyMap | StructStringArrayElement)? RBRACE
+  // STRING_LITERAL_SINGLE | LINE_STRING+
+  public static boolean STRING_LITERAL(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "STRING_LITERAL")) return false;
+    if (!nextTokenIs(b, "<string literal>", LINE_STRING, STRING_LITERAL_SINGLE)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, STRING_LITERAL, "<string literal>");
+    r = consumeToken(b, STRING_LITERAL_SINGLE);
+    if (!r) r = STRING_LITERAL_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // LINE_STRING+
+  private static boolean STRING_LITERAL_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "STRING_LITERAL_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LINE_STRING);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, LINE_STRING)) break;
+      if (!empty_element_parsed_guard_(b, "STRING_LITERAL_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // DOT LBRACE (StructPropertyMap | StructStringArray | ()) RBRACE
   public static boolean Struct(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Struct")) return false;
     if (!nextTokenIs(b, DOT)) return false;
@@ -67,20 +115,21 @@ public class ZonParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (StructPropertyMap | StructStringArrayElement)?
+  // StructPropertyMap | StructStringArray | ()
   private static boolean Struct_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Struct_2")) return false;
-    Struct_2_0(b, l + 1);
-    return true;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = StructPropertyMap(b, l + 1);
+    if (!r) r = StructStringArray(b, l + 1);
+    if (!r) r = Struct_2_2(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
   }
 
-  // StructPropertyMap | StructStringArrayElement
-  private static boolean Struct_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "Struct_2_0")) return false;
-    boolean r;
-    r = StructPropertyMap(b, l + 1);
-    if (!r) r = StructStringArrayElement(b, l + 1);
-    return r;
+  // ()
+  private static boolean Struct_2_2(PsiBuilder b, int l) {
+    return true;
   }
 
   /* ********************************************************** */
@@ -99,30 +148,29 @@ public class ZonParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (StructProperty) (COMMA StructPropertyMap)* COMMA?
+  // (StructProperty | IncompleteStructProperty) (COMMA (IncompleteStructProperty? StructProperty IncompleteStructProperty? | IncompleteStructProperty))* COMMA?
   public static boolean StructPropertyMap(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "StructPropertyMap")) return false;
-    if (!nextTokenIs(b, DOT)) return false;
+    if (!nextTokenIs(b, "<struct property map>", COMPLETION_DUMMY, DOT)) return false;
     boolean r;
-    Marker m = enter_section_(b);
+    Marker m = enter_section_(b, l, _NONE_, STRUCT_PROPERTY_MAP, "<struct property map>");
     r = StructPropertyMap_0(b, l + 1);
     r = r && StructPropertyMap_1(b, l + 1);
     r = r && StructPropertyMap_2(b, l + 1);
-    exit_section_(b, m, STRUCT_PROPERTY_MAP, r);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // (StructProperty)
+  // StructProperty | IncompleteStructProperty
   private static boolean StructPropertyMap_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "StructPropertyMap_0")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = StructProperty(b, l + 1);
-    exit_section_(b, m, null, r);
+    if (!r) r = IncompleteStructProperty(b, l + 1);
     return r;
   }
 
-  // (COMMA StructPropertyMap)*
+  // (COMMA (IncompleteStructProperty? StructProperty IncompleteStructProperty? | IncompleteStructProperty))*
   private static boolean StructPropertyMap_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "StructPropertyMap_1")) return false;
     while (true) {
@@ -133,15 +181,52 @@ public class ZonParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // COMMA StructPropertyMap
+  // COMMA (IncompleteStructProperty? StructProperty IncompleteStructProperty? | IncompleteStructProperty)
   private static boolean StructPropertyMap_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "StructPropertyMap_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, COMMA);
-    r = r && StructPropertyMap(b, l + 1);
+    r = r && StructPropertyMap_1_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
+  }
+
+  // IncompleteStructProperty? StructProperty IncompleteStructProperty? | IncompleteStructProperty
+  private static boolean StructPropertyMap_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "StructPropertyMap_1_0_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = StructPropertyMap_1_0_1_0(b, l + 1);
+    if (!r) r = IncompleteStructProperty(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // IncompleteStructProperty? StructProperty IncompleteStructProperty?
+  private static boolean StructPropertyMap_1_0_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "StructPropertyMap_1_0_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = StructPropertyMap_1_0_1_0_0(b, l + 1);
+    r = r && StructProperty(b, l + 1);
+    r = r && StructPropertyMap_1_0_1_0_2(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // IncompleteStructProperty?
+  private static boolean StructPropertyMap_1_0_1_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "StructPropertyMap_1_0_1_0_0")) return false;
+    IncompleteStructProperty(b, l + 1);
+    return true;
+  }
+
+  // IncompleteStructProperty?
+  private static boolean StructPropertyMap_1_0_1_0_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "StructPropertyMap_1_0_1_0_2")) return false;
+    IncompleteStructProperty(b, l + 1);
+    return true;
   }
 
   // COMMA?
@@ -152,108 +237,54 @@ public class ZonParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // Struct | (STRING_LITERAL_SINGLE | LINE_STRING+)
+  // Struct | STRING_LITERAL
   static boolean StructPropertyValue(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "StructPropertyValue")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = Struct(b, l + 1);
-    if (!r) r = StructPropertyValue_1(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // STRING_LITERAL_SINGLE | LINE_STRING+
-  private static boolean StructPropertyValue_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "StructPropertyValue_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, STRING_LITERAL_SINGLE);
-    if (!r) r = StructPropertyValue_1_1(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // LINE_STRING+
-  private static boolean StructPropertyValue_1_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "StructPropertyValue_1_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, LINE_STRING);
-    while (r) {
-      int c = current_position_(b);
-      if (!consumeToken(b, LINE_STRING)) break;
-      if (!empty_element_parsed_guard_(b, "StructPropertyValue_1_1", c)) break;
-    }
-    exit_section_(b, m, null, r);
+    if (!r) r = STRING_LITERAL(b, l + 1);
     return r;
   }
 
   /* ********************************************************** */
-  // (STRING_LITERAL_SINGLE | LINE_STRING+) (COMMA StructStringArrayElement)* COMMA?
-  public static boolean StructStringArrayElement(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "StructStringArrayElement")) return false;
-    if (!nextTokenIs(b, "<struct string array element>", LINE_STRING, STRING_LITERAL_SINGLE)) return false;
+  // STRING_LITERAL (COMMA STRING_LITERAL)* COMMA?
+  public static boolean StructStringArray(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "StructStringArray")) return false;
+    if (!nextTokenIs(b, "<struct string array>", LINE_STRING, STRING_LITERAL_SINGLE)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _COLLAPSE_, STRUCT_STRING_ARRAY_ELEMENT, "<struct string array element>");
-    r = StructStringArrayElement_0(b, l + 1);
-    r = r && StructStringArrayElement_1(b, l + 1);
-    r = r && StructStringArrayElement_2(b, l + 1);
+    Marker m = enter_section_(b, l, _NONE_, STRUCT_STRING_ARRAY, "<struct string array>");
+    r = STRING_LITERAL(b, l + 1);
+    r = r && StructStringArray_1(b, l + 1);
+    r = r && StructStringArray_2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // STRING_LITERAL_SINGLE | LINE_STRING+
-  private static boolean StructStringArrayElement_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "StructStringArrayElement_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, STRING_LITERAL_SINGLE);
-    if (!r) r = StructStringArrayElement_0_1(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // LINE_STRING+
-  private static boolean StructStringArrayElement_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "StructStringArrayElement_0_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, LINE_STRING);
-    while (r) {
-      int c = current_position_(b);
-      if (!consumeToken(b, LINE_STRING)) break;
-      if (!empty_element_parsed_guard_(b, "StructStringArrayElement_0_1", c)) break;
-    }
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (COMMA StructStringArrayElement)*
-  private static boolean StructStringArrayElement_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "StructStringArrayElement_1")) return false;
+  // (COMMA STRING_LITERAL)*
+  private static boolean StructStringArray_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "StructStringArray_1")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!StructStringArrayElement_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "StructStringArrayElement_1", c)) break;
+      if (!StructStringArray_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "StructStringArray_1", c)) break;
     }
     return true;
   }
 
-  // COMMA StructStringArrayElement
-  private static boolean StructStringArrayElement_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "StructStringArrayElement_1_0")) return false;
+  // COMMA STRING_LITERAL
+  private static boolean StructStringArray_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "StructStringArray_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, COMMA);
-    r = r && StructStringArrayElement(b, l + 1);
+    r = r && STRING_LITERAL(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // COMMA?
-  private static boolean StructStringArrayElement_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "StructStringArrayElement_2")) return false;
+  private static boolean StructStringArray_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "StructStringArray_2")) return false;
     consumeToken(b, COMMA);
     return true;
   }

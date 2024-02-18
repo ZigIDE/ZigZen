@@ -12,6 +12,6 @@ public interface ZonStruct extends ZonStructMixin {
   ZonStructPropertyMap getStructPropertyMap();
 
   @Nullable
-  ZonStructStringArrayElement getStructStringArrayElement();
+  ZonStructStringArray getStructStringArray();
 
 }
