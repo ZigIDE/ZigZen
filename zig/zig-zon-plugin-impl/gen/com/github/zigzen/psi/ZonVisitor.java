@@ -7,19 +7,19 @@ import com.intellij.psi.PsiElement;
 
 public class ZonVisitor extends PsiElementVisitor {
 
-  public void visitZonStruct(@NotNull ZonZonStruct o) {
+  public void visitStruct(@NotNull ZonStruct o) {
     visitPsiElement(o);
   }
 
-  public void visitZonStructProperty(@NotNull ZonZonStructProperty o) {
+  public void visitStructProperty(@NotNull ZonStructProperty o) {
     visitPsiElement(o);
   }
 
-  public void visitZonStructPropertyMap(@NotNull ZonZonStructPropertyMap o) {
+  public void visitStructPropertyMap(@NotNull ZonStructPropertyMap o) {
     visitPsiElement(o);
   }
 
-  public void visitZonStructStringArrayElement(@NotNull ZonZonStructStringArrayElement o) {
+  public void visitStructStringArrayElement(@NotNull ZonStructStringArrayElement o) {
     visitPsiElement(o);
   }
 

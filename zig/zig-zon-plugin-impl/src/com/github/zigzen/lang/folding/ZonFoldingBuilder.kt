@@ -2,7 +2,6 @@
 package com.github.zigzen.lang.folding
 
 import com.github.zigzen.psi.ZonVisitor
-import com.github.zigzen.psi.ZonZonStruct
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.CustomFoldingBuilder
 import com.intellij.lang.folding.FoldingDescriptor
