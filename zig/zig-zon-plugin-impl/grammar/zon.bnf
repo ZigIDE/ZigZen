@@ -31,7 +31,7 @@
 
 Root ::= Struct
 
-Struct ::= DOT LBRACE (StructStringArray| StructPropertyMap | ()) RBRACE
+Struct ::= DOT LBRACE (StructStringArray | StructPropertyMap | ()) RBRACE
 
 StructPropertyMap ::= (StructProperty | IncompleteStructProperty) (COMMA (IncompleteStructProperty? StructProperty IncompleteStructProperty? | IncompleteStructProperty))* COMMA?
 
