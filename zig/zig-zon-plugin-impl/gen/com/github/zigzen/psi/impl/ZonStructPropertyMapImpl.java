@@ -29,14 +29,14 @@ public class ZonStructPropertyMapImpl extends ASTWrapperPsiElement implements Zo
 
   @Override
   @NotNull
-  public ZonStructProperty getStructProperty() {
-    return findNotNullChildByClass(ZonStructProperty.class);
+  public List<ZonIncompleteStructProperty> getIncompleteStructPropertyList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ZonIncompleteStructProperty.class);
   }
 
   @Override
   @NotNull
-  public List<ZonStructPropertyMap> getStructPropertyMapList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, ZonStructPropertyMap.class);
+  public List<ZonStructProperty> getStructPropertyList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ZonStructProperty.class);
   }
 
 }

@@ -13,13 +13,14 @@ import static com.intellij.psi.TokenType.WHITE_SPACE;
 %implements FlexLexer
 %function advance
 %type IElementType
+%unicode
 
-CRLF=\r\n
-WHITESPACE=[\s]+
-COMMENT="///".*
+CRLF=\R
+WHITE_SPACE=[\s]+
 LINE_COMMENT="//" [^\n]* | "////" [^\n]*
+COMMENT="///".*
 
-IDENTIFIER=[A-Za-z_][A-Za-z0-9_]*
+ID=[A-Za-z_][A-Za-z0-9_]*
 
 hex=[0-9a-fA-F]
 char_escape
@@ -38,7 +39,7 @@ LINE_STRING=("\\\\" [^\n]* [ \n]*)+
 %state UNCLOSED_STRING
 %%
 
-<YYINITIAL>      {WHITESPACE}             { return WHITE_SPACE; }
+<YYINITIAL>      {WHITE_SPACE}            { return WHITE_SPACE; }
 <YYINITIAL>      "."                      { return DOT; }
 <YYINITIAL>      "{"                      { return LBRACE; }
 <YYINITIAL>      "}"                      { return RBRACE; }
@@ -47,9 +48,9 @@ LINE_STRING=("\\\\" [^\n]* [ \n]*)+
 <YYINITIAL>      {COMMENT}                { return COMMENT; }
 <YYINITIAL>      {LINE_COMMENT}           { return COMMENT; }
 
-<YYINITIAL>      {IDENTIFIER}             { return ID; }
+<YYINITIAL>      {ID}                     { return ID; }
 <YYINITIAL>      "@\""                    { yybegin(ID_STRING); }
-<ID_STRING>      {string_char}*"\""       { yybegin(YYINITIAL); return IDENTIFIER; }
+<ID_STRING>      {string_char}*"\""       { yybegin(YYINITIAL); return ID; }
 <ID_STRING>      [^]                      { yypushback(1); yybegin(UNCLOSED_STRING); }
 
 <YYINITIAL>      "\""                     { yybegin(STRING_LITERAL); }

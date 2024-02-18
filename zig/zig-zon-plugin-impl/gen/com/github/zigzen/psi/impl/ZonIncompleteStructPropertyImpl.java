@@ -11,38 +11,20 @@ import static com.github.zigzen.psi.ZonTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.zigzen.psi.*;
 
-public class ZonStructPropertyImpl extends ASTWrapperPsiElement implements ZonStructProperty {
+public class ZonIncompleteStructPropertyImpl extends ASTWrapperPsiElement implements ZonIncompleteStructProperty {
 
-  public ZonStructPropertyImpl(@NotNull ASTNode node) {
+  public ZonIncompleteStructPropertyImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ZonVisitor visitor) {
-    visitor.visitStructProperty(this);
+    visitor.visitIncompleteStructProperty(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof ZonVisitor) accept((ZonVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public ZonIdentifier getIdentifier() {
-    return findNotNullChildByClass(ZonIdentifier.class);
-  }
-
-  @Override
-  @Nullable
-  public ZonStringLiteral getStringLiteral() {
-    return findChildByClass(ZonStringLiteral.class);
-  }
-
-  @Override
-  @Nullable
-  public ZonStruct getStruct() {
-    return findChildByClass(ZonStruct.class);
   }
 
 }

@@ -31,14 +31,18 @@
 
 Root ::= Struct
 
-Struct ::= DOT LBRACE (StructPropertyMap | StructStringArrayElement)? RBRACE
+Struct ::= DOT LBRACE (StructStringArray| StructPropertyMap | ()) RBRACE
 
-StructPropertyMap ::= (StructProperty) (COMMA StructPropertyMap)* COMMA?
+StructPropertyMap ::= (StructProperty | IncompleteStructProperty) (COMMA (IncompleteStructProperty? StructProperty IncompleteStructProperty? | IncompleteStructProperty))* COMMA?
 
-StructStringArrayElement ::= (STRING_LITERAL_SINGLE | LINE_STRING+) (COMMA StructStringArrayElement)* COMMA?
+StructStringArray ::= STRING_LITERAL (COMMA STRING_LITERAL)* COMMA?
 
 StructProperty ::= DOT Identifier EQUAL StructPropertyValue
 
 Identifier ::= ID
 
-private StructPropertyValue ::= Struct | (STRING_LITERAL_SINGLE | LINE_STRING+)
+IncompleteStructProperty ::= DOT? COMPLETION_DUMMY
+
+private StructPropertyValue ::= Struct | STRING_LITERAL
+
+STRING_LITERAL ::= STRING_LITERAL_SINGLE | LINE_STRING+

@@ -12,6 +12,14 @@ public class ZonVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitIncompleteStructProperty(@NotNull ZonIncompleteStructProperty o) {
+    visitPsiElement(o);
+  }
+
+  public void visitStringLiteral(@NotNull ZonStringLiteral o) {
+    visitPsiElement(o);
+  }
+
   public void visitStruct(@NotNull ZonStruct o) {
     visitStructMixin(o);
   }
@@ -24,7 +32,7 @@ public class ZonVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitStructStringArrayElement(@NotNull ZonStructStringArrayElement o) {
+  public void visitStructStringArray(@NotNull ZonStructStringArray o) {
     visitPsiElement(o);
   }
 

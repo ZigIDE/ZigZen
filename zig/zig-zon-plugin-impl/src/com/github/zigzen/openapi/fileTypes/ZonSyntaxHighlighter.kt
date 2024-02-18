@@ -20,7 +20,7 @@ class ZonSyntaxHighlighter : SyntaxHighlighterBase() {
     Pair(ZonTypes.COMMA, arrayOf(commaTextAttributesKey)),
     Pair(ZonTypes.DOT, arrayOf(dotTextAttributesKey)),
     Pair(ZonTypes.EQUAL, arrayOf(equalTextAttributesKey)),
-    Pair(ZonTypes.IDENTIFIER, arrayOf(identifierTextAttributesKey)),
+    Pair(ZonTypes.ID, arrayOf(identifierTextAttributesKey)),
     Pair(ZonTypes.LBRACE, arrayOf(bracesTextAttributesKey)),
     Pair(ZonTypes.LINE_STRING, arrayOf(stringTextAttributesKey)),
     Pair(ZonTypes.RBRACE, arrayOf(bracesTextAttributesKey)),
