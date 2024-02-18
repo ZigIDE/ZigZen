@@ -8,6 +8,7 @@ import com.github.zigzen.psi.impl.*;
 
 public interface ZonTypes {
 
+  IElementType IDENTIFIER = new ZonElementType("IDENTIFIER");
   IElementType STRUCT = new ZonElementType("STRUCT");
   IElementType STRUCT_PROPERTY = new ZonElementType("STRUCT_PROPERTY");
   IElementType STRUCT_PROPERTY_MAP = new ZonElementType("STRUCT_PROPERTY_MAP");
@@ -18,7 +19,7 @@ public interface ZonTypes {
   IElementType COMMENT = new ZonTokenType("comment");
   IElementType DOT = new ZonTokenType(".");
   IElementType EQUAL = new ZonTokenType("=");
-  IElementType IDENTIFIER = new ZonTokenType("identifier");
+  IElementType ID = new ZonTokenType("identifier");
   IElementType LBRACE = new ZonTokenType("{");
   IElementType LINE_STRING = new ZonTokenType("multiline string");
   IElementType RBRACE = new ZonTokenType("}");
@@ -27,7 +28,10 @@ public interface ZonTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-      if (type == STRUCT) {
+      if (type == IDENTIFIER) {
+        return new ZonIdentifierImpl(node);
+      }
+      else if (type == STRUCT) {
         return new ZonStructImpl(node);
       }
       else if (type == STRUCT_PROPERTY) {

@@ -5,12 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ZonStructProperty extends PsiElement {
-
-  @NotNull
-  ZonIdentifier getIdentifier();
-
-  @Nullable
-  ZonStruct getStruct();
+public interface ZonIdentifier extends PsiElement {
 
 }

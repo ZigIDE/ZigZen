@@ -4,5 +4,5 @@ package com.github.zigzen.psi.mixin
 import com.intellij.psi.PsiElement
 
 interface ZonStructMixin : PsiElement {
-  val keys: Set<String>
+  val definedFields: Set<String>
 }

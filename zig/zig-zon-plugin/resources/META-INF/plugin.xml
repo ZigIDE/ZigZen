@@ -8,6 +8,10 @@
     <fileType extensions="zon" fieldName="INSTANCE" implementationClass="com.github.zigzen.openapi.ZonFileType" language="ZON" name="ZON File"/>
   </extensions>
 
+  <extensions defaultExtensionNs="com.intellij.completion">
+    <contributor language="ZON" implementationClass="com.github.zigzen.codeInsight.completion.BuildZigZonCompletionContributor"/>
+  </extensions>
+
   <extensions defaultExtensionNs="com.intellij.lang">
     <braceMatcher language="ZON" implementationClass="com.github.zigzen.lang.ZonBraceMatcher"/>
     <commenter language="ZON" implementationClass="com.github.zigzen.lang.ZonCommenter"/>

@@ -4,11 +4,16 @@ package com.github.zigzen.psi;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
+import com.github.zigzen.psi.mixin.ZonStructMixin;
 
 public class ZonVisitor extends PsiElementVisitor {
 
-  public void visitStruct(@NotNull ZonStruct o) {
+  public void visitIdentifier(@NotNull ZonIdentifier o) {
     visitPsiElement(o);
+  }
+
+  public void visitStruct(@NotNull ZonStruct o) {
+    visitStructMixin(o);
   }
 
   public void visitStructProperty(@NotNull ZonStructProperty o) {
@@ -20,6 +25,10 @@ public class ZonVisitor extends PsiElementVisitor {
   }
 
   public void visitStructStringArrayElement(@NotNull ZonStructStringArrayElement o) {
+    visitPsiElement(o);
+  }
+
+  public void visitStructMixin(@NotNull ZonStructMixin o) {
     visitPsiElement(o);
   }
 

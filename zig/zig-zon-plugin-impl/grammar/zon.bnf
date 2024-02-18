@@ -19,7 +19,7 @@
     EQUAL='='
     COMMA=','
     COMMENT='comment'
-    IDENTIFIER='identifier'
+    ID='identifier'
     STRING_LITERAL_SINGLE='string'
     LINE_STRING='multiline string'
     BAD_STRING='unterminated string'
@@ -37,6 +37,8 @@ StructPropertyMap ::= (StructProperty) (COMMA StructPropertyMap)* COMMA?
 
 StructStringArrayElement ::= (STRING_LITERAL_SINGLE | LINE_STRING+) (COMMA StructStringArrayElement)* COMMA?
 
-StructProperty ::= DOT IDENTIFIER EQUAL StructPropertyValue
+StructProperty ::= DOT Identifier EQUAL StructPropertyValue
+
+Identifier ::= ID
 
 private StructPropertyValue ::= Struct | (STRING_LITERAL_SINGLE | LINE_STRING+)

@@ -47,7 +47,7 @@ LINE_STRING=("\\\\" [^\n]* [ \n]*)+
 <YYINITIAL>      {COMMENT}                { return COMMENT; }
 <YYINITIAL>      {LINE_COMMENT}           { return COMMENT; }
 
-<YYINITIAL>      {IDENTIFIER}             { return IDENTIFIER; }
+<YYINITIAL>      {IDENTIFIER}             { return ID; }
 <YYINITIAL>      "@\""                    { yybegin(ID_STRING); }
 <ID_STRING>      {string_char}*"\""       { yybegin(YYINITIAL); return IDENTIFIER; }
 <ID_STRING>      [^]                      { yypushback(1); yybegin(UNCLOSED_STRING); }
