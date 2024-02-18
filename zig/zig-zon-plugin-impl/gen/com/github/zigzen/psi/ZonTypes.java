@@ -8,10 +8,10 @@ import com.github.zigzen.psi.impl.*;
 
 public interface ZonTypes {
 
-  IElementType ZON_STRUCT = new ZonElementType("ZON_STRUCT");
-  IElementType ZON_STRUCT_PROPERTY = new ZonElementType("ZON_STRUCT_PROPERTY");
-  IElementType ZON_STRUCT_PROPERTY_MAP = new ZonElementType("ZON_STRUCT_PROPERTY_MAP");
-  IElementType ZON_STRUCT_STRING_ARRAY_ELEMENT = new ZonElementType("ZON_STRUCT_STRING_ARRAY_ELEMENT");
+  IElementType STRUCT = new ZonElementType("STRUCT");
+  IElementType STRUCT_PROPERTY = new ZonElementType("STRUCT_PROPERTY");
+  IElementType STRUCT_PROPERTY_MAP = new ZonElementType("STRUCT_PROPERTY_MAP");
+  IElementType STRUCT_STRING_ARRAY_ELEMENT = new ZonElementType("STRUCT_STRING_ARRAY_ELEMENT");
 
   IElementType BAD_STRING = new ZonTokenType("unterminated string");
   IElementType COMMA = new ZonTokenType(",");
@@ -27,17 +27,17 @@ public interface ZonTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-      if (type == ZON_STRUCT) {
-        return new ZonZonStructImpl(node);
+      if (type == STRUCT) {
+        return new ZonStructImpl(node);
       }
-      else if (type == ZON_STRUCT_PROPERTY) {
-        return new ZonZonStructPropertyImpl(node);
+      else if (type == STRUCT_PROPERTY) {
+        return new ZonStructPropertyImpl(node);
       }
-      else if (type == ZON_STRUCT_PROPERTY_MAP) {
-        return new ZonZonStructPropertyMapImpl(node);
+      else if (type == STRUCT_PROPERTY_MAP) {
+        return new ZonStructPropertyMapImpl(node);
       }
-      else if (type == ZON_STRUCT_STRING_ARRAY_ELEMENT) {
-        return new ZonZonStructStringArrayElementImpl(node);
+      else if (type == STRUCT_STRING_ARRAY_ELEMENT) {
+        return new ZonStructStringArrayElementImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

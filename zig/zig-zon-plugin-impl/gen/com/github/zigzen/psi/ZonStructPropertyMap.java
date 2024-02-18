@@ -5,12 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ZonZonStructPropertyMap extends PsiElement {
+public interface ZonStructPropertyMap extends PsiElement {
 
   @NotNull
-  ZonZonStructProperty getZonStructProperty();
+  ZonStructProperty getStructProperty();
 
   @NotNull
-  List<ZonZonStructPropertyMap> getZonStructPropertyMapList();
+  List<ZonStructPropertyMap> getStructPropertyMapList();
 
 }

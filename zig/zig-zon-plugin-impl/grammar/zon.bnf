@@ -24,16 +24,19 @@
     LINE_STRING='multiline string'
     BAD_STRING='unterminated string'
   ]
+
+  mixin("Struct") = "com.github.zigzen.psi.mixin.impl.ZonStructMixinImpl"
+  implements("Struct") = "com.github.zigzen.psi.mixin.ZonStructMixin"
 }
 
-Root ::= ZonStruct
+Root ::= Struct
 
-ZonStruct ::= DOT LBRACE (ZonStructPropertyMap | ZonStructStringArrayElement)? RBRACE
+Struct ::= DOT LBRACE (StructPropertyMap | StructStringArrayElement)? RBRACE
 
-ZonStructPropertyMap ::= (ZonStructProperty) (COMMA ZonStructPropertyMap)* COMMA?
+StructPropertyMap ::= (StructProperty) (COMMA StructPropertyMap)* COMMA?
 
-ZonStructStringArrayElement ::= (STRING_LITERAL_SINGLE | LINE_STRING+) (COMMA ZonStructStringArrayElement)* COMMA?
+StructStringArrayElement ::= (STRING_LITERAL_SINGLE | LINE_STRING+) (COMMA StructStringArrayElement)* COMMA?
 
-ZonStructProperty ::= DOT IDENTIFIER EQUAL ZonStructPropertyValue
+StructProperty ::= DOT IDENTIFIER EQUAL StructPropertyValue
 
-private ZonStructPropertyValue ::= ZonStruct | (STRING_LITERAL_SINGLE | LINE_STRING+)
+private StructPropertyValue ::= Struct | (STRING_LITERAL_SINGLE | LINE_STRING+)

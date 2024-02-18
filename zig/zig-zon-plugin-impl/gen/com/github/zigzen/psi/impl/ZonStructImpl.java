@@ -11,14 +11,14 @@ import static com.github.zigzen.psi.ZonTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.zigzen.psi.*;
 
-public class ZonZonStructImpl extends ASTWrapperPsiElement implements ZonZonStruct {
+public class ZonStructImpl extends ASTWrapperPsiElement implements ZonStruct {
 
-  public ZonZonStructImpl(@NotNull ASTNode node) {
+  public ZonStructImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ZonVisitor visitor) {
-    visitor.visitZonStruct(this);
+    visitor.visitStruct(this);
   }
 
   @Override
@@ -29,14 +29,14 @@ public class ZonZonStructImpl extends ASTWrapperPsiElement implements ZonZonStru
 
   @Override
   @Nullable
-  public ZonZonStructPropertyMap getZonStructPropertyMap() {
-    return findChildByClass(ZonZonStructPropertyMap.class);
+  public ZonStructPropertyMap getStructPropertyMap() {
+    return findChildByClass(ZonStructPropertyMap.class);
   }
 
   @Override
   @Nullable
-  public ZonZonStructStringArrayElement getZonStructStringArrayElement() {
-    return findChildByClass(ZonZonStructStringArrayElement.class);
+  public ZonStructStringArrayElement getStructStringArrayElement() {
+    return findChildByClass(ZonStructStringArrayElement.class);
   }
 
 }

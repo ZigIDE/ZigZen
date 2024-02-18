@@ -11,14 +11,14 @@ import static com.github.zigzen.psi.ZonTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.zigzen.psi.*;
 
-public class ZonZonStructPropertyMapImpl extends ASTWrapperPsiElement implements ZonZonStructPropertyMap {
+public class ZonStructStringArrayElementImpl extends ASTWrapperPsiElement implements ZonStructStringArrayElement {
 
-  public ZonZonStructPropertyMapImpl(@NotNull ASTNode node) {
+  public ZonStructStringArrayElementImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull ZonVisitor visitor) {
-    visitor.visitZonStructPropertyMap(this);
+    visitor.visitStructStringArrayElement(this);
   }
 
   @Override
@@ -29,14 +29,8 @@ public class ZonZonStructPropertyMapImpl extends ASTWrapperPsiElement implements
 
   @Override
   @NotNull
-  public ZonZonStructProperty getZonStructProperty() {
-    return findNotNullChildByClass(ZonZonStructProperty.class);
-  }
-
-  @Override
-  @NotNull
-  public List<ZonZonStructPropertyMap> getZonStructPropertyMapList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, ZonZonStructPropertyMap.class);
+  public List<ZonStructStringArrayElement> getStructStringArrayElementList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ZonStructStringArrayElement.class);
   }
 
 }
