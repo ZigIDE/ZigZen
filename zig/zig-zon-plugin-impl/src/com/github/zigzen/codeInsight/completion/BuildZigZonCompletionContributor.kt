@@ -3,6 +3,7 @@ package com.github.zigzen.codeInsight.completion
 
 import com.github.zigzen.extapi.psi.ZonPsiFile
 import com.github.zigzen.psi.ZonStructProperty
+import com.github.zigzen.psi.ZonTypes
 import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.patterns.PlatformPatterns
@@ -13,6 +14,7 @@ class BuildZigZonCompletionContributor : CompletionContributor() {
       CompletionType.BASIC,
       PlatformPatterns.psiElement()
         .withParent(ZonStructProperty::class.java)
+        .afterSibling(PlatformPatterns.psiElement(ZonTypes.DOT))
         .inFile(PlatformPatterns.psiFile(ZonPsiFile::class.java)),
       BuildZigZonRootFieldCompletionProvider())
   }

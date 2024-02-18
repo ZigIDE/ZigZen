@@ -36,6 +36,18 @@ public class ZonParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // ID
+  public static boolean Identifier(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "Identifier")) return false;
+    if (!nextTokenIs(b, ID)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, ID);
+    exit_section_(b, m, IDENTIFIER, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // Struct
   static boolean Root(PsiBuilder b, int l) {
     return Struct(b, l + 1);
@@ -72,13 +84,15 @@ public class ZonParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DOT IDENTIFIER EQUAL StructPropertyValue
+  // DOT Identifier EQUAL StructPropertyValue
   public static boolean StructProperty(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "StructProperty")) return false;
     if (!nextTokenIs(b, DOT)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, DOT, IDENTIFIER, EQUAL);
+    r = consumeToken(b, DOT);
+    r = r && Identifier(b, l + 1);
+    r = r && consumeToken(b, EQUAL);
     r = r && StructPropertyValue(b, l + 1);
     exit_section_(b, m, STRUCT_PROPERTY, r);
     return r;

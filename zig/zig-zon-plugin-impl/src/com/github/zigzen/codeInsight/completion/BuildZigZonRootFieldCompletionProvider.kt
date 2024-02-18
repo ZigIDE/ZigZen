@@ -6,6 +6,8 @@ import com.github.zigzen.psi.ZonStructProperty
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
+import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.icons.AllIcons
 import com.intellij.psi.util.findParentInFile
 import com.intellij.util.ProcessingContext
 
@@ -19,6 +21,11 @@ class BuildZigZonRootFieldCompletionProvider : CompletionProvider<CompletionPara
       .findParentInFile { element -> element is ZonStructProperty }!! as ZonStructProperty
 
     val struct = property.findParentInFile { element -> element is ZonStruct }!! as ZonStruct
+    val difference = ALL_ROOT_FIELDS - struct.definedFields
+
+    difference.forEach {
+      result.addElement(LookupElementBuilder.create(it).withIcon(AllIcons.Nodes.Field))
+    }
   }
 
   companion object {

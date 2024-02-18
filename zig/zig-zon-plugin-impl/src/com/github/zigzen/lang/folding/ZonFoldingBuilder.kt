@@ -1,6 +1,7 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.github.zigzen.lang.folding
 
+import com.github.zigzen.psi.ZonStruct
 import com.github.zigzen.psi.ZonVisitor
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.CustomFoldingBuilder
@@ -17,8 +18,8 @@ class ZonFoldingBuilder : CustomFoldingBuilder() {
         element.acceptChildren(this)
       }
 
-      override fun visitZonStruct(o: ZonZonStruct) {
-        super.visitZonStruct(o)
+      override fun visitStruct(o: ZonStruct) {
+        super.visitStruct(o)
         descriptors.add(FoldingDescriptor(o, o.textRange))
       }
     })

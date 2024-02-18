@@ -563,7 +563,7 @@ class ZonLexer implements FlexLexer {
           // fall through
           case 21: break;
           case 6:
-            { return EQ;
+            { return EQUAL;
             }
           // fall through
           case 22: break;

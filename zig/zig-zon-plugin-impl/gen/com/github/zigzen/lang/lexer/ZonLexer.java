@@ -568,7 +568,7 @@ class ZonLexer implements FlexLexer {
           // fall through
           case 22: break;
           case 7:
-            { return IDENTIFIER;
+            { return ID;
             }
           // fall through
           case 23: break;

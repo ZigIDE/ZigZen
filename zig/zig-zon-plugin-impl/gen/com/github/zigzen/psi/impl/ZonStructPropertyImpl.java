@@ -28,6 +28,12 @@ public class ZonStructPropertyImpl extends ASTWrapperPsiElement implements ZonSt
   }
 
   @Override
+  @NotNull
+  public ZonIdentifier getIdentifier() {
+    return findNotNullChildByClass(ZonIdentifier.class);
+  }
+
+  @Override
   @Nullable
   public ZonStruct getStruct() {
     return findChildByClass(ZonStruct.class);

@@ -4,8 +4,9 @@ package com.github.zigzen.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.github.zigzen.psi.mixin.ZonStructMixin;
 
-public interface ZonStruct extends PsiElement {
+public interface ZonStruct extends ZonStructMixin {
 
   @Nullable
   ZonStructPropertyMap getStructPropertyMap();
