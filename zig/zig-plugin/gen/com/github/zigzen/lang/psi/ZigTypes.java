@@ -4,7 +4,7 @@ package com.github.zigzen.lang.psi;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
-import com.github.zigzenlang.psi.impl.*;
+import com.github.zigzen.lang.psi.impl.*;
 
 public interface ZigTypes {
 

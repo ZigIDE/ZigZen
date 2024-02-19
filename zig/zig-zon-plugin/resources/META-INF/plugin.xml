@@ -21,4 +21,8 @@
     <syntaxHighlighter language="ZON" implementationClass="com.github.zigzen.openapi.fileTypes.ZonSyntaxHighlighter"/>
     <syntaxHighlighterFactory language="ZON" implementationClass="com.github.zigzen.openapi.fileTypes.ZonSyntaxHighlighterFactory"/>
   </extensions>
+
+  <extensions defaultExtensionNs="com.intellij.platform.backend.documentation">
+    <psiTargetProvider implementation="com.github.zigzen.backend.documentation.BuildZigZonPsiDocumentationTargetProvider"/>
+  </extensions>
 </idea-plugin>
