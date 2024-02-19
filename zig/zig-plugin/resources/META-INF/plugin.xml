@@ -10,11 +10,11 @@
       implementationClass="com.github.zigzen.openapi.ZigFileType"
       name="Zig File"/>
     <lang.parserDefinition language="ZIG"
-      implementationClass="com.github.zigzen.lang.ZigParserDefinition"/>
+      implementationClass="com.github.zigzen.lang.parser.ZigParserDefinition"/>
     <lang.syntaxHighlighterFactory language="ZIG"
-      implementationClass="com.github.zigzen.openapi.ZigSyntaxHighlighterFactory"/>
+      implementationClass="com.github.zigzen.openapi.fileTypes.ZigSyntaxHighlighterFactory"/>
     <annotator language="ZIG"
-      implementationClass="com.github.zigzen.lang.ZigAnnotator"/>
+      implementationClass="com.github.zigzen.lang.annotation.ZigAnnotator"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.github.zigzen.zig">

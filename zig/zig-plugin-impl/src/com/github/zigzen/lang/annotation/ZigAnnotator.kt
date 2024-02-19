@@ -1,13 +1,13 @@
-package com.github.zigzen.lang
+// Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
+package com.github.zigzen.lang.annotation
 
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.PsiElement
 import com.github.zigzen.lang.psi.*
-import com.github.zigzen.openapi.ZigSyntaxHighlighter
+import com.github.zigzen.openapi.fileTypes.ZigSyntaxHighlighter
 import java.util.regex.Pattern
 
 class ZigAnnotator : Annotator {

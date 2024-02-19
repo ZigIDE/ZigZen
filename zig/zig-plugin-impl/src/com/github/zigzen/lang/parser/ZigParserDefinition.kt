@@ -1,6 +1,8 @@
-package com.github.zigzen.lang
+// Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
+package com.github.zigzen.lang.parser
 
-import com.github.zigzen.lang.parser.ZigParser
+import com.github.zigzen.lang.ZigLanguage
+import com.github.zigzen.lang.lexer.ZigLexerAdapter
 import com.github.zigzen.lang.psi.ZigFile
 import com.github.zigzen.lang.psi.ZigTokenSets
 import com.github.zigzen.lang.psi.ZigTypes

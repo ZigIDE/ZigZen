@@ -4,7 +4,6 @@ package com.github.zigzen.openapi
 import com.github.zigzen.icons.ZigZenIcons
 import com.github.zigzen.lang.ZigLanguage
 import com.intellij.openapi.fileTypes.LanguageFileType
-import javax.swing.Icon
 
 class ZigFileType : LanguageFileType(ZigLanguage.INSTANCE) {
   override fun getName() = "Zig File"
