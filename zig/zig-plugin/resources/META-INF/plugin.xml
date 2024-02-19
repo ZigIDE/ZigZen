@@ -4,7 +4,17 @@
   <name>Zig Language</name>
 
   <extensions defaultExtensionNs="com.intellij">
-    <fileType extensions="zig" fieldName="INSTANCE" implementationClass="com.github.zigzen.openapi.ZigFileType" language="ZIG" name="Zig File"/>
+    <fileType language="ZIG"
+      extensions="zig"
+      fieldName="INSTANCE"
+      implementationClass="com.github.zigzen.openapi.ZigFileType"
+      name="Zig File"/>
+    <lang.parserDefinition language="ZIG"
+      implementationClass="com.github.zigzen.lang.ZigParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="ZIG"
+      implementationClass="com.github.zigzen.openapi.ZigSyntaxHighlighterFactory"/>
+    <annotator language="ZIG"
+      implementationClass="com.github.zigzen.lang.ZigAnnotator"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.github.zigzen.zig">

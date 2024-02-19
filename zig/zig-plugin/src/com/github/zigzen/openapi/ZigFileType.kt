@@ -7,17 +7,16 @@ import com.intellij.openapi.fileTypes.LanguageFileType
 import javax.swing.Icon
 
 class ZigFileType : LanguageFileType(ZigLanguage.INSTANCE) {
-  override fun getName(): String = "Zig File"
+  override fun getName() = "Zig File"
 
-  override fun getDescription(): String = "Zig file"
+  override fun getDescription() = "Zig file"
 
-  override fun getDefaultExtension(): String = "zig"
+  override fun getDefaultExtension() = "zig"
 
-  override fun getIcon(): Icon = ZigZenIcons.Zig
+  override fun getIcon() = ZigZenIcons.Zig
 
   @Suppress("CompanionObjectInExtension")
   companion object {
-    @JvmField
     val INSTANCE = ZigFileType()
   }
 }
