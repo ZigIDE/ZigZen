@@ -41,6 +41,7 @@ LINE_STRING=("\\\\" [^\n]* [ \n]*)+
 
 <YYINITIAL>      {WHITE_SPACE}            { return WHITE_SPACE; }
 <YYINITIAL>      "."                      { return DOT; }
+<YYINITIAL>      "IntellijIdeaRulezzz"    { return COMPLETION_DUMMY; }
 <YYINITIAL>      "{"                      { return LBRACE; }
 <YYINITIAL>      "}"                      { return RBRACE; }
 <YYINITIAL>      "="                      { return EQUAL; }
