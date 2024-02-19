@@ -4,7 +4,7 @@ package com.github.zigzen.lang
 import com.intellij.lang.Language
 
 class ZonLanguage : Language("ZON") {
-  override fun getDisplayName() = "Zon"
+  override fun getDisplayName() = "ZON"
 
   override fun isCaseSensitive() = true
 

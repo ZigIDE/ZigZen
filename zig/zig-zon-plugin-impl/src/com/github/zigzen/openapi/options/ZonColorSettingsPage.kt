@@ -27,7 +27,7 @@ class ZonColorSettingsPage : ColorSettingsPage {
 
   override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 
-  override fun getDisplayName() = "Zon"
+  override fun getDisplayName() = "ZON"
 
   override fun getIcon() = ZigZenIcons.Zon
 

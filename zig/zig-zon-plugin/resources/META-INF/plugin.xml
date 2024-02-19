@@ -1,7 +1,7 @@
 <!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
 <idea-plugin>
   <id>com.github.zigzen.zon</id>
-  <name>Zon Language</name>
+  <name>ZON Language</name>
 
   <extensions defaultExtensionNs="com.intellij">
     <colorSettingsPage implementation="com.github.zigzen.openapi.options.ZonColorSettingsPage"/>

@@ -6,9 +6,9 @@ import com.github.zigzen.lang.ZonLanguage
 import com.intellij.openapi.fileTypes.LanguageFileType
 
 class ZonFileType : LanguageFileType(ZonLanguage.INSTANCE) {
-  override fun getName() = "Zon File"
+  override fun getName() = "ZON File"
 
-  override fun getDescription() = "Zon file"
+  override fun getDescription() = "ZON file"
 
   override fun getDefaultExtension() = "zon"
 
