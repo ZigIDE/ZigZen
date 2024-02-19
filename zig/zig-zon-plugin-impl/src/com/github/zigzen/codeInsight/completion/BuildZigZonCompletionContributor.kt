@@ -13,8 +13,8 @@ class BuildZigZonCompletionContributor : CompletionContributor() {
       CompletionType.BASIC,
       PlatformPatterns.psiElement()
         .withParent(PlatformPatterns.psiElement(ZonTypes.INCOMPLETE_STRUCT_PROPERTY))
-        .withSuperParent(4, PlatformPatterns.psiElement(ZonPsiFile::class.java)),
-        //.inVirtualFile(PlatformPatterns.virtualFile().withName("build.zig.zon")),
+        .withSuperParent(4, PlatformPatterns.psiElement(ZonPsiFile::class.java))
+        .inVirtualFile(PlatformPatterns.virtualFile().withName("build.zig.zon")),
       BuildZigZonRootFieldCompletionProvider()
     )
   }

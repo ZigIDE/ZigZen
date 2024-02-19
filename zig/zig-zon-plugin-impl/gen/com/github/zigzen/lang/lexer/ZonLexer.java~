@@ -72,12 +72,13 @@ class ZonLexer implements FlexLexer {
   private static final String ZZ_CMAP_BLOCKS_PACKED_0 =
     "\11\0\1\1\1\2\3\3\22\0\1\4\1\0\1\5"+
     "\4\0\1\6\4\0\1\7\1\0\1\10\1\11\12\12"+
-    "\3\0\1\13\2\0\1\14\6\15\24\16\1\0\1\17"+
-    "\2\0\1\16\1\0\6\15\7\16\1\20\3\16\1\20"+
-    "\1\16\1\20\1\21\2\16\1\22\2\16\1\23\1\0"+
-    "\1\24\7\0\1\3\32\0\1\1\u01df\0\1\1\177\0"+
-    "\13\1\35\0\2\3\5\0\1\1\57\0\1\1\240\0"+
-    "\1\1\u01ff\0";
+    "\3\0\1\13\2\0\1\14\6\15\2\16\1\17\11\16"+
+    "\1\20\7\16\1\0\1\21\2\0\1\16\1\0\1\22"+
+    "\2\15\1\23\1\24\1\25\2\16\1\26\1\27\1\16"+
+    "\1\30\1\16\1\31\3\16\1\32\1\16\1\33\1\34"+
+    "\2\16\1\35\2\16\1\36\1\0\1\37\7\0\1\3"+
+    "\32\0\1\1\u01df\0\1\1\177\0\13\1\35\0\2\3"+
+    "\5\0\1\1\57\0\1\1\240\0\1\1\u01ff\0";
 
   private static int [] zzUnpackcmap_blocks() {
     int [] result = new int[1536];
@@ -105,12 +106,12 @@ class ZonLexer implements FlexLexer {
 
   private static final String ZZ_ACTION_PACKED_0 =
     "\4\0\1\1\1\2\1\3\1\4\1\5\1\1\1\6"+
-    "\1\1\1\7\1\1\1\10\1\11\2\12\1\13\2\12"+
-    "\1\14\1\12\1\1\2\15\1\16\1\17\1\20\11\0"+
-    "\1\20\7\0";
+    "\1\1\2\7\1\1\1\10\1\11\2\12\1\13\2\12"+
+    "\1\14\1\12\1\1\2\15\1\16\1\17\1\7\1\20"+
+    "\11\0\1\7\1\20\4\0\1\7\3\0\14\7\1\21";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[46];
+    int [] result = new int[63];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -135,15 +136,17 @@ class ZonLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\25\0\52\0\77\0\124\0\151\0\124\0\124"+
-    "\0\124\0\176\0\124\0\223\0\250\0\275\0\124\0\124"+
-    "\0\322\0\124\0\124\0\347\0\374\0\124\0\u0111\0\u0126"+
-    "\0\124\0\u0126\0\u013b\0\124\0\u0150\0\322\0\347\0\u0165"+
-    "\0\u017a\0\374\0\u0111\0\u018f\0\u01a4\0\u0126\0\u01b9\0\u01ce"+
-    "\0\u01e3\0\u01f8\0\u020d\0\275\0\u0222\0\u0237";
+    "\0\0\0\40\0\100\0\140\0\200\0\240\0\200\0\200"+
+    "\0\200\0\300\0\200\0\340\0\u0100\0\u0120\0\u0140\0\200"+
+    "\0\200\0\u0160\0\200\0\200\0\u0180\0\u01a0\0\200\0\u01c0"+
+    "\0\u01e0\0\200\0\u01e0\0\u0200\0\200\0\u0220\0\u0240\0\u0160"+
+    "\0\u0180\0\u0260\0\u0280\0\u01a0\0\u01c0\0\u02a0\0\u02c0\0\u01e0"+
+    "\0\u02e0\0\u0300\0\u0320\0\u0340\0\u0360\0\u0380\0\u03a0\0\u0140"+
+    "\0\u03c0\0\u03e0\0\u0400\0\u0420\0\u0440\0\u0460\0\u0480\0\u04a0"+
+    "\0\u04c0\0\u04e0\0\u0500\0\u0520\0\u0540\0\u0560\0\u0100";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[46];
+    int [] result = new int[63];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -167,25 +170,44 @@ class ZonLexer implements FlexLexer {
 
   private static final String ZZ_TRANS_PACKED_0 =
     "\1\5\4\6\1\7\1\5\1\10\1\11\1\12\1\5"+
-    "\1\13\1\14\2\15\1\16\3\15\1\17\1\20\2\21"+
-    "\1\22\2\21\1\23\11\21\1\24\5\21\2\25\1\22"+
-    "\2\25\1\26\11\25\1\27\5\25\2\30\1\31\1\32"+
-    "\21\30\26\0\4\6\31\0\1\33\20\0\1\34\31\0"+
-    "\1\15\2\0\2\15\1\0\3\15\21\0\1\35\5\0"+
-    "\2\36\1\0\2\36\1\23\11\36\1\37\5\36\5\0"+
-    "\2\36\10\0\2\36\1\40\1\41\2\0\2\42\1\0"+
-    "\2\42\1\26\11\42\1\43\5\42\5\0\2\42\10\0"+
-    "\2\42\1\44\1\45\2\0\2\46\1\31\1\32\21\46"+
-    "\2\33\1\0\22\33\2\35\1\47\22\35\23\0\1\50"+
-    "\13\0\1\51\2\0\1\51\32\0\1\52\13\0\1\53"+
-    "\2\0\1\53\11\0\1\47\1\0\1\47\12\0\1\54"+
-    "\17\0\1\55\2\0\1\55\21\0\1\36\2\0\1\36"+
-    "\21\0\1\56\2\0\1\56\21\0\1\42\2\0\1\42"+
-    "\21\0\1\55\2\0\1\55\6\0\1\36\12\0\1\56"+
-    "\2\0\1\56\6\0\1\42";
+    "\1\13\1\14\2\15\1\16\1\15\1\17\14\15\1\20"+
+    "\1\21\2\22\1\23\2\22\1\24\13\22\1\25\16\22"+
+    "\2\26\1\23\2\26\1\27\13\26\1\30\16\26\2\31"+
+    "\1\32\1\33\34\31\41\0\4\6\44\0\1\34\33\0"+
+    "\1\35\44\0\1\15\2\0\4\15\1\0\14\15\14\0"+
+    "\1\15\2\0\4\15\1\0\7\15\1\36\4\15\23\0"+
+    "\1\37\16\0\2\40\1\0\2\40\1\24\13\40\1\41"+
+    "\16\40\5\0\2\40\12\0\1\40\7\0\3\40\1\42"+
+    "\1\43\2\0\2\44\1\0\2\44\1\27\13\44\1\45"+
+    "\16\44\5\0\2\44\12\0\1\44\7\0\3\44\1\46"+
+    "\1\47\2\0\2\50\1\32\1\33\34\50\2\34\1\0"+
+    "\35\34\12\0\1\15\2\0\4\15\1\0\11\15\1\51"+
+    "\2\15\2\0\2\37\1\52\35\37\36\0\1\53\13\0"+
+    "\1\54\2\0\1\54\4\0\4\54\50\0\1\55\13\0"+
+    "\1\56\2\0\1\56\4\0\4\56\24\0\1\15\2\0"+
+    "\4\15\1\0\2\15\1\57\11\15\4\0\1\52\1\0"+
+    "\1\52\14\0\1\60\30\0\1\61\2\0\1\61\4\0"+
+    "\4\61\24\0\1\40\2\0\1\40\4\0\4\40\24\0"+
+    "\1\62\2\0\1\62\4\0\4\62\24\0\1\44\2\0"+
+    "\1\44\4\0\4\44\24\0\1\15\2\0\4\15\1\0"+
+    "\6\15\1\63\5\15\14\0\1\61\2\0\1\61\4\0"+
+    "\4\61\11\0\1\40\12\0\1\62\2\0\1\62\4\0"+
+    "\4\62\11\0\1\44\12\0\1\15\2\0\4\15\1\0"+
+    "\6\15\1\64\5\15\14\0\1\15\2\0\4\15\1\0"+
+    "\4\15\1\65\7\15\14\0\1\15\2\0\4\15\1\0"+
+    "\5\15\1\66\6\15\14\0\1\15\2\0\2\15\1\67"+
+    "\1\15\1\0\14\15\14\0\1\15\2\0\4\15\1\0"+
+    "\1\15\1\70\12\15\14\0\1\15\2\0\4\15\1\0"+
+    "\2\15\1\71\11\15\14\0\1\15\2\0\4\15\1\0"+
+    "\1\72\13\15\14\0\1\15\2\0\3\15\1\73\1\0"+
+    "\14\15\14\0\1\15\2\0\4\15\1\0\11\15\1\74"+
+    "\2\15\14\0\1\15\2\0\4\15\1\0\12\15\1\75"+
+    "\1\15\14\0\1\15\2\0\4\15\1\0\3\15\1\76"+
+    "\10\15\14\0\1\15\2\0\4\15\1\0\3\15\1\77"+
+    "\10\15\2\0";
 
   private static int [] zzUnpacktrans() {
-    int [] result = new int[588];
+    int [] result = new int[1408];
     int offset = 0;
     offset = zzUnpacktrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -223,12 +245,12 @@ class ZonLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\4\0\1\11\1\1\3\11\1\1\1\11\3\1\2\11"+
+    "\4\0\1\11\1\1\3\11\1\1\1\11\4\1\2\11"+
     "\1\1\2\11\2\1\1\11\2\1\1\11\2\1\1\11"+
-    "\1\1\11\0\1\1\7\0";
+    "\2\1\11\0\2\1\4\0\1\1\3\0\15\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[46];
+    int [] result = new int[63];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -541,82 +563,87 @@ class ZonLexer implements FlexLexer {
             { return BAD_CHARACTER;
             }
           // fall through
-          case 17: break;
+          case 18: break;
           case 2:
             { return WHITE_SPACE;
             }
           // fall through
-          case 18: break;
+          case 19: break;
           case 3:
             { yybegin(STRING_LITERAL);
             }
           // fall through
-          case 19: break;
+          case 20: break;
           case 4:
             { return COMMA;
             }
           // fall through
-          case 20: break;
+          case 21: break;
           case 5:
             { return DOT;
             }
           // fall through
-          case 21: break;
+          case 22: break;
           case 6:
             { return EQUAL;
             }
           // fall through
-          case 22: break;
+          case 23: break;
           case 7:
             { return ID;
             }
           // fall through
-          case 23: break;
+          case 24: break;
           case 8:
             { return LBRACE;
             }
           // fall through
-          case 24: break;
+          case 25: break;
           case 9:
             { return RBRACE;
             }
           // fall through
-          case 25: break;
+          case 26: break;
           case 10:
             { yypushback(1); yybegin(UNCLOSED_STRING);
             }
           // fall through
-          case 26: break;
+          case 27: break;
           case 11:
             { yybegin(YYINITIAL); return STRING_LITERAL_SINGLE;
             }
           // fall through
-          case 27: break;
+          case 28: break;
           case 12:
             { yybegin(YYINITIAL); return ID;
             }
           // fall through
-          case 28: break;
+          case 29: break;
           case 13:
             { yybegin(YYINITIAL); return BAD_STRING;
             }
           // fall through
-          case 29: break;
+          case 30: break;
           case 14:
             { return COMMENT;
             }
           // fall through
-          case 30: break;
+          case 31: break;
           case 15:
             { yybegin(ID_STRING);
             }
           // fall through
-          case 31: break;
+          case 32: break;
           case 16:
             { return LINE_STRING;
             }
           // fall through
-          case 32: break;
+          case 33: break;
+          case 17:
+            { return COMPLETION_DUMMY;
+            }
+          // fall through
+          case 34: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }

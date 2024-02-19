@@ -2,8 +2,6 @@
 package com.github.zigzen.psi.mixin.impl
 
 import com.github.zigzen.psi.ZonStruct
-import com.github.zigzen.psi.ZonStructProperty
-import com.github.zigzen.psi.ZonTypes
 import com.github.zigzen.psi.mixin.ZonStructMixin
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
@@ -11,7 +9,9 @@ import com.intellij.lang.ASTNode
 abstract class ZonStructMixinImpl(node: ASTNode) : ASTWrapperPsiElement(node), ZonStruct, ZonStructMixin {
   override val definedFields: Set<String>
     get() {
-      val children = findChildrenByType<ZonStructProperty>(ZonTypes.STRUCT_PROPERTY)
-      return children.map { it.identifier.text }.toSet()
+      if (structPropertyMap == null)
+        return setOf()
+
+      return structPropertyMap!!.structPropertyList.map { it.identifier.text }.toSet()
     }
 }
