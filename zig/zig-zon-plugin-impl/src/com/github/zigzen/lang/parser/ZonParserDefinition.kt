@@ -18,19 +18,19 @@ import com.intellij.psi.tree.TokenSet
 
 @Suppress("CompanionObjectInExtension")
 class ZonParserDefinition : ParserDefinition {
-  override fun createLexer(project: Project?): Lexer = ZonLexerAdapter()
+  override fun createLexer(project: Project?) = ZonLexerAdapter()
 
-  override fun createParser(project: Project?): PsiParser = ZonParser()
+  override fun createParser(project: Project?) = ZonParser()
 
-  override fun getFileNodeType(): IFileElementType = FILE
+  override fun getFileNodeType() = FILE
 
-  override fun getCommentTokens(): TokenSet = TokenSet.create(ZonTypes.COMMENT)
+  override fun getCommentTokens() = TokenSet.create(ZonTypes.COMMENT)
 
-  override fun getStringLiteralElements(): TokenSet = TokenSet.create(ZonTypes.LINE_STRING, ZonTypes.STRING_LITERAL_SINGLE)
+  override fun getStringLiteralElements() = TokenSet.create(ZonTypes.LINE_STRING, ZonTypes.STRING_LITERAL_SINGLE)
 
   override fun createElement(node: ASTNode?): PsiElement = ZonTypes.Factory.createElement(node)
 
-  override fun createFile(viewProvider: FileViewProvider): PsiFile = ZonPsiFile(viewProvider)
+  override fun createFile(viewProvider: FileViewProvider) = ZonPsiFile(viewProvider)
 
   companion object {
     val FILE = IFileElementType(ZonLanguage.INSTANCE)

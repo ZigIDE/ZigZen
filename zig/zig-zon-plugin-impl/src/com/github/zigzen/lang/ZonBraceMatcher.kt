@@ -8,11 +8,16 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
 
 class ZonBraceMatcher : PairedBraceMatcher {
-  override fun getPairs(): Array<BracePair> = arrayOf(
-    BracePair(ZonTypes.LBRACE, ZonTypes.RBRACE, true)
-  )
+  @Suppress("CompanionObjectInExtension")
+  companion object {
+    val PAIRS = arrayOf(
+      BracePair(ZonTypes.LBRACE, ZonTypes.RBRACE, true)
+    )
+  }
 
-  override fun isPairedBracesAllowedBeforeType(lbraceType: IElementType, contextType: IElementType?): Boolean = true
+  override fun getPairs() = PAIRS
 
-  override fun getCodeConstructStart(file: PsiFile?, openingBraceOffset: Int): Int = openingBraceOffset
+  override fun isPairedBracesAllowedBeforeType(lbraceType: IElementType, contextType: IElementType?) = true
+
+  override fun getCodeConstructStart(file: PsiFile?, openingBraceOffset: Int) = openingBraceOffset
 }

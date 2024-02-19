@@ -14,20 +14,7 @@ import kotlinx.collections.immutable.persistentMapOf
 
 @Suppress("CompanionObjectInExtension")
 class ZonSyntaxHighlighter : SyntaxHighlighterBase() {
-  private val textAttributeKeyMap = persistentMapOf(
-    Pair(TokenType.BAD_CHARACTER, arrayOf(badCharacterTextAttributesKey)),
-    Pair(ZonTypes.COMMENT, arrayOf(commentTextAttributesKey)),
-    Pair(ZonTypes.COMMA, arrayOf(commaTextAttributesKey)),
-    Pair(ZonTypes.DOT, arrayOf(dotTextAttributesKey)),
-    Pair(ZonTypes.EQUAL, arrayOf(equalTextAttributesKey)),
-    Pair(ZonTypes.ID, arrayOf(identifierTextAttributesKey)),
-    Pair(ZonTypes.LBRACE, arrayOf(bracesTextAttributesKey)),
-    Pair(ZonTypes.LINE_STRING, arrayOf(stringTextAttributesKey)),
-    Pair(ZonTypes.RBRACE, arrayOf(bracesTextAttributesKey)),
-    Pair(ZonTypes.STRING_LITERAL_SINGLE, arrayOf(stringTextAttributesKey)),
-  )
-
-  override fun getHighlightingLexer(): Lexer = ZonLexerAdapter()
+  override fun getHighlightingLexer() = ZonLexerAdapter()
 
   override fun getTokenHighlights(tokenType: IElementType?): Array<TextAttributesKey> =
     textAttributeKeyMap[tokenType] ?: TextAttributesKey.EMPTY_ARRAY
@@ -41,5 +28,18 @@ class ZonSyntaxHighlighter : SyntaxHighlighterBase() {
     val identifierTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_IDENTIFIER", DefaultLanguageHighlighterColors.INSTANCE_FIELD)
     val bracesTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_LBRACE", DefaultLanguageHighlighterColors.BRACES)
     val stringTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_STRING", DefaultLanguageHighlighterColors.STRING)
+
+    private val textAttributeKeyMap = persistentMapOf(
+      Pair(TokenType.BAD_CHARACTER, arrayOf(badCharacterTextAttributesKey)),
+      Pair(ZonTypes.COMMENT, arrayOf(commentTextAttributesKey)),
+      Pair(ZonTypes.COMMA, arrayOf(commaTextAttributesKey)),
+      Pair(ZonTypes.DOT, arrayOf(dotTextAttributesKey)),
+      Pair(ZonTypes.EQUAL, arrayOf(equalTextAttributesKey)),
+      Pair(ZonTypes.ID, arrayOf(identifierTextAttributesKey)),
+      Pair(ZonTypes.LBRACE, arrayOf(bracesTextAttributesKey)),
+      Pair(ZonTypes.LINE_STRING, arrayOf(stringTextAttributesKey)),
+      Pair(ZonTypes.RBRACE, arrayOf(bracesTextAttributesKey)),
+      Pair(ZonTypes.STRING_LITERAL_SINGLE, arrayOf(stringTextAttributesKey)),
+    )
   }
 }

@@ -13,6 +13,7 @@
       implementationClass="com.github.zigzen.lang.parser.ZigParserDefinition"/>
     <lang.syntaxHighlighterFactory language="ZIG"
       implementationClass="com.github.zigzen.openapi.fileTypes.ZigSyntaxHighlighterFactory"/>
+    <colorSettingsPage implementation="com.github.zigzen.openapi.options.ZigColorSettingsPage"/>
     <annotator language="ZIG"
       implementationClass="com.github.zigzen.lang.annotation.ZigAnnotator"/>
   </extensions>

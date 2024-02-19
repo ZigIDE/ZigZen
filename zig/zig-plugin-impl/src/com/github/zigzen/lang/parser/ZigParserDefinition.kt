@@ -3,7 +3,7 @@ package com.github.zigzen.lang.parser
 
 import com.github.zigzen.lang.ZigLanguage
 import com.github.zigzen.lang.lexer.ZigLexerAdapter
-import com.github.zigzen.lang.psi.ZigFile
+import com.github.zigzen.extapi.psi.ZigPsiFile
 import com.github.zigzen.lang.psi.ZigTokenSets
 import com.github.zigzen.lang.psi.ZigTypes
 import com.intellij.lang.ASTNode
@@ -25,5 +25,5 @@ class ZigParserDefinition : ParserDefinition {
   override fun getCommentTokens() = ZigTokenSets.COMMENTS
   override fun getStringLiteralElements() = ZigTokenSets.STRINGS
   override fun createElement(node: ASTNode?): PsiElement = ZigTypes.Factory.createElement(node)
-  override fun createFile(viewProvider: FileViewProvider) = ZigFile(viewProvider)
+  override fun createFile(viewProvider: FileViewProvider) = ZigPsiFile(viewProvider)
 }

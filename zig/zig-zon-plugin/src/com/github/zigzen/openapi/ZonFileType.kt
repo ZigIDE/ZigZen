@@ -4,20 +4,18 @@ package com.github.zigzen.openapi
 import com.github.zigzen.icons.ZigZenIcons
 import com.github.zigzen.lang.ZonLanguage
 import com.intellij.openapi.fileTypes.LanguageFileType
-import javax.swing.Icon
 
 class ZonFileType : LanguageFileType(ZonLanguage.INSTANCE) {
-  override fun getName(): String = "ZON File"
+  override fun getName() = "Zon File"
 
-  override fun getDescription(): String = "ZON file"
+  override fun getDescription() = "Zon file"
 
-  override fun getDefaultExtension(): String = "zon"
+  override fun getDefaultExtension() = "zon"
 
-  override fun getIcon(): Icon = ZigZenIcons.Zon
+  override fun getIcon() = ZigZenIcons.Zon
 
   @Suppress("CompanionObjectInExtension")
   companion object {
-    @JvmField
     val INSTANCE = ZonFileType()
   }
 }

@@ -22,7 +22,7 @@ class BuildZigZonDocumentationTarget(private val element: PsiElement, private va
     }
   }
 
-  override fun computePresentation(): TargetPresentation = targetPresentation(element)
+  override fun computePresentation() = targetPresentation(element)
 
   override fun computeDocumentation(): DocumentationResult? {
     if (element.elementType.toString() != "identifier") return null

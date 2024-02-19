@@ -4,9 +4,9 @@ package com.github.zigzen.lang
 import com.intellij.lang.Language
 
 class ZonLanguage : Language("ZON") {
-  override fun getDisplayName(): String = "ZON"
+  override fun getDisplayName() = "Zon"
 
-  override fun isCaseSensitive(): Boolean = true
+  override fun isCaseSensitive() = true
 
   companion object {
     val INSTANCE = ZonLanguage()

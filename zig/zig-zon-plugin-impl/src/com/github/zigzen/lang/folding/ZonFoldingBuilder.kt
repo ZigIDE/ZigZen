@@ -25,7 +25,7 @@ class ZonFoldingBuilder : CustomFoldingBuilder() {
     })
   }
 
-  override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange): String = ".{...}"
+  override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange) = ".{...}"
 
-  override fun isRegionCollapsedByDefault(node: ASTNode): Boolean = false
+  override fun isRegionCollapsedByDefault(node: ASTNode) = false
 }

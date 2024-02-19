@@ -4,33 +4,36 @@ package com.github.zigzen.openapi.options
 import com.github.zigzen.icons.ZigZenIcons
 import com.github.zigzen.openapi.ZigZenBundle
 import com.github.zigzen.openapi.fileTypes.ZonSyntaxHighlighter
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.ColorSettingsPage
-import javax.swing.Icon
 
 class ZonColorSettingsPage : ColorSettingsPage {
-  override fun getAttributeDescriptors(): Array<AttributesDescriptor> = arrayOf(
-    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.braces"), ZonSyntaxHighlighter.bracesTextAttributesKey),
-    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.comma"), ZonSyntaxHighlighter.commaTextAttributesKey),
-    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.dot"), ZonSyntaxHighlighter.dotTextAttributesKey),
-    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.operator.sign"), ZonSyntaxHighlighter.equalTextAttributesKey),
-    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.comments"), ZonSyntaxHighlighter.commentTextAttributesKey),
-    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.field"), ZonSyntaxHighlighter.identifierTextAttributesKey),
-    AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.string.text"), ZonSyntaxHighlighter.stringTextAttributesKey),
-  )
+  @Suppress("CompanionObjectInExtension")
+  companion object {
+    val DESCRIPTORS = arrayOf(
+      AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.bad.character"), ZonSyntaxHighlighter.badCharacterTextAttributesKey),
+      AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.braces"), ZonSyntaxHighlighter.bracesTextAttributesKey),
+      AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.comma"), ZonSyntaxHighlighter.commaTextAttributesKey),
+      AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.dot"), ZonSyntaxHighlighter.dotTextAttributesKey),
+      AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.operator.sign"), ZonSyntaxHighlighter.equalTextAttributesKey),
+      AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.comments"), ZonSyntaxHighlighter.commentTextAttributesKey),
+      AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.field"), ZonSyntaxHighlighter.identifierTextAttributesKey),
+      AttributesDescriptor(ZigZenBundle.ZON_BUNDLE.getMessage("com.github.zigzen.zon.color.settings.page.string.text"), ZonSyntaxHighlighter.stringTextAttributesKey),
+    )
+  }
+
+  override fun getAttributeDescriptors() = DESCRIPTORS
 
   override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 
-  override fun getDisplayName(): String = "ZON"
+  override fun getDisplayName() = "Zon"
 
-  override fun getIcon(): Icon = ZigZenIcons.Zon
+  override fun getIcon() = ZigZenIcons.Zon
 
-  override fun getHighlighter(): SyntaxHighlighter = ZonSyntaxHighlighter()
+  override fun getHighlighter() = ZonSyntaxHighlighter()
 
-  override fun getDemoText(): String = """
+  override fun getDemoText() = """
     .{
       // ZON Color Settings
       .name = "zon-color-settings",
@@ -48,5 +51,5 @@ class ZonColorSettingsPage : ColorSettingsPage {
     }
   """.trimIndent()
 
-  override fun getAdditionalHighlightingTagToDescriptorMap(): MutableMap<String, TextAttributesKey>? = null
+  override fun getAdditionalHighlightingTagToDescriptorMap() = null
 }

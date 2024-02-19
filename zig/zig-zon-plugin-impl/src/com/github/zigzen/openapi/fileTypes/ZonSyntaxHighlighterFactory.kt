@@ -7,5 +7,5 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 
 class ZonSyntaxHighlighterFactory : SyntaxHighlighterFactory() {
-  override fun getSyntaxHighlighter(project: Project?, virtualFile: VirtualFile?): SyntaxHighlighter = ZonSyntaxHighlighter()
+  override fun getSyntaxHighlighter(project: Project?, virtualFile: VirtualFile?) = ZonSyntaxHighlighter()
 }
