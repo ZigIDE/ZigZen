@@ -23,6 +23,6 @@
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij.platform.backend.documentation">
-    <psiTargetProvider implementation="com.github.zigzen.backend.documentation.BuildZigZonPsiDocumentationTargetProvider"/>
+    <targetProvider implementation="com.github.zigzen.backend.documentation.BuildZigZonDocumentationTargetProvider"/>
   </extensions>
 </idea-plugin>

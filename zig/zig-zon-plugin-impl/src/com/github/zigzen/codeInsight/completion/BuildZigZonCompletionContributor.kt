@@ -24,7 +24,8 @@ class BuildZigZonCompletionContributor : CompletionContributor() {
       PlatformPatterns.psiElement()
         .withParent(ZonIncompleteStructProperty::class.java)
         .withSuperParent(4, ZonStructProperty::class.java)
-        .withSuperParent(7, ZonPsiFile::class.java)
+        .withSuperParent(7, ZonStructProperty::class.java)
+        .withSuperParent(10, ZonPsiFile::class.java)
         .inVirtualFile(PlatformPatterns.virtualFile().withName("build.zig.zon")),
       BuildZigZonDependencyFieldCompletionProvider()
     )
