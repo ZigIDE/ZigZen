@@ -4,6 +4,7 @@
 .idea/gradle_extensions.xml
 .idea/libraries/Gradle__*.xml
 .idea/shelf
+.idea/discord.xml
 .idea/workspace.xml
 .jqwik-database
 /.diff

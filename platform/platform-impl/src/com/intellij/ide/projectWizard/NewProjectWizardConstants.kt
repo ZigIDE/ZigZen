@@ -15,6 +15,7 @@ object NewProjectWizardConstants {
     const val GO: String = "Go"
     const val SCALA: String = "Scala"
     const val RUST: String = "Rust"
+    const val ZIG: String = "Zig"
   }
 
   object BuildSystem {
