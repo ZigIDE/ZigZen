@@ -7,7 +7,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDirectory
 import com.intellij.util.text.SemVer
 import java.nio.file.Path
-import kotlinx.lazyWithThisReference
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -40,7 +39,8 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
       val process = commandLine.createProcess()
       process.waitFor()
 
-      return Json.decodeFromStream<ZigToolchainEnvironment>(process.inputStream)
+      val json = Json { ignoreUnknownKeys = true }
+      return json.decodeFromStream<ZigToolchainEnvironment>(process.inputStream)
     } catch (e: Exception) {
       return null
     }
@@ -52,6 +52,7 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
     @Serializable(ZigSemVerSerializer::class)
     val version: SemVer,
     @Required
+    @Serializable(ZigPathSerializer::class)
     @SerialName("std_dir")
     val stdLibPath: Path,
   )
@@ -67,4 +68,5 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
   }
 }
 
-val AbstractZigToolchain.zig by lazyWithThisReference { ZigToolchainZigTool(this as AbstractZigToolchain) }
+val AbstractZigToolchain.zig
+  get() = ZigToolchainZigTool(this)

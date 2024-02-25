@@ -30,11 +30,7 @@ class ZigToolchainFileChooserComboBox(onTextChanged: () -> Unit = {})
     get() = childComponent.editor.editorComponent as ExtendableTextField
 
   var selectedPath: Path?
-    get() = try {
-      pathTextField.text.toNioPathOrNull()
-    } catch (e: Exception) {
-      null
-    }
+    get() = pathTextField.text?.toNioPathOrNull()
     set(value) {
       pathTextField.text = value?.toString().orEmpty()
     }
