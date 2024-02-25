@@ -13,6 +13,11 @@ class IntellijIconClassGeneratorConfig : IconClasses() {
   override fun getConfigForModule(moduleName: String): IntellijIconClassGeneratorModuleConfig? {
     @Suppress("SpellCheckingInspection")
     return when (moduleName) {
+      "com.github.zigzen.icons" -> IntellijIconClassGeneratorModuleConfig(
+        className = "ZigZenIcons",
+        packageName = "com.github.zigzen.icons",
+        iconDirectory = "icons/com/github/zigzen",
+      )
       "intellij.devkit" -> IntellijIconClassGeneratorModuleConfig(
         className = "DevKitIcons",
         packageName = "org.jetbrains.idea.devkit",

@@ -1,0 +1,48 @@
+// Copyright Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
+{
+  parserClass="com.github.zigzen.lang.parser.ZonParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Zon"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.github.zigzen.psi"
+  psiImplPackage="com.github.zigzen.psi.impl"
+
+  elementTypeHolderClass="com.github.zigzen.psi.ZonTypes"
+  elementTypeClass="com.github.zigzen.psi.ZonElementType"
+  tokenTypeClass="com.github.zigzen.psi.ZonTokenType"
+  tokens=[
+    DOT='.'
+    LBRACE='{'
+    RBRACE='}'
+    EQUAL='='
+    COMMA=','
+    COMMENT='comment'
+    ID='identifier'
+    STRING_LITERAL_SINGLE='string'
+    LINE_STRING='multiline string'
+    BAD_STRING='unterminated string'
+  ]
+
+  mixin("Struct") = "com.github.zigzen.psi.mixin.impl.ZonStructMixinImpl"
+  implements("Struct") = "com.github.zigzen.psi.mixin.ZonStructMixin"
+}
+
+Root ::= Struct
+
+Struct ::= DOT LBRACE (StructStringArray | StructPropertyMap | ()) RBRACE
+
+StructPropertyMap ::= (StructProperty | IncompleteStructProperty) (COMMA (IncompleteStructProperty? StructProperty IncompleteStructProperty? | IncompleteStructProperty))* COMMA?
+
+StructStringArray ::= STRING_LITERAL (COMMA STRING_LITERAL)* COMMA?
+
+StructProperty ::= DOT Identifier EQUAL StructPropertyValue
+
+Identifier ::= ID
+
+IncompleteStructProperty ::= DOT? COMPLETION_DUMMY
+
+private StructPropertyValue ::= Struct | STRING_LITERAL
+
+STRING_LITERAL ::= STRING_LITERAL_SINGLE | LINE_STRING+

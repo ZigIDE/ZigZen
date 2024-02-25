@@ -1,0 +1,13 @@
+<!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
+<component xmlns="http://jetbrains.org/intellij/schema/application-info">
+  <version major="2024" minor="1" eap="true"/>
+  <company name="ZigIDE" url="https://github.com/ZigIDE"/>
+  <build number="ZZ-__BUILD__" date="__BUILD_DATE__"/>
+  <logo url="/zigzen_logo.png"/>
+  <icon svg="/zigzen.svg" svg-small="/zigzen_16.svg"/>
+  <names product="ZigZen" fullname="ZigZen" script="zigzen" motto="Powerful IDE for Zig"/>
+
+  <essential-plugin>com.github.zigzen.zig</essential-plugin>
+  <essential-plugin>com.github.zigzen.ide</essential-plugin>
+  <essential-plugin>com.github.zigzen.zon</essential-plugin>
+</component>
