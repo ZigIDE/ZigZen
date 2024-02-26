@@ -9,6 +9,7 @@ object ZigLanguagePluginLayout {
       spec.withModules(
         listOf(
           "com.github.zigzen.icons",
+          "com.github.zigzen.openapi",
           "com.github.zigzen.zig.impl",
         )
       )

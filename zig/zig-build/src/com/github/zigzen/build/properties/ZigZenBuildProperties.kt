@@ -40,7 +40,6 @@ class ZigZenBuildProperties(private val home: Path) : JetBrainsProductProperties
     ))
     productLayout.mainModules = listOf("com.github.zigzen.main")
     productLayout.productImplementationModules = listOf(
-      "com.github.zigzen.ide",
       "com.github.zigzen.resources",
       "intellij.platform.main",
     )
