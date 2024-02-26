@@ -1,5 +1,5 @@
 <!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
-<idea-plugin>
+<idea-plugin use-idea-classloader="true">
   <id>com.github.zigzen.ide</id>
   <name>ZigZen</name>
 
