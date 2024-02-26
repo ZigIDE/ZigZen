@@ -12,16 +12,16 @@
     <orderEntry type="jdk" jdkName="jbr-17" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="kotlin-stdlib" level="project" />
+    <orderEntry type="module" module-name="com.github.zigzen.icons" />
+    <orderEntry type="module" module-name="com.github.zigzen.openapi" />
+    <orderEntry type="module" module-name="com.github.zigzen.psi.util" />
     <orderEntry type="module" module-name="com.github.zigzen.zon" />
     <orderEntry type="module" module-name="intellij.platform.core" />
     <orderEntry type="module" module-name="intellij.platform.core.impl" />
     <orderEntry type="module" module-name="intellij.platform.analysis.impl" />
     <orderEntry type="module" module-name="intellij.platform.editor" />
-    <orderEntry type="module" module-name="com.github.zigzen.icons" />
     <orderEntry type="module" module-name="intellij.platform.ide" />
     <orderEntry type="module" module-name="intellij.platform.lang.impl" />
-    <orderEntry type="module" module-name="com.github.zigzen.openapi" />
-    <orderEntry type="module" module-name="com.github.zigzen.psi.util" />
     <orderEntry type="module" module-name="intellij.platform.codeStyle.impl" />
   </component>
 </module>

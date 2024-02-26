@@ -27,6 +27,7 @@ class ZigZenBuildProperties(private val home: Path) : JetBrainsProductProperties
     productLayout.bundledPluginModules.addAll(listOf(
       "com.github.zigzen.ide",
       "com.github.zigzen.zig",
+      "com.github.zigzen.zon",
       "intellij.vcs.git",
       "intellij.vcs.github.community",
       "intellij.yaml",
@@ -70,7 +71,7 @@ class ZigZenBuildProperties(private val home: Path) : JetBrainsProductProperties
       fileAssociations = listOf("zig", "zon")
       icoPath = "${home}/zig/zig-build/conf/win/images/zigzen.ico"
       icoPathForEAP = "${home}/zig/zig-build/conf/win/images/zigzen.ico"
-      installerImagesPath = "${home}/zig/zig-build//conf/win/images"
+      installerImagesPath = "${home}/zig/zig-build/conf/win/images"
     }
   }
 }
