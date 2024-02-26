@@ -70,7 +70,7 @@ class ZigZenBuildProperties(private val home: Path) : JetBrainsProductProperties
       fileAssociations = listOf("zig", "zon")
       icoPath = "${home}/zig/zig-build/conf/win/images/zigzen.ico"
       icoPathForEAP = "${home}/zig/zig-build/conf/win/images/zigzen.ico"
-      installerImagesPath = "${home}/build/conf/ideaCE/win/images"
+      installerImagesPath = "${home}/zig/zig-build//conf/ideaCE/win/images"
     }
   }
 }
