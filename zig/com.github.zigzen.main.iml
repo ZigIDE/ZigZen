@@ -19,7 +19,9 @@
     <orderEntry type="module" module-name="intellij.platform.resources" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.vcs" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.vcs.impl" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.sh" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.terminal" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.terminal.sh" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.vcs.git" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.vcs.github" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.vcs.github.community" scope="RUNTIME" />
