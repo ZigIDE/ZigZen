@@ -8,6 +8,9 @@ object ZonLanguagePluginLayout {
     return PluginLayout.plugin("com.github.zigzen.zon") { spec ->
       spec.withModules(
         listOf(
+          "com.github.zigzen.icons",
+          "com.github.zigzen.openapi",
+          "com.github.zigzen.psi.util",
           "com.github.zigzen.zon.impl"
         )
       )

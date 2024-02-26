@@ -5,11 +5,11 @@ import org.jetbrains.intellij.build.impl.PluginLayout
 
 object ZigIdePluginLayout {
   fun zigIdePlugin(): PluginLayout {
-    return PluginLayout.plugin("com.github.zigzen.zig") { spec ->
+    return PluginLayout.plugin("com.github.zigzen.ide") { spec ->
       spec.withModules(
         listOf(
           "com.github.zigzen.icons",
-          "com.github.zigzen.zig.impl",
+          "com.github.zigzen.ide.ui",
         )
       )
     }
