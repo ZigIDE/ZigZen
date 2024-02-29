@@ -2,13 +2,21 @@
 package com.github.zigzen.psi
 
 import com.github.zigzen.extapi.psi.ZonPsiFile
-import com.github.zigzen.lang.ZonLanguage
+import com.github.zigzen.openapi.ZonFileType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFileFactory
+import com.intellij.util.LocalTimeCounter
 
 object ZonElementFactory {
   fun createFile(project: Project, text: String): ZonPsiFile =
-    PsiFileFactory.getInstance(project).createFileFromText("psiElementFactory.zon", ZonLanguage.INSTANCE, text) as ZonPsiFile
+    PsiFileFactory.getInstance(project).createFileFromText(
+      "psiElementFactory.zon",
+      ZonFileType.INSTANCE,
+      text,
+      LocalTimeCounter.currentTime(),
+      false,
+      true,
+    ) as ZonPsiFile
 
   fun createIdentifier(project: Project, name: String): ZonIdentifier =
     createProperty(project, name).identifier
