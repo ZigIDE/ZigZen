@@ -18,6 +18,10 @@
       implementationClass="com.github.zigzen.lang.annotation.ZigAnnotator"/>
   </extensions>
 
+  <extensions defaultExtensionNs="com.intellij.completion">
+    <contributor language="ZIG" implementationClass="com.github.zigzen.codeInsight.completion.ZigBuiltinFunctionCompletionContributor"/>
+  </extensions>
+
   <extensions defaultExtensionNs="com.github.zigzen.zig">
     <toolchainFlavour implementation="com.github.zigzen.lang.toolchain.flavour.ZigSystemPathEnvironmentVariableToolchainFlavour"/>
     <toolchainProvider implementation="com.github.zigzen.lang.toolchain.ZigLocalToolchainProvider"/>

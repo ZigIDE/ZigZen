@@ -1,6 +1,7 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.github.zigzen.backend.documentation
 
+import com.github.zigzen.psi.ZonIdentifier
 import com.intellij.codeInsight.navigation.targetPresentation
 import com.intellij.model.Pointer
 import com.intellij.platform.backend.documentation.DocumentationResult
@@ -23,7 +24,7 @@ class BuildZigZonDocumentationTarget(private val element: PsiElement, private va
   override fun computePresentation() = targetPresentation(element)
 
   override fun computeDocumentation(): DocumentationResult? {
-    if (element.elementType.toString() != "identifier") return null
+    if (element.elementType.toString() != "identifier" && element !is ZonIdentifier) return null
 
     val documentation = when (element.text) {
       "name" -> "The name of the Zig package."
