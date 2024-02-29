@@ -1,6 +1,7 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.github.zigzen.codeInsight.completion
 
+import com.github.zigzen.psi.ZonElementFactory
 import com.github.zigzen.psi.ZonIncompleteStructProperty
 import com.github.zigzen.psi.ZonStruct
 import com.github.zigzen.psi.util.PsiUtil
@@ -23,7 +24,12 @@ class BuildZigZonRootFieldCompletionProvider : CompletionProvider<CompletionPara
     val struct = PsiUtil.parentOrNull(incompleteStructProperty, ZonStruct::class.java)!!
 
     (allRootFields - struct.definedFields).forEach {
-      result.addElement(LookupElementBuilder.create(it).withIcon(AllIcons.Nodes.Field))
+      result.addElement(
+        LookupElementBuilder
+          .create(it)
+          .withIcon(AllIcons.Nodes.Field)
+          .withPsiElement(ZonElementFactory.createIdentifier(parameters.originalFile.project, it))
+      )
     }
   }
 }
