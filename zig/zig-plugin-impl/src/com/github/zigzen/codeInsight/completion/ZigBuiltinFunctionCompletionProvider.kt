@@ -138,7 +138,7 @@ class ZigBuiltinFunctionCompletionProvider : CompletionProvider<CompletionParame
         .withPresentableText(it)
         .withIcon(AllIcons.Nodes.Function)
         .withInsertHandler { context, _ ->
-          context.editor.caretModel.moveCaretRelatively(it.length + 1, 0, false, false, true)
+          context.editor.caretModel.moveCaretRelatively(-1, 0, false, false, true)
         }
     }.toList())
 
@@ -148,7 +148,7 @@ class ZigBuiltinFunctionCompletionProvider : CompletionProvider<CompletionParame
         .withPresentableText(it)
         .withIcon(AllIcons.Nodes.Function)
         .withInsertHandler { context, _ ->
-          context.editor.caretModel.moveCaretRelatively(it.length + 2, 0, false, false, true)
+          context.editor.caretModel.moveCaretRelatively(0, 0, false, false, true)
         }
     }.toList())
   }
