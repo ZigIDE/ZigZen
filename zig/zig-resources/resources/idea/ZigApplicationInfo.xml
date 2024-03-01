@@ -5,6 +5,7 @@
   <build number="ZZ-__BUILD__" date="__BUILD_DATE__"/>
   <logo url="/zigzen_logo.png"/>
   <icon svg="/zigzen.svg" svg-small="/zigzen_16.svg"/>
+  <icon-eap svg="/zigzen-eap.svg" svg-small="/zigzen_16-eap.svg"/>
   <names product="ZigZen" fullname="ZigZen" script="zigzen" motto="Powerful IDE for Zig"/>
 
   <essential-plugin>com.github.zigzen.zig</essential-plugin>
