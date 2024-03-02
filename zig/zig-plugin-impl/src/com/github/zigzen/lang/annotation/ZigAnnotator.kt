@@ -40,7 +40,7 @@ class ZigAnnotator : Annotator {
     when (element) {
       is ZigFnProto -> {
         if (element.identifier == null) return
-        annotateElement(holder, element.identifier!!, ZigSyntaxHighlighter.FUNCTION_DECL)
+        annotateElement(holder, element.identifier!!, ZigSyntaxHighlighter.FUNCTION)
       }
       is ZigVarDecl -> {
         var isVariable = false
@@ -49,7 +49,7 @@ class ZigAnnotator : Annotator {
           when (val child = element.children[i]) {
             is ZigPrimaryTypeExpr -> {
               if (child.builtinidentifier?.text == "@import" || child.builtinidentifier?.text == "@cImport") {
-                annotateElement(holder, element.identifier, ZigSyntaxHighlighter.TYPE_DECL)
+                annotateElement(holder, element.identifier, ZigSyntaxHighlighter.TYPE)
                 types.add(element.identifier.text)
               } else isVariable = true
             }
@@ -60,7 +60,7 @@ class ZigAnnotator : Annotator {
         }
 
         if (isVariable) {
-          annotateElement(holder, element.identifier, ZigSyntaxHighlighter.VARIABLE_DECL)
+          annotateElement(holder, element.identifier, ZigSyntaxHighlighter.VARIABLE)
           variables.add(element.identifier.text)
         }
       }
@@ -82,19 +82,19 @@ class ZigAnnotator : Annotator {
               if (child.identifier == null) continue
 
               if (variables.contains(child.identifier!!.text)) {
-                annotateElement(holder, child.identifier!!, ZigSyntaxHighlighter.VARIABLE_REF)
+                annotateElement(holder, child.identifier!!, ZigSyntaxHighlighter.VARIABLE)
               } else if (callArguments != null) {
-                annotateElement(holder, child.identifier!!, ZigSyntaxHighlighter.FUNCTION_REF)
+                annotateElement(holder, child.identifier!!, ZigSyntaxHighlighter.FUNCTION_CALL)
               }
             }
             is ZigSuffixOp -> {
               if (child.identifier == null) continue
 
               if (callArguments != null) {
-                annotateElement(holder, child.identifier!!, ZigSyntaxHighlighter.FUNCTION_REF)
+                annotateElement(holder, child.identifier!!, ZigSyntaxHighlighter.FUNCTION_CALL)
                 continue
               }
-              annotateElement(holder, child.identifier!!, ZigSyntaxHighlighter.VARIABLE_REF)
+              annotateElement(holder, child.identifier!!, ZigSyntaxHighlighter.VARIABLE)
             }
           }
         }
@@ -106,7 +106,7 @@ class ZigAnnotator : Annotator {
         if (identifier.text == "undefined") {
           annotateElement(holder, identifier, ZigSyntaxHighlighter.KEYWORD)
         } else if (types.contains(identifier.text) || numberTypeRegex.matcher(identifier.text).find()) {
-          annotateElement(holder, identifier, ZigSyntaxHighlighter.TYPE_REF)
+          annotateElement(holder, identifier, ZigSyntaxHighlighter.TYPE) // TODO: Generic types?
         }
       }
     }
