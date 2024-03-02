@@ -2,15 +2,16 @@
 package com.github.zigzen.lang.psi
 
 import com.github.zigzen.openapi.ZigFileType
-import com.intellij.openapi.project.Project
+import com.intellij.ide.DataManager
+import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.psi.PsiFileFactory
 import com.intellij.util.LocalTimeCounter
 
-class ZigBuiltinFunctionPsiElementProvider(private val project: Project) {
-  private val BUILTINS_FILE = String(this.javaClass.getResourceAsStream("language-helper/builtinFunctions.zig")!!.readAllBytes())
+object ZigBuiltinFunctionPsiElementProvider {
+  private val BUILTINS_FILE = String(this.javaClass.getResourceAsStream("/language-helper/builtinFunctions.zig")!!.readAllBytes())
 
-  val PSI_FILE by lazy {
-    PsiFileFactory.getInstance(project).createFileFromText(
+  private val PSI_FILE =
+    PsiFileFactory.getInstance(CommonDataKeys.PROJECT.getData(DataManager.getInstance().dataContext)).createFileFromText(
       "builtinFunctions.zig",
       ZigFileType.INSTANCE,
       BUILTINS_FILE,
@@ -18,16 +19,13 @@ class ZigBuiltinFunctionPsiElementProvider(private val project: Project) {
       false,
       true,
     )
-  }
 
-  val CONTAINER_DECLARATIONS by lazy {
+  private val FN_PROTOS by lazy {
     PSI_FILE.children.filterIsInstance<ZigContainerDecl>().map { it.containerDeclAuto.containerDeclarationList }.flatten()
       .mapNotNull { it.decl?.fnProto }
   }
 
-  fun getBuiltinFunctionAsFunctionProtoByName(name: String): ZigFnProto = TODO()
+  fun getBuiltinFunctionNames(): List<String> = FN_PROTOS.mapNotNull { it.identifier?.text }
 
-  companion object {
-    fun getInstance(project: Project) = ZigBuiltinFunctionPsiElementProvider(project)
-  }
+  fun getBuiltinFunctionAsFunctionProtoByName(name: String): ZigFnProto? = FN_PROTOS.find { it.identifier?.text == name }
 }
