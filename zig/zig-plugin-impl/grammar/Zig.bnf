@@ -153,6 +153,7 @@
     LINE_COMMENT='comment'
 
     CHAR_LITERAL='character literal'
+    CHAR_ESCAPE='character escape'
 
     FLOAT='float'
     INTEGER='integer'
