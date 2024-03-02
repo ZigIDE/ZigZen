@@ -1,40 +1,39 @@
-# IntelliJ IDEA Community Edition [![official JetBrains project](http://jb.gg/badges/official.svg)](https://github.com/JetBrains/.github/blob/main/profile/README.md)
-These instructions will help you build IntelliJ IDEA Community Edition from source code, which is the basis for IntelliJ Platform development.
-The following conventions will be used to refer to directories on your machine:
+# ZigZen
+Welcome! ZigZen is an IDE based off [IntelliJ IDEA Community Edition](https://github.com/JetBrains/intellij-community) which provides tight
+integration with the Zig language. These instructions will help you build it from source code. The following conventions will be used to
+refer to directories on your machine:
 * `<USER_HOME>` is your home directory.
-* `<IDEA_HOME>` is the root directory for the IntelliJ source code.
+* `<ZIGZEN_HOME>` is the root directory for the ZigZen source code.
 
-## Getting IntelliJ IDEA Community Edition Source Code
-IntelliJ IDEA Community Edition source code is available from `github.com/JetBrains/intellij-community` by either cloning or
-downloading a zip file (based on a branch) into `<IDEA_HOME>`. The default is the *master* branch. 
-
-The master branch contains the source code which will be used to create the next major version of IntelliJ IDEA. The branch names
-and build numbers for older releases of IntelliJ IDEA can be found on the page of
-[Build Number Ranges](https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html).
+## Getting ZigZen Source Code
+ZigZen source code is available from `github.com/ZigIDE/ZigZen` by either cloning or downloading a zip file (based on a branch) into
+`<ZIGZEN_HOME>`. The default is the *nightly* branch. It contains the source code which will be used to create the next major version of ZigZen.
 
 These Git operations can also be done through the [IntelliJ IDEA user interface](https://www.jetbrains.com/help/idea/using-git-integration.html).
 
-_**Speed Tip:**_ If the complete repository history isn't needed, then using a shallow clone (`git clone --depth 1`) will save significant time.
+_**Speed Tip:**_ If the complete repository history isn't needed, then using a shallow clone (`git clone --depth 1`) will save significant
+time.
 
-_**On Windows:**_ Two git options are required to check out sources on Windows. Since it's a common source of Git issues on Windows anyway, those options could be set globally (execute those commands before cloning any of intellij-community/android repositories):
+_**On Windows:**_ Two git options are required to check out sources on Windows. Since it's a common source of Git issues on Windows anyway,
+those options could be set globally (execute those commands before cloning any of intellij-community/android repositories):
 
 * `git config --global core.longpaths true`
 * `git config --global core.autocrlf input`
 
-IntelliJ IDEA Community Edition requires additional Android modules from separate Git repositories. To clone these repositories,
-run one of the `getPlugins` scripts located in the `<IDEA_HOME>` directory. Use the `--shallow` argument if the complete repository history isn't needed. 
-These scripts clone their respective *master* branches. Make sure you are inside the `<IDEA_HOME>` directory when running those scripts, so the modules get cloned inside the `<IDEA_HOME>` directory.
+ZigZen requires additional Android modules from separate Git repositories. To clone these repositories, run one of the `getPlugins` scripts
+located in the `<ZIGZEN_HOME>` directory. Use the `--shallow` argument if the complete repository history isn't needed. These scripts clone
+their respective *master* branches. Make sure you are inside the `<ZIGZEN_HOME>` directory when running those scripts, so the modules get
+cloned inside the `<ZIGZEN_HOME>` directory.
 * `getPlugins.sh` for Linux or macOS.
 * `getPlugins.bat` for Windows.
 
-_**Note:**_ Always `git checkout` the `intellij-community` and `android` Git repositories to the same branches/tags. 
+_**Note:**_ Always `git checkout` the `ZigZen` and `android` Git repositories to the same branches/tags. 
 
-## Building IntelliJ Community Edition
-Version 2023.2 or newer of IntelliJ IDEA Community Edition or IntelliJ IDEA Ultimate Edition is required to build and develop
-for the IntelliJ Platform.
+## Building ZigZen
+Version 2023.2 or newer of IntelliJ IDEA Community Edition or IntelliJ IDEA Ultimate Edition is required to build ZigZen.
 
-### Opening the IntelliJ Source Code for Build
-Using IntelliJ IDEA **File | Open**, select the `<IDEA_HOME>` directory. 
+### Opening the ZigZen Source Code for Build
+Using IntelliJ IDEA **File | Open**, select the `<ZIGZEN_HOME>` directory. 
 * If IntelliJ IDEA displays an error about a missing or out of date required plugin (e.g. Kotlin),
   [enable, upgrade, or install that plugin](https://www.jetbrains.com/help/idea/managing-plugins.html) and restart IntelliJ IDEA.
 
@@ -52,10 +51,11 @@ So, if for some reason `jbr-17` SDK points to an installation of JetBrains Runti
 ensure that IntelliJ IDEA is running in internal mode (by adding `idea.is.internal=true` to `idea.properties` file), navigate to `jbr-17` 
 item in Project Structure | SDKs, click on 'Browse' button, choose 'Download...' item and select version 17 and vendor 'JetBrains Runtime'.
 
-### Building the IntelliJ Application Source Code
-To build IntelliJ IDEA Community Edition from source, choose **Build | Build Project** from the main menu.
+### Building the ZigZen Source Code
+To build ZigZen from source, choose **Build | Build Project** from the main menu.
 
-To build installation packages, run the `installers.cmd` command in `<IDEA_HOME>` directory. `installers.cmd` will work on both Windows and Unix systems.
+To build installation packages, run the `installers.cmd` command in `<ZIGZEN_HOME>` directory. `installers.cmd` will work on both Windows and
+Unix systems.
 
 Options to build installers are passed as system properties to `installers.cmd` command.
 You may find the list of available properties in [BuildOptions.kt](platform/build-scripts/src/org/jetbrains/intellij/build/BuildOptions.kt)
@@ -64,27 +64,31 @@ Examples (`./` should be added only for Linux/macOS):
  * Build installers only for current operating system: `./installers.cmd -Dintellij.build.target.os=current`
  * Build source code _incrementally_ (do not build what was already built before): `./installers.cmd -Dintellij.build.incremental.compilation=true`
 
-`installers.cmd` is used just to run [OpenSourceCommunityInstallersBuildTarget](build/src/OpenSourceCommunityInstallersBuildTarget.kt) from the command line.
-You may call it directly from IDEA, see run configuration `Build IDEA Community Installers (current OS)` for an example.
+`installers.cmd` is used just to run [OpenSourceCommunityInstallersBuildTarget](build/src/OpenSourceCommunityInstallersBuildTarget.kt) from
+the command line.
+You may call it directly from IDEA, see run configuration `Build ZigZen Community Installers (current OS)` for an example.
 
 #### Dockerized Build Environment
-To build installation packages inside a Docker container with preinstalled dependencies and tools, run the following command in `<IDEA_HOME>` directory (on Windows, use PowerShell):  
+To build installation packages inside a Docker container with preinstalled dependencies and tools, run the following command in `<ZIGZEN_HOME>`
+directory (on Windows, use PowerShell):  
 `docker run --rm -it -v ${PWD}:/community $(docker build -q . --target build_env)`
 
-## Running IntelliJ IDEA
-To run the IntelliJ IDEA built from source, choose **Run | Run** from the main menu. This will use the preconfigured run configuration "**IDEA**".
+## Running ZigZen
+To run the ZigZen built from source, choose **Run | Run** from the main menu. This will use the preconfigured run configuration
+"**ZigZen**".
 
 To run tests on the build, apply these setting to the **Run | Edit Configurations... | Templates | JUnit** configuration tab:
-  * Working dir: `<IDEA_HOME>/bin`
+  * Working dir: `<ZIGZEN_HOME>/bin`
   * VM options: 
     * `-ea` 
  
 You can find other helpful information at [https://www.jetbrains.com/opensource/idea](https://www.jetbrains.com/opensource/idea).
-The "Contribute Code" section of that site describes how you can contribute to IntelliJ IDEA.
+The "Contribute Code" section of that site describes how you can contribute to ZigZen.
 
-## Running IntelliJ IDEA on CI/CD environment
+## Running ZigZen on CI/CD environment
 
-To run tests outside of IntelliJ IDEA, run the `tests.cmd` command in `<IDEA_HOME>` directory. `tests.cmd` will work on both Windows and Unix systems.
+To run tests outside of ZigZen, run the `tests.cmd` command in `<ZIGZEN_HOME>` directory. `tests.cmd` will work on both Windows and
+Unix systems.
 
 Options to run tests are passed as system properties to `tests.cmd` command.
 You may find the list of available properties in [TestingOptions.kt](platform/build-scripts/src/org/jetbrains/intellij/build/TestingOptions.kt)
