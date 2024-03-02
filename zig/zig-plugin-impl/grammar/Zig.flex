@@ -260,6 +260,8 @@ BUILTINIDENTIFIER="@"[A-Za-z_][A-Za-z0-9_]*
 
 <YYINITIAL>      "\""                     { yybegin(STR_LIT); }
 <STR_LIT>        {string_char}*"\""       { yybegin(YYINITIAL); return STRING_LITERAL_SINGLE; }
+// TODO: Fix escape character export because I'm bad with lexers (and parsers) :)
+<STR_LIT>        {char_escape}            { return CHAR_ESCAPE; }
 <STR_LIT>        [^]                      { yypushback(1); yybegin(UNT_QUOT); }
 <YYINITIAL>      {line_string}+           { return STRING_LITERAL_MULTI; }
 
