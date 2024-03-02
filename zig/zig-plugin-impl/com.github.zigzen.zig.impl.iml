@@ -36,6 +36,7 @@
     <orderEntry type="module" module-name="com.github.zigzen.icons" />
     <orderEntry type="module" module-name="com.github.zigzen.openapi" />
     <orderEntry type="module" module-name="com.github.zigzen.zig" />
+    <orderEntry type="module" module-name="intellij.platform.core.ui" />
     <orderEntry type="module" module-name="intellij.platform.ide.impl" />
     <orderEntry type="module" module-name="intellij.platform.ide.util.io" />
     <orderEntry type="module" module-name="intellij.platform.lang.core" />
