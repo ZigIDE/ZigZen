@@ -117,6 +117,7 @@ public interface ZigTypes {
   IElementType BUILTINIDENTIFIER = new ZigTokenType("builtin identifier");
   IElementType CARET = new ZigTokenType("^");
   IElementType CARETEQUAL = new ZigTokenType("^=");
+  IElementType CHAR_ESCAPE = new ZigTokenType("character escape");
   IElementType CHAR_LITERAL = new ZigTokenType("character literal");
   IElementType COLON = new ZigTokenType(":");
   IElementType COMMA = new ZigTokenType(",");
