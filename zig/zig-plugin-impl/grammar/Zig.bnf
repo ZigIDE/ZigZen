@@ -160,6 +160,7 @@
 
     STRING_LITERAL_SINGLE='quoted string literal'
     STRING_LITERAL_MULTI='multiline string literal'
+    BAD_STRING='unterminated string'
 
     IDENTIFIER='identifier'
     BUILTINIDENTIFIER='builtin identifier'

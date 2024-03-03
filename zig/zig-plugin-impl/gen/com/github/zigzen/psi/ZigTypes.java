@@ -114,6 +114,7 @@ public interface ZigTypes {
   IElementType ASTERISKPERCENTEQUAL = new ZigTokenType("*%=");
   IElementType ASTERISKPIPE = new ZigTokenType("*|");
   IElementType ASTERISKPIPEEQUAL = new ZigTokenType("*|=");
+  IElementType BAD_STRING = new ZigTokenType("unterminated string");
   IElementType BUILTINIDENTIFIER = new ZigTokenType("builtin identifier");
   IElementType CARET = new ZigTokenType("^");
   IElementType CARETEQUAL = new ZigTokenType("^=");
