@@ -43,7 +43,7 @@ fn bitCast(value: anytype) @TypeOf(value) {}
 /// Returns the bit offset of a field relative to its containing struct.
 fn bitOffsetOf(comptime T: type, comptime field_name: []const u8) comptime_int {}
 
-/// Reverses the bitpattern of an integer value, including the sign bit if applicable.
+/// Reverses the bit pattern of an integer value, including the sign bit if applicable.
 fn bitReverse(integer: anytype) T {}
 
 /// Returns the number of bits it takes to store `T` in memory if the type were a field in a packed struct orunion. The
@@ -66,7 +66,10 @@ fn ceil(value: anytype) @TypeOf(value) {}
 /// type, and then returns that type.
 fn cImport(expression) type {}
 
-/// Appends `#include <path>\n` to the `c_import` temporary buffer.
+/// Appends `#define $name $value` to the `@cImport` temporary buffer.
+fn cDefine(comptime name: []const u8, value) void {}
+
+/// Appends `#include <$path>\n` to the `@cImport` temporary buffer.
 fn cInclude(comptime path: []const u8) void {}
 
 /// Counts the number of most-significant (leading in a big-endian sense) zeroes in an integer - "count leading zeroes".
@@ -79,3 +82,52 @@ fn cmpxchgStrong(comptime T: type, ptr: *T, expected_value: T, new_value: T, suc
 /// Performs a weak atomic compare-and-exchange operation, returning `null` if the current value is not the given
 /// expected value.
 fn cmpxchgWeak(comptime T: type, ptr: *T, expected_value: T, new_value: T, success_order: AtomicOrder, fail_order: AtomicOrder) ?T {}
+
+/// Causes a compile error with the message `msg` when semantically checked.
+fn compileError(comptime msg: []const u8) noreturn {}
+
+// TODO: figure out proper `args` parameter type
+/// Prints the arguments passed to it at compile-time.
+fn compileLog(args: VaList) void {}
+
+/// Removes `const` qualifier from a pointer.
+fn constCast(value: anytype) DsetType {}
+
+/// Computes the cosine trigonometric function on a floating point number in radians. Uses a dedicated hardware
+/// instruction when available.
+fn cos(value: anytype) @TypeOf(value) {}
+
+/// Counts the number of least-significant (trailing in a big-endian sense) zeroes in an integer - "count trailing
+/// zeroes".
+fn ctz(operand: anytype) @TypeOf(operand) {}
+
+/// Appends `#undef $name` to the `@cImport` temporary buffer.
+fn cUndef(comptime name: []const u8) void {}
+
+/// Implements the C macro `va_arg`.
+fn cVaArg(operand: *VaList, comptime T: type) T {}
+
+/// Implements the C macro `va_copy`.
+fn cVaCopy(src: *VaList) VaList {}
+
+/// Implements the C macro `va_end`.
+fn cVaEnd(src: *VaList) void {}
+
+/// Implements the C macro `va_start`. Only valid inside a variadic function.
+fn cVaStart() VaList {}
+
+///Performs exact division. Caller guarantees `denominator != 0` and `@divTrunc(numerator, denominator) * denominator == numerator`.
+fn divExact(numerator: T, denominator: T) T {}
+
+/// Performs floored division. Rounds toward negative infinity. For unsigned integers it is the same as `numerator / denominator`.
+/// Caller guarantees `denominator != 0` and `!(@typeInfo(T) == .Int and T.is_signed and numerator == std.math.minInt(T) and denominator == -1)`.
+fn divFloor(numerator: T, denominator: T) T {}
+
+/// Performs truncated division. Rounds toward zero. For unsigned integers it is the same as `numerator / denominator`.
+/// Caller guarantees `denominator != 0` and `!(@typeInfo(T) == .Int and T.is_signed and numerator == std.math.minInt(T) and denominator == -1)`.
+fn divTrunc(numerator: T, denominator: T) T {}
+
+/// Returns a compile time constant pointer to null-terminated, fixed-size array with length equal to the byte count of
+/// the file given by `path`. The contents of the array are the contents of the file. This is equivalent to a string
+/// literal with the file contents.
+fn embedFile(comptime path: []const u8) *const [N:0]u8 {}
