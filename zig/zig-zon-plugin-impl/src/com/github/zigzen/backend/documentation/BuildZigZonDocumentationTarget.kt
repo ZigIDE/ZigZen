@@ -3,6 +3,7 @@ package com.github.zigzen.backend.documentation
 
 import com.github.zigzen.psi.ZonIdentifier
 import com.intellij.codeInsight.navigation.targetPresentation
+import com.intellij.lang.documentation.DocumentationMarkup
 import com.intellij.model.Pointer
 import com.intellij.platform.backend.documentation.DocumentationResult
 import com.intellij.platform.backend.documentation.DocumentationTarget
@@ -38,6 +39,10 @@ class BuildZigZonDocumentationTarget(private val element: PsiElement, private va
       else -> return null
     }
 
-    return DocumentationResult.documentation(documentation)
+    return DocumentationResult.documentation(buildString {
+      append(DocumentationMarkup.CONTENT_START)
+      append(documentation)
+      append(DocumentationMarkup.CONTENT_END)
+    })
   }
 }
