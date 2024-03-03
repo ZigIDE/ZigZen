@@ -157,10 +157,10 @@ fn exp(value: anytype) @TypeOf(value) {}
 fn exp2(value: anytype) @TypeOf(value) {}
 
 /// Creates a symbol in the output object file.
-fn export(declaration, comptime options: ExportOptions) void {}
+fn export_(declaration, comptime options: ExportOptions) void {}
 
 /// Creates a reference to an external symbol in the output object file. `T` must be a pointer type.
-fn extern(T: type, comptime options: ExternOptions) T {}
+fn extern_(T: type, comptime options: ExternOptions) T {}
 
 /// Introduces happens-before edges between operations.
 fn fence(order: AtomicOrder) void {}
@@ -202,3 +202,199 @@ fn inComptime() bool {}
 // TODO: figure out proper return type
 /// Converts an integer to another integer while keeping the same numerical value. The return type is the inferred result type.
 fn intCast(int: anytype) T {}
+
+/// Converts `true` to `@as(u1, 1)` and `false` to `@as(u1, 0)`.
+fn intFromBool(value: bool) u1 {}
+
+// TODO: figure out proper return type
+/// Converts an enumeration value into its integer tag type. When a tagged union is passed, the tag value is used as the enumeration value.
+fn intFromEnum(enum_or_tagged_union: anytype) T {}
+
+/// Converts an error to the integer representation of an error.
+fn intFromError(err: anytype) Int(.unsigned, @bitSizeOf(anyerror)) {}
+
+/// Converts value to a `usize` which is the address of the pointer. value can be `*T` or `?*T`.
+fn intFromPtr(value: anytype) usize {}
+
+/// Computes the natural logarithm of a floating point number. Uses a dedicated hardware instruction when available.
+fn log(value: anytype) @TypeOf(value) {}
+
+/// Computes the logarithm to the base 2 of a floating point number. Uses a dedicated hardware instruction when available.
+fn log2(value: anytype) @TypeOf(value) {}
+
+/// Computes the logarithm to the base 10 of a floating point number. Uses a dedicated hardware instruction when available.
+fn log10(value: anytype) @TypeOf(value) {}
+
+/// Returns the maximum value of `a` and `b`. This builtin accepts integers, floats, and vectors of either. In the latter case, the
+/// operation is performed element wise.
+fn max(a: T, b: T) T {}
+
+/// Copies bytes from one region of memory to another.
+fn memcpy(noalias dest, noalias source) void {}
+
+/// Sets all the elements of a memory region to `elem`.
+fn memset(dest, elem) void {}
+
+/// Returns the minimum value of `a` and `b`. This builtin accepts integers, floats, and vectors of either. In the latter case, the operation
+/// is performed element wise.
+fn min(a: T, b: T) T {}
+
+/// Performs modulus division. For unsigned integers this is the same as `numerator % denominator`. Caller guarantees `denominator > 0`,
+/// otherwise the operation will result in a [Remainder Division by Zero](https://ziglang.org/documentation/master/#Remainder-Division-by-Zero)
+/// when runtime safety checks are enabled.
+fn mod(numerator: T, denominator: T) T {}
+
+/// Performs fused multiply-add, similar to `(a * b) + c`, except only rounds once, and is thus more accurate.
+fn mulAdd(comptime T: type, a: T, b: T, c: T) T {}
+
+/// Performs `a * b` and returns a tuple with the result and a possible overflow bit.
+fn mulWithOverflow(a: anytype, b: anytype) struct { @TypeOf(a, b), u1 } {}
+
+/// Returns the byte offset of a field relative to its containing struct.
+fn offsetOf(comptime T: type, comptime field_name: []const u8) comptime_int {}
+
+/// Invokes the panic handler function. By default the panic handler function calls the public panic function exposed in the root source
+/// file, or if there is not one specified, the `default_panic` function from `std/builtin.zig`.
+fn panic(message: []const u8) noreturn {}
+
+/// Counts the number of bits set in an integer - "population count".
+fn popCount(operand: anytype) @TypeOf(operand) {}
+
+/// Tells the compiler to emit a prefetch instruction if supported by the target CPU. If the target CPU does not support the requested
+/// prefetch instruction, this builtin is a no-op. This function has no effect on the behavior of the program, only on the performance
+/// characteristics.
+fn prefetch(ptr: anytype, comptime options: PrefetchOptions) void {}
+
+// TODO: figure out proper return type
+/// Converts a pointer of one type to a pointer of another type. The return type is the inferred result type.
+fn ptrCast(value: anytype) T {}
+
+/// Converts an integer to a pointer. The return type is the inferred result type. Casting an address of `0` to a destination type which
+/// is not optional and does not have the `allowzero` attribute will result in a [Pointer Cast Invalid Null](https://ziglang.org/documentation/master/#Pointer-Cast-Invalid-Null)
+/// panic when runtime safety checks are enabled.
+fn ptrFromInt(address: usize) T {}
+
+/// Performs remainder division. For unsigned integers this is the same as `numerator % denominator`. Caller guarantees `denominator > 0`,
+/// otherwise the operation will result in a [Remainder Division by Zero](https://ziglang.org/documentation/master/#Remainder-Division-by-Zero)
+/// when runtime safety checks are enabled.
+fn rem(numerator: T, denominator: T) T {}
+
+/// Returns the address of the next machine code instruction that will be executed when the current function returns.
+fn returnAddress() usize {}
+
+/// Rounds the given floating point number to an integer, away from zero. Uses a dedicated hardware instruction when available.
+fn round(value: anytype) @TypeOf(value) {}
+
+/// Selects values element-wise from `a` or `b` based on `pred`. If `pred[i]` is `true`, the corresponding element in the result will be
+/// `a[i]` and otherwise `b[i]`.
+fn select(comptime T: type, pred: @Vector(len, bool), a: @Vector(len, T), b: @Vector(len, T)) @Vector(len, T) {}
+
+/// Ensures that a function will have a stack alignment of at least `alignment` bytes.
+fn setAlignStack(comptime alignment: u29) void {}
+
+/// Tells the optimizer that the current function is (or is not) rarely called. This function is only valid within function scope.
+fn setCold(comptime is_cold: bool) void {}
+
+/// Increase the maximum number of backwards branches that compile-time code execution can use before giving up and making a compile error.
+fn setEvalBranchQuota(comptime new_quota: u32) void {}
+
+/// Changes the current scope's rules about how floating point operations are defined.
+fn setFloatMode(comptime mode: FloatMode) void {}
+
+/// Sets whether runtime safety checks are enabled for the scope that contains the function call.
+fn setRuntimeSafety(comptime safety_on: bool) void {}
+
+/// Performs the left shift operation (`<<`). For unsigned integers, the result is [undefined](https://ziglang.org/documentation/master/#undefined)
+/// if any 1 bits are shifted out. For signed integers, the result is [undefined](https://ziglang.org/documentation/master/#undefined) if
+/// any bits that disagree with the resultant sign bit are shifted out.
+fn shlExact(value: T, shift_amt: Log2T) T {}
+
+/// Performs `a << b` and returns a tuple with the result and a possible overflow bit.
+fn shlWithOverflow(a: anytype, shift_amt: Log2T) struct { @TypeOf(a), u1 } {}
+
+/// Performs the right shift operation (`>>`). Caller guarantees that the shift will not shift any 1 bits out.
+fn shrExact(value: T, shift_amt: Log2T) T {}
+
+/// Constructs a new [vector](https://ziglang.org/documentation/master/#Vectors) by selecting elements from `a` and `b` based on `mask`.
+fn shuffle(comptime E: type, a: @Vector(a_len, E), b: @Vector(b_len, E), comptime mask: @Vector(mask_len, i32)) @Vector(mask_len, E) {}
+
+/// Computes the sine trigonometric function on a floating point number in radians. Uses a dedicated hardware instruction when available.
+fn sin(value: anytype) @TypeOf(value) {}
+
+/// This function returns the number of bytes it takes to store `T` in memory. The result is a target-specific compile time constant.
+fn sizeOf(comptime T: type) comptime_int {}
+
+// TODO: figure out proper return type
+/// Produces a vector where each element is the value `scalar`. The return type and thus the length of the vector is inferred.
+fn splat(scalar: anytype) T {}
+
+/// Performs the square root of a floating point number. Uses a dedicated hardware instruction when available.
+fn sqrt(value: anytype) @TypeOf(value) {}
+
+/// Returns a `SourceLocation` struct representing the function's name and location in the source code. This must be called in a function.
+fn src() SourceLocation {}
+
+/// Performs `a - b` and returns a tuple with the result and a possible overflow bit.
+fn subWithOverflow(a: anytype, b: anytype) struct { @TypeOf(a, b), u1 } {}
+
+/// Converts an enum value or union value to a string literal representing the name.
+fn tagName(value: anytype) [:0]const u8 {}
+
+/// Computes the tangent trigonometric function on a floating point number in radians. Uses a dedicated hardware instruction when available.
+fn tan(value: anytype) @TypeOf(value) {}
+
+/// Returns the innermost struct, enum, or union that this function call is inside.
+fn This() type {}
+
+/// Inserts a platform-specific trap/jam instruction which can be used to exit the program abnormally. This may be implemented by explicitly
+/// emitting an invalid instruction which may cause an illegal instruction exception of some sort. Unlike for `@breakpoint()`, execution does
+/// not continue after this point.
+fn trap() noreturn {}
+
+/// Rounds the given floating point number to an integer, towards zero. Uses a dedicated hardware instruction when available.
+fn trunc(value: anytype) @TypeOf(value) {}
+
+// TODO: figure out proper return type
+/// This function truncates bits from an integer type, resulting in a smaller or same-sized integer type. The return type is the inferred
+/// result type.
+fn truncate(integer: anytype) T {}
+
+/// Reifies type information into a type.
+fn Type(comptime info: Type) type {}
+
+/// Provides type reflection.
+fn typeInfo(comptime T: type) Type {}
+
+/// This function returns the string representation of a type, as an array. It is equivalent to a string literal of the type name. The
+/// returned type name is fully qualified with the parent namespace included as part of the type name with a series of dots.
+fn typeName(T: type) *const [N:0]u8 {}
+
+/// A special builtin function that takes any (nonzero) number of expressions as parameters and returns the type of the result, using
+/// [Peer Type Resolution](https://ziglang.org/documentation/master/#Peer-Type-Resolution).
+fn TypeOf(...) type {}
+
+fn unionInit(comptime Union: type, comptime active_field_name: []const u8, init_expr) Union {}
+
+/// Creates [Vectors](https://ziglang.org/documentation/master/#Vectors).
+fn Vector(len: comptime_int, Element: type) type {}
+
+/// Removes the `volatile` qualifier from a pointer.
+fn volatileCast(value: anytype) DestType {}
+
+/// Increases the size of the Wasm memory identified by `index` by `delta` in units of unsigned number of Wasm pages. Note that each Wasm
+/// page is 64KB in size. On success, returns previous memory size; on failure, if the allocation fails, returns `-1`.
+fn wasmMemoryGrow(index: u32, delta: u32) i32 {}
+
+/// Returns the size of the Wasm memory identified by `index` as an unsigned value in units of Wasm pages. Note that each Wasm page is
+/// 64KB in size.
+fn wasmMemorySize(index: u32) u32 {}
+
+/// Returns the index of the work group in the current kernel invocation in dimension `dimension`.
+fn workGroupId(comptime dimension: u32) u32 {}
+
+/// Returns the number of work items that a work group has in dimension `dimension`.
+fn workGroupSize(comptime dimension: u32) u32 {}
+
+/// Returns the index of the work item in the work group in dimension `dimension`. This function returns values between `0` (inclusive)
+/// and `@workGroupSize(dimension)` (exclusive).
+fn workItemId(comptime dimension: u32) u32 {}
