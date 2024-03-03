@@ -11,7 +11,9 @@ class ZigBraceMatcher : PairedBraceMatcher {
   @Suppress("CompanionObjectInExtension")
   companion object {
     val PAIRS = arrayOf(
-      BracePair(ZigTypes.LBRACE, ZigTypes.RBRACE, true)
+      BracePair(ZigTypes.LBRACE, ZigTypes.RBRACE, true),
+      BracePair(ZigTypes.LBRACKET, ZigTypes.RBRACKET, false),
+      BracePair(ZigTypes.LPAREN, ZigTypes.RPAREN, false)
     )
   }
 
