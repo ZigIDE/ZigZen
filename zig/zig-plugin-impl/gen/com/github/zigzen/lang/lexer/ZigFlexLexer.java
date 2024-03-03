@@ -1060,7 +1060,7 @@ class ZigFlexLexer implements FlexLexer {
           // fall through
           case 167: break;
           case 34:
-            { yybegin(YYINITIAL); return BAD_CHARACTER;
+            { yybegin(YYINITIAL); return BAD_STRING;
             }
           // fall through
           case 168: break;
