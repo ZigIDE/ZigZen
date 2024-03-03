@@ -1,7 +1,7 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.github.zigzen.lang
 
-import com.github.zigzen.lang.psi.ZigTypes
+import com.github.zigzen.psi.ZigTypes
 import com.intellij.lang.BracePair
 import com.intellij.lang.PairedBraceMatcher
 import com.intellij.psi.PsiFile
