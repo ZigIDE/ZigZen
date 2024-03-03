@@ -5,22 +5,26 @@
   <vendor>JetBrains</vendor>
 
   <extensions defaultExtensionNs="com.intellij">
+    <annotator language="ZIG"
+               implementationClass="com.github.zigzen.lang.annotation.ZigAnnotator"/>
+    <colorSettingsPage implementation="com.github.zigzen.openapi.options.ZigColorSettingsPage"/>
     <fileType language="ZIG"
               extensions="zig"
               fieldName="INSTANCE"
               implementationClass="com.github.zigzen.openapi.ZigFileType"
               name="Zig File"/>
-    <lang.parserDefinition language="ZIG"
-                           implementationClass="com.github.zigzen.lang.parser.ZigParserDefinition"/>
-    <lang.syntaxHighlighterFactory language="ZIG"
-                                   implementationClass="com.github.zigzen.openapi.fileTypes.ZigSyntaxHighlighterFactory"/>
-    <lang.braceMatcher language="ZIG"
-                       implementationClass="com.github.zigzen.lang.ZigBraceMatcher"/>
-    <lang.commenter language="ZIG"
-                    implementationClass="com.github.zigzen.lang.ZigCommenter"/>
-    <colorSettingsPage implementation="com.github.zigzen.openapi.options.ZigColorSettingsPage"/>
-    <annotator language="ZIG"
-               implementationClass="com.github.zigzen.lang.annotation.ZigAnnotator"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.intellij.lang">
+    <braceMatcher language="ZIG"
+                  implementationClass="com.github.zigzen.lang.ZigBraceMatcher"/>
+    <commenter language="ZIG"
+               implementationClass="com.github.zigzen.lang.ZigCommenter"/>
+    <parserDefinition language="ZIG"
+                      implementationClass="com.github.zigzen.lang.parser.ZigParserDefinition"/>
+    <quoteHandler language="ZIG" implementationClass="com.github.zigzen.codeInsight.editorActions.ZigQuoteHandler"/>
+    <syntaxHighlighterFactory language="ZIG"
+                              implementationClass="com.github.zigzen.openapi.fileTypes.ZigSyntaxHighlighterFactory"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij.completion">
