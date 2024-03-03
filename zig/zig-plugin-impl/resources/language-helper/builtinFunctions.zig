@@ -30,3 +30,52 @@ fn as(comptime T: type, expression) T {}
 
 /// Dereferences atomically a pointer to a `T` and returns the value.
 fn atomicLoad(comptime T: type, ptr: *const T, comptime ordering: AtomicOrder) T {}
+
+/// Dereferences a pointer to a `T` and atomically modifies the value and returns the previous value.
+fn atomicRmw(comptime T: type, ptr: *const T, comptime ordering: AtomicOrder) T {}
+
+/// Dereferences a pointer to a `T` and atomically stores the given value.
+fn atomicStore(comptime T: type, ptr: *T, value: T, comptime ordering: AtomicOrder) void {}
+
+/// Converts a value of one type to another type. The return type is the inferred result type.
+fn bitCast(value: anytype) @TypeOf(value) {}
+
+/// Returns the bit offset of a field relative to its containing struct.
+fn bitOffsetOf(comptime T: type, comptime field_name: []const u8) comptime_int {}
+
+/// Reverses the bitpattern of an integer value, including the sign bit if applicable.
+fn bitReverse(integer: anytype) T {}
+
+/// Returns the number of bits it takes to store `T` in memory if the type were a field in a packed struct orunion. The
+/// result is a target-specific compile time constant.
+fn bitSizeOf(comptime T: type) comptime_int {}
+
+/// Swaps the byte order of the integer. This converts a big endian integer to a little endian integer, and converts
+/// a little endian integer to a big endian integer.
+fn byteSwap(operand: anytype) T {}
+
+// TODO: figure out proper return type
+/// Calls a function, in the same way that invoking an expression with parentheses does.
+fn call(modifier: CallModifier, function: anytype, args: anytype) @TypeOf(function) {}
+
+/// Returns the smallest integral value not less than the given floating point number. Uses a dedicated hardware
+/// instruction when available.
+fn ceil(value: anytype) @TypeOf(value) {}
+
+/// Parses C code and imports the functions, types, variables, and compatible macro definitions into a new empty struct
+/// type, and then returns that type.
+fn cImport(expression) type {}
+
+/// Appends `#include <path>\n` to the `c_import` temporary buffer.
+fn cInclude(comptime path: []const u8) void {}
+
+/// Counts the number of most-significant (leading in a big-endian sense) zeroes in an integer - "count leading zeroes".
+fn clz(operand: anytype) @TypeOf(operand) {}
+
+/// Performs a strong atomic compare-and-exchange operation, returning `null` if the current value is not the given
+/// expected value.
+fn cmpxchgStrong(comptime T: type, ptr: *T, expected_value: T, new_value: T, success_order: AtomicOrder, fail_order: AtomicOrder) ?T {}
+
+/// Performs a weak atomic compare-and-exchange operation, returning `null` if the current value is not the given
+/// expected value.
+fn cmpxchgWeak(comptime T: type, ptr: *T, expected_value: T, new_value: T, success_order: AtomicOrder, fail_order: AtomicOrder) ?T {}
