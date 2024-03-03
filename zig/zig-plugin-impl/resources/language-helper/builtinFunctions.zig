@@ -46,7 +46,7 @@ fn bitOffsetOf(comptime T: type, comptime field_name: []const u8) comptime_int {
 /// Reverses the bit pattern of an integer value, including the sign bit if applicable.
 fn bitReverse(integer: anytype) T {}
 
-/// Returns the number of bits it takes to store `T` in memory if the type were a field in a packed struct orunion. The
+/// Returns the number of bits it takes to store `T` in memory if the type were a field in a packed struct or union. The
 /// result is a target-specific compile time constant.
 fn bitSizeOf(comptime T: type) comptime_int {}
 
@@ -56,7 +56,7 @@ fn byteSwap(operand: anytype) T {}
 
 // TODO: figure out proper return type
 /// Calls a function, in the same way that invoking an expression with parentheses does.
-fn call(modifier: CallModifier, function: anytype, args: anytype) @TypeOf(function) {}
+fn call(modifier: CallModifier, function: anytype, args: anytype) T {}
 
 /// Returns the smallest integral value not less than the given floating point number. Uses a dedicated hardware
 /// instruction when available.
@@ -91,7 +91,7 @@ fn compileError(comptime msg: []const u8) noreturn {}
 fn compileLog(args: VaList) void {}
 
 /// Removes `const` qualifier from a pointer.
-fn constCast(value: anytype) DsetType {}
+fn constCast(value: anytype) DestType {}
 
 /// Computes the cosine trigonometric function on a floating point number in radians. Uses a dedicated hardware
 /// instruction when available.
@@ -131,3 +131,74 @@ fn divTrunc(numerator: T, denominator: T) T {}
 /// the file given by `path`. The contents of the array are the contents of the file. This is equivalent to a string
 /// literal with the file contents.
 fn embedFile(comptime path: []const u8) *const [N:0]u8 {}
+
+// TODO: figure out proper return type
+/// Converts an integer into an [enum](https://ziglang.org/documentation/master/#enum) value. The return type is the inferred result type.
+fn enumFromInt(integer: anytype) T {}
+
+// TODO: figure out proper return type
+/// Converts an error set or error union value from one error set to another error set. The return type is the inferred result type.
+fn errorCast(value: anytype) T {}
+
+/// Converts from the integer representation of an error into [The Global Error Set](https://ziglang.org/documentation/master/#The-Global-Error-Set) type.
+fn errorFromInt(value: Int(.unsigned, @bitSizeOf(anyerror))) anyerror {}
+
+/// Returns the string representation of an error. The string representation of `error.OutOfMem` is `"OutOfMem"`.
+fn errorName(err: anyerror) [:0]const u8 {}
+
+/// Returns a stack trace object if the binary is built with error return tracing, and this function is invoked in a function that calls
+/// a function with an error or error union return type; otherwise returns `null`.
+fn errorReturnTrace() ?*StackTrace {}
+
+/// Computes the base-e exponential function on a floating point number. Uses a dedicated hardware instruction when available.
+fn exp(value: anytype) @TypeOf(value) {}
+
+/// Computes the base-2 exponential function on a floating point number. Uses a dedicated hardware instruction when available.
+fn exp2(value: anytype) @TypeOf(value) {}
+
+/// Creates a symbol in the output object file.
+fn export(declaration, comptime options: ExportOptions) void {}
+
+/// Creates a reference to an external symbol in the output object file. `T` must be a pointer type.
+fn extern(T: type, comptime options: ExternOptions) T {}
+
+/// Introduces happens-before edges between operations.
+fn fence(order: AtomicOrder) void {}
+
+// TODO: figure out proper return type
+/// Performs field access by a compile-time string. Works on both fields and declarations.
+fn field(lhs: anytype, comptime field_name: []const u8) T {}
+
+/// Returns the base pointer of a struct given a pointer to a field in the struct.
+fn fieldParentPtr(comptime ParentType: type, comptime field_name: []const u8, field_ptr: *T) *ParentType {}
+
+// TODO: figure out proper return type
+/// Convert from one float type to another. This cast is safe, but may cause the numeric value to lose precision. The return type is the
+/// inferred result type.
+fn floatCast(value: anytype) T {}
+
+// TODO: figure out proper return type
+/// Converts an integer to the closest floating point representation. The return type is the inferred result type.
+fn floatFromInt(int: anytype) T {}
+
+/// Returns the largest integral value not greater than the given floating point number. Uses a dedicated hardware instruction when available.
+fn floor(value: anytype) @TypeOf(value) {}
+
+/// Returns the base pointer of the current stack frame.
+fn frameAddress() usize {}
+
+/// Returns whether or not a [container](https://ziglang.org/documentation/master/#Containers) has a declaration matching `name`.
+fn hasDecl(comptime Container: type, comptime name: []const u8) bool {}
+
+/// Returns whether the field name of a struct, union, or enum exists.
+fn hasField(comptime Container: type, comptime name: []const u8) bool {}
+
+/// Finds a Zig file corresponding to `path` and adds it to the build, if it is not already added.
+fn import(comptime path: []const u8) type {}
+
+/// Returns whether the builtin was run in a comptime context. The result is a compile-time constant.
+fn inComptime() bool {}
+
+// TODO: figure out proper return type
+/// Converts an integer to another integer while keeping the same numerical value. The return type is the inferred result type.
+fn intCast(int: anytype) T {}
