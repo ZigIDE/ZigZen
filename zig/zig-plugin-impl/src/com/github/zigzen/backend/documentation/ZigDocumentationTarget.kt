@@ -1,11 +1,9 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.github.zigzen.backend.documentation
 
-import com.github.zigzen.lang.ZigLanguage
 import com.github.zigzen.psi.ZigBuiltinFunctionPsiElementProvider
 import com.github.zigzen.psi.ZigTypes
 import com.intellij.codeInsight.navigation.targetPresentation
-import com.intellij.markdown.utils.doc.DocMarkdownToHtmlConverter
 import com.intellij.model.Pointer
 import com.intellij.platform.backend.documentation.DocumentationResult
 import com.intellij.platform.backend.documentation.DocumentationTarget
@@ -35,6 +33,6 @@ class ZigDocumentationTarget(private val element: PsiElement, private val origin
       else -> return null
     }
 
-    return DocumentationResult.documentation(DocMarkdownToHtmlConverter.convert(element.project, docs, ZigLanguage.INSTANCE))
+    return DocumentationResult.documentation(docs)
   }
 }
