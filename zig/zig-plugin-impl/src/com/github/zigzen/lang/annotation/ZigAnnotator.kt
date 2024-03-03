@@ -6,7 +6,7 @@ import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.PsiElement
-import com.github.zigzen.lang.psi.*
+import com.github.zigzen.psi.*
 import com.github.zigzen.openapi.fileTypes.ZigSyntaxHighlighter
 import java.util.regex.Pattern
 

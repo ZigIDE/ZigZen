@@ -3,7 +3,7 @@ package com.github.zigzen.lang.parser;
 
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static com.github.zigzen.lang.psi.ZigTypes.*;
+import static com.github.zigzen.psi.ZigTypes.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
