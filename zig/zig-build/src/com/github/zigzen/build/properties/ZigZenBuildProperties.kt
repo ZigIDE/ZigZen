@@ -55,9 +55,9 @@ class ZigZenBuildProperties(private val home: Path) : JetBrainsProductProperties
     "ZZ-$buildNumber"
 
   override fun createWindowsCustomizer(projectHome: String): WindowsDistributionCustomizer
-    = ZigZenWindowsDistributionCustomer()
+    = ZigZenWindowsDistributionCustomizer()
 
-  override fun createLinuxCustomizer(projectHome: String): LinuxDistributionCustomizer? = null
+  override fun createLinuxCustomizer(projectHome: String): LinuxDistributionCustomizer = ZigZenLinuxDistributionCustomizer()
 
   override fun createMacCustomizer(projectHome: String): MacDistributionCustomizer? = null
 
@@ -65,7 +65,14 @@ class ZigZenBuildProperties(private val home: Path) : JetBrainsProductProperties
     return "ZZ${appInfo.majorVersion}.${appInfo.minorVersionMainPart}"
   }
 
-  inner class ZigZenWindowsDistributionCustomer : WindowsDistributionCustomizer() {
+  inner class ZigZenLinuxDistributionCustomizer : LinuxDistributionCustomizer() {
+    init {
+      iconPngPath = "${home}/zig/zig-build/conf/linux/images/zigzen.png"
+      iconPngPathForEAP = "${home}/zig/zig-build/conf/linux/images/zigzen-eap.png"
+    }
+  }
+
+  inner class ZigZenWindowsDistributionCustomizer : WindowsDistributionCustomizer() {
     init {
       fileAssociations = listOf("zig", "zon")
       icoPath = "${home}/zig/zig-build/conf/win/images/zigzen.ico"
