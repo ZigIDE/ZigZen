@@ -11,7 +11,9 @@ import com.intellij.util.ProcessingContext
 
 class ZigBuiltinFunctionCompletionProvider : CompletionProvider<CompletionParameters>() {
   override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-    result.addAllElements(ZigBuiltinFunctionPsiElementProvider.getBuiltinFunctionNames().map { name ->
+    val provider = ZigBuiltinFunctionPsiElementProvider.createInstance(parameters.editor.project ?: return)
+
+    result.addAllElements(provider.getBuiltinFunctionNames().map { name ->
       LookupElementBuilder
         .create("$name()")
         .withPresentableText(name)
