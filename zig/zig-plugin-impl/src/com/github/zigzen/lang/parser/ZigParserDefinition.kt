@@ -4,8 +4,8 @@ package com.github.zigzen.lang.parser
 import com.github.zigzen.lang.ZigLanguage
 import com.github.zigzen.lang.lexer.ZigLexerAdapter
 import com.github.zigzen.extapi.psi.ZigPsiFile
-import com.github.zigzen.lang.psi.ZigTokenSets
-import com.github.zigzen.lang.psi.ZigTypes
+import com.github.zigzen.psi.ZigTokenSets
+import com.github.zigzen.psi.ZigTypes
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.openapi.project.Project

@@ -22,13 +22,13 @@
 
   psiClassPrefix="Zig"
   psiImplClassSuffix="Impl"
-  psiPackage="com.github.zigzen.lang.psi"
-  psiImplPackage="com.github.zigzen.lang.psi.impl"
+  psiPackage="com.github.zigzen.psi"
+  psiImplPackage="com.github.zigzen.psi.impl"
 
-  elementTypeHolderClass="com.github.zigzen.lang.psi.ZigTypes"
-  elementTypeClass="com.github.zigzen.lang.psi.ZigElementType"
+  elementTypeHolderClass="com.github.zigzen.psi.ZigTypes"
+  elementTypeClass="com.github.zigzen.psi.ZigElementType"
 
-  tokenTypeClass="com.github.zigzen.lang.psi.ZigTokenType"
+  tokenTypeClass="com.github.zigzen.psi.ZigTokenType"
   generateTokenAccessors = true
   tokens=[
 
