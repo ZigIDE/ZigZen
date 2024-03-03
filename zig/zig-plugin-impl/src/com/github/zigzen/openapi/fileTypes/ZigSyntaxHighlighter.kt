@@ -2,7 +2,7 @@
 package com.github.zigzen.openapi.fileTypes
 
 import com.github.zigzen.lang.lexer.ZigLexerAdapter
-import com.github.zigzen.lang.psi.ZigTypes
+import com.github.zigzen.psi.ZigTypes
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
