@@ -20,7 +20,7 @@ import com.intellij.psi.tree.IElementType;
 
 import static com.intellij.psi.TokenType.WHITE_SPACE;
 import static com.intellij.psi.TokenType.BAD_CHARACTER;
-import static com.github.zigzen.lang.psi.ZigTypes.*;
+import static com.github.zigzen.psi.ZigTypes.*;
 
 %%
 
