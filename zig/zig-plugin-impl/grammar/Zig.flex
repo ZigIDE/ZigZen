@@ -272,7 +272,7 @@ BUILTINIDENTIFIER="@"[A-Za-z_][A-Za-z0-9_]*
 
 <YYINITIAL>      {BUILTINIDENTIFIER}      { return BUILTINIDENTIFIER; }
 
-<UNT_QUOT>       [^\n]*{CRLF}             { yybegin(YYINITIAL); return BAD_CHARACTER; }
+<UNT_QUOT>       [^\n]*{CRLF}             { yybegin(YYINITIAL); return BAD_STRING; }
 
 <YYINITIAL>      {WHITE_SPACE}            { return WHITE_SPACE; }
 
