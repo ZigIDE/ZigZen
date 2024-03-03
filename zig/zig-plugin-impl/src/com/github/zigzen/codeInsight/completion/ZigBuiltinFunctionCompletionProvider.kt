@@ -15,12 +15,13 @@ class ZigBuiltinFunctionCompletionProvider : CompletionProvider<CompletionParame
 
     result.addAllElements(provider.getBuiltinFunctionNames().map { name ->
       LookupElementBuilder
-        .create("$name()")
+        .create("${name.trimEnd { it == '_' }}()")
         .withPresentableText(name)
         .withIcon(AllIcons.Nodes.Function)
         .withInsertHandler { context, _ ->
           context.editor.caretModel.moveCaretRelatively(-1, 0, false, false, true)
         }
+        .withPsiElement(provider.getBuiltinIdentifierByName(name))
     }.toList())
   }
 }
