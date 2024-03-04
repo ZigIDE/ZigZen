@@ -15,6 +15,10 @@
               name="Zig File"/>
   </extensions>
 
+  <extensions defaultExtensionNs="com.intellij.codeInsight">
+    <parameterNameHints language="ZIG" implementationClass="com.github.zigzen.codeInsight.hints.ZigInlayParameterHintsProvider"/>
+  </extensions>
+
   <extensions defaultExtensionNs="com.intellij.lang">
     <braceMatcher language="ZIG"
                   implementationClass="com.github.zigzen.lang.ZigBraceMatcher"/>
