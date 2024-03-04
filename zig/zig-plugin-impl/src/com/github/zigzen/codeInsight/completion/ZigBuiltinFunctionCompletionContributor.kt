@@ -2,6 +2,7 @@
 package com.github.zigzen.codeInsight.completion
 
 import com.github.zigzen.extapi.psi.ZigPsiFile
+import com.github.zigzen.psi.ZigTypes
 import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.patterns.PlatformPatterns
@@ -12,6 +13,7 @@ class ZigBuiltinFunctionCompletionContributor : CompletionContributor() {
       CompletionType.BASIC,
       PlatformPatterns
         .psiElement()
+        .withElementType(ZigTypes.BUILTINIDENTIFIER)
         .inFile(PlatformPatterns.psiFile(ZigPsiFile::class.java)),
       ZigBuiltinFunctionCompletionProvider(),
     )
