@@ -15,6 +15,7 @@ class ZigBuiltinFunctionCompletionProvider : CompletionProvider<CompletionParame
 
     result.addAllElements(provider.getBuiltinFunctionNames().map { name ->
       val fnProto = provider.getBuiltinFunctionAsFnProtoByName(name)!!
+      val element = provider.getBuiltinIdentifierByName(name)
 
       LookupElementBuilder
         .create("${name.trimEnd { it == '_' }}()")
@@ -25,7 +26,7 @@ class ZigBuiltinFunctionCompletionProvider : CompletionProvider<CompletionParame
         .withInsertHandler { context, _ ->
           context.editor.caretModel.moveCaretRelatively(-1, 0, false, false, true)
         }
-        .withPsiElement(provider.getBuiltinIdentifierByName(name))
+        .withPsiElement(element)
     }.toList())
   }
 }
