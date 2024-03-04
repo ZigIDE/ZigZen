@@ -14,9 +14,13 @@ class ZigBuiltinFunctionCompletionProvider : CompletionProvider<CompletionParame
     val provider = ZigBuiltinFunctionPsiElementProvider.createInstance(parameters.editor.project ?: return)
 
     result.addAllElements(provider.getBuiltinFunctionNames().map { name ->
+      val fnProto = provider.getBuiltinFunctionAsFnProtoByName(name)!!
+
       LookupElementBuilder
         .create("${name.trimEnd { it == '_' }}()")
         .withPresentableText(name)
+        .withTailText("(${fnProto.paramDeclList.text})")
+        .withTypeText(fnProto.expr.text)
         .withIcon(AllIcons.Nodes.Function)
         .withInsertHandler { context, _ ->
           context.editor.caretModel.moveCaretRelatively(-1, 0, false, false, true)
