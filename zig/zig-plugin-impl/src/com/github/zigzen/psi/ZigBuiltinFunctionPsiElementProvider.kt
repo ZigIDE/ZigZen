@@ -68,7 +68,7 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
   }
 
   private fun createFile(text: String): ZigPsiFile = PsiFileFactory.getInstance(project).createFileFromText(
-    "psiElementFactory.zig",
+    "builtinFunctionElementFactory.zig",
     ZigFileType.INSTANCE,
     text,
     LocalTimeCounter.currentTime(),
