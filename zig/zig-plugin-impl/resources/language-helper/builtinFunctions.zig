@@ -22,52 +22,217 @@ fn alignCast(ptr: anytype) @TypeOf(ptr) {}
 
 /// Returns the number of bytes that this type should be aligned to for the current target to match the C ABI. When
 /// the child type of a pointer has this alignment, the alignment can be omitted from the type.
+///
+/// ```zig
+/// const assert = @import("std").debug.assert;
+/// comptime {
+///    assert(*u32 == *align(@alignOf(u32)) u32);
+/// }
+/// ```
+///
+/// The result is a target-specific compile time constant. It is guaranteed to be less than or equal to `@sizeOf(T)`.
+///
+/// See also:
+/// - [Alignment](https://ziglang.org/documentation/master/#Alignment)
 fn alignOf(comptime T: type) comptime_int {}
 
-/// Performs Type Coercion. This cast is allowed when the conversion is unambiguous and safe, and is the preferred
-/// way to convert between types, whenever possible.
+/// Performs [Type Coercion](https://ziglang.org/documentation/master/#Type-Coercion). This cast is allowed when the
+/// conversion is unambiguous and safe, and is the preferred way to convert between types, whenever possible.
 fn as(comptime T: type, expression) T {}
 
 /// Dereferences atomically a pointer to a `T` and returns the value.
+///
+/// `T` must be a pointer, a `bool`, a float, an integer or an enum.
+///
+/// `AtomicOrder` can be found with `@import("std").builtin.AtomicOrder`.
+///
+/// See also:
+/// - `@atomicStore`
+/// - `@atomicLoad`
+/// - `@fence`
+/// - `@cmpxchgWeak`
+/// - `@cmpxchgStrong`
 fn atomicLoad(comptime T: type, ptr: *const T, comptime ordering: AtomicOrder) T {}
 
 /// Dereferences a pointer to a `T` and atomically modifies the value and returns the previous value.
+///
+/// `T` must be a pointer, a `bool`, a float, an integer or an enum.
+///
+/// `AtomicOrder` can be found with `@import("std").builtin.AtomicOrder`.
+///
+/// `AtomicRmwOp` can be found with `@import("std").builtin.AtomicRmwOp`.
+///
+/// See also:
+/// - `@atomicStore`
+/// - `@atomicLoad`
+/// - `@fence`
+/// - `@cmpxchgWeak`
+/// - `@cmpxchgStrong`
 fn atomicRmw(comptime T: type, ptr: *const T, comptime ordering: AtomicOrder) T {}
 
 /// Dereferences a pointer to a `T` and atomically stores the given value.
+///
+/// `T` must be a pointer, a `bool`, a float, an integer or an enum.
+///
+/// `AtomicOrder` can be found with `@import("std").builtin.AtomicOrder`.
+///
+/// See also:
+/// - `@atomicStore`
+/// - `@atomicLoad`
+/// - `@fence`
+/// - `@cmpxchgWeak`
+/// - `@cmpxchgStrong`
 fn atomicStore(comptime T: type, ptr: *T, value: T, comptime ordering: AtomicOrder) void {}
 
 /// Converts a value of one type to another type. The return type is the inferred result type.
+///
+/// Asserts that `@sizeOf(@TypeOf(value)) == @sizeOf(DestType)`.
+///
+/// Asserts that `@typeInfo(DestType) != .Pointer`. Use `@ptrCast` or `@ptrFromInt` if you need this.
+///
+/// Can be used for these things for example:
+/// - Convert `f32` to `u32` bits
+/// - Convert `i32` to `u32` preserving twos complement
+///
+/// Works at compile-time if `value` is known at compile time. It's a compile error to bitcast a value of undefined
+/// layout; this means that, besides the restriction from types which possess dedicated casting builtins (enums,
+/// pointers, error sets), bare structs, error unions, slices, optionals, and any other type without a well-defined
+/// memory layout, also cannot be used in this operation.
 fn bitCast(value: anytype) @TypeOf(value) {}
 
 /// Returns the bit offset of a field relative to its containing struct.
+///
+/// For non [packed structs](https://ziglang.org/documentation/master/#packed-struct), this will always be divisible
+/// by `8`. For packed structs, non-byte-aligned fields will share a byte offset, but they will have different bit
+/// offsets.
+///
+/// See also:
+/// - `@offsetOf`
 fn bitOffsetOf(comptime T: type, comptime field_name: []const u8) comptime_int {}
 
 /// Reverses the bit pattern of an integer value, including the sign bit if applicable.
+///
+/// `@TypeOf(anytype)` accepts any integer type or integer vector type.
+///
+/// For example `0b10110110` (`u8 = 182`, `i8 = -74`) becomes `0b01101101` (`u8 = 109`, `i8 = 109`).
 fn bitReverse(integer: anytype) T {}
 
 /// Returns the number of bits it takes to store `T` in memory if the type were a field in a packed struct or union. The
 /// result is a target-specific compile time constant.
+///
+/// This function measures the size at runtime. For types that are disallowed at runtime, such as `comptime_int` and
+/// `type`, the result is `0`.
+///
+/// See also:
+/// - `@sizeOf`
+/// - `@typeInfo`
 fn bitSizeOf(comptime T: type) comptime_int {}
+
+/// This function inserts a platform-specific debug trap instruction which causes debuggers to break there. Unlike for
+/// `@trap()`, execution may continue after this point if the program is resumed.
+///
+/// This function is only valid within function scope.
+///
+/// See also:
+/// - `@trap`
+fn breakpoint() void {}
 
 /// Swaps the byte order of the integer. This converts a big endian integer to a little endian integer, and converts
 /// a little endian integer to a big endian integer.
+///
+/// `@TypeOf(operand)` must be an integer type or an integer vector type with bit count evenly divisible by 8.
+///
+/// `operand` may be an [integer](https://ziglang.org/documentation/master/#Integers) or [vector](https://ziglang.org/documentation/master/#Vectors).
+///
+/// Note that for the purposes of memory layout with respect to endianness, the integer type should be related to the
+/// number of bytes reported by `@sizeOf` bytes. This is demonstrated with `u24`. `@sizeOf(u24) == 4`, which means that
+/// a `u24` stored in memory takes 4 bytes, and those 4 bytes are what are swapped on a little vs big endian system. On
+/// the other hand, if `T` is specified to be `u24`, then only 3 bytes are reversed.
 fn byteSwap(operand: anytype) T {}
 
 // TODO: figure out proper return type
-/// Calls a function, in the same way that invoking an expression with parentheses does.
+/// Calls a function, in the same way that invoking an expression with parentheses does:
+///
+/// ```zig
+/// const expect = @import("std").testing.expect;
+///
+/// test "noinline function call" {
+///    try expect(@call(.auto, add, .{3, 9}) == 12);
+/// }
+///
+/// fn add(a: i32, b: i32) i32 {
+///    return a + b;
+/// }
+/// ```
+///
+/// `@call` allows more flexibility than normal function call syntax does. The `CallModifier` enum is reproduced here:
+///
+/// ```zig
+/// pub const CallModifier = enum {
+///    /// Equivalent to function call syntax.
+///    auto,
+///
+///    /// Equivalent to async keyword used with function call syntax.
+///    async_kw,
+///
+///    /// Prevents tail call optimization. This guarantees that the return
+///    /// address will point to the callsite, as opposed to the callsite's
+///    /// callsite. If the call is otherwise required to be tail-called
+///    /// or inlined, a compile error is emitted instead.
+///    never_tail,
+///
+///    /// Guarantees that the call will not be inlined. If the call is
+///    /// otherwise required to be inlined, a compile error is emitted instead.
+///    never_inline,
+///
+///    /// Asserts that the function call will not suspend. This allows a
+///    /// non-async function to call an async function.
+///    no_async,
+///
+///    /// Guarantees that the call will be generated with tail call optimization.
+///    /// If this is not possible, a compile error is emitted instead.
+///    always_tail,
+///
+///    /// Guarantees that the call will inlined at the callsite.
+///    /// If this is not possible, a compile error is emitted instead.
+///    always_inline,
+///
+///    /// Evaluates the call at compile-time. If the call cannot be completed at
+///    /// compile-time, a compile error is emitted instead.
+///    compile_time,
+///};
 fn call(modifier: CallModifier, function: anytype, args: anytype) T {}
 
 /// Returns the smallest integral value not less than the given floating point number. Uses a dedicated hardware
 /// instruction when available.
 fn ceil(value: anytype) @TypeOf(value) {}
 
+/// Appends `#define $name $value` to the `@cImport` temporary buffer.
+///
+/// This function can only occur inside `@cImport`.
+///
+/// To define without a value, like this:
+///
+/// ```c
+/// #define _GNU_SOURCE
+/// ```
+/// Use the void value, like this:
+///
+/// ```zig
+/// @cDefine("_GNU_SOURCE", {})
+/// ```
+///
+/// See also:
+/// - [Import from C Header File](https://ziglang.org/documentation/master/#Import-from-C-Header-File)
+/// - `@cInclude`
+/// - `@cImport`
+/// - `@cUndef`
+/// - `void`
+fn cDefine(comptime name: []const u8, value) void {}
+
 /// Parses C code and imports the functions, types, variables, and compatible macro definitions into a new empty struct
 /// type, and then returns that type.
 fn cImport(expression) type {}
-
-/// Appends `#define $name $value` to the `@cImport` temporary buffer.
-fn cDefine(comptime name: []const u8, value) void {}
 
 /// Appends `#include <$path>\n` to the `@cImport` temporary buffer.
 fn cInclude(comptime path: []const u8) void {}
@@ -245,12 +410,17 @@ fn min(a: T, b: T) T {}
 fn mod(numerator: T, denominator: T) T {}
 
 /// Performs fused multiply-add, similar to `(a * b) + c`, except only rounds once, and is thus more accurate.
+///
+/// Supports [Floats](https://ziglang.org/documentation/master/#Floats) and [Vectors](https://ziglang.org/documentation/master/#Vectors) of floats.
 fn mulAdd(comptime T: type, a: T, b: T, c: T) T {}
 
 /// Performs `a * b` and returns a tuple with the result and a possible overflow bit.
 fn mulWithOverflow(a: anytype, b: anytype) struct { @TypeOf(a, b), u1 } {}
 
 /// Returns the byte offset of a field relative to its containing struct.
+///
+/// See also:
+/// - `@bitOffsetOf`
 fn offsetOf(comptime T: type, comptime field_name: []const u8) comptime_int {}
 
 /// Invokes the panic handler function. By default the panic handler function calls the public panic function exposed in the root source

@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface ZigPrimaryTypeExpr extends ZigExpr {
 
   @Nullable
+  ZigBuiltinIdentifier getBuiltinIdentifier();
+
+  @Nullable
   ZigContainerDecl getContainerDecl();
 
   @Nullable
@@ -27,9 +30,6 @@ public interface ZigPrimaryTypeExpr extends ZigExpr {
 
   @Nullable
   ZigStringLiteral getStringLiteral();
-
-  @Nullable
-  PsiElement getBuiltinidentifier();
 
   @Nullable
   PsiElement getCharLiteral();

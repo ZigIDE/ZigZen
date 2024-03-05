@@ -107,6 +107,10 @@ public class ZigVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitBuiltinIdentifier(@NotNull ZigBuiltinIdentifier o) {
+    visitPsiElement(o);
+  }
+
   public void visitByteAlign(@NotNull ZigByteAlign o) {
     visitPsiElement(o);
   }

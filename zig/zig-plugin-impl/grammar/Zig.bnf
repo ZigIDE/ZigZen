@@ -289,7 +289,7 @@ SuffixExpr
   | PrimaryTypeExpr (SuffixOp | FnCallArguments)*
 
 PrimaryTypeExpr
-::= BUILTINIDENTIFIER FnCallArguments
+::= BuiltinIdentifier FnCallArguments
   | CHAR_LITERAL
   | ContainerDecl
   | DOT IDENTIFIER
@@ -511,5 +511,7 @@ StringList ::= (StringLiteral COMMA)* StringLiteral?
 ParamDeclList ::= (ParamDecl COMMA)* ParamDecl?
 
 ExprList ::= (Expr COMMA)* Expr?
+
+BuiltinIdentifier ::= BUILTINIDENTIFIER
 
 StringLiteral ::= STRING_LITERAL_SINGLE | STRING_LITERAL_MULTI
