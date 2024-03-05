@@ -26,9 +26,8 @@ class BuildZigZonDependencyFieldCompletionProvider : CompletionProvider<Completi
     (allDependencyFields - struct.definedFields).forEach {
       result.addElement(
         LookupElementBuilder
-          .create(it)
-          .withIcon(AllIcons.Nodes.Field)
-          .withPsiElement(ZonElementFactory.createIdentifier(parameters.originalFile.project, it)))
+          .createWithSmartPointer(it, ZonElementFactory.createIdentifier(parameters.originalFile.project, it))
+          .withIcon(AllIcons.Nodes.Field))
     }
   }
 }

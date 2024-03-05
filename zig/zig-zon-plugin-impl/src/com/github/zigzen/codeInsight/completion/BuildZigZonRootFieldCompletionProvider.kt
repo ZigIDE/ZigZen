@@ -26,9 +26,8 @@ class BuildZigZonRootFieldCompletionProvider : CompletionProvider<CompletionPara
     (allRootFields - struct.definedFields).forEach {
       result.addElement(
         LookupElementBuilder
-          .create(it)
+          .createWithSmartPointer(it, ZonElementFactory.createIdentifier(parameters.originalFile.project, it))
           .withIcon(AllIcons.Nodes.Field)
-          .withPsiElement(ZonElementFactory.createIdentifier(parameters.originalFile.project, it))
       )
     }
   }
