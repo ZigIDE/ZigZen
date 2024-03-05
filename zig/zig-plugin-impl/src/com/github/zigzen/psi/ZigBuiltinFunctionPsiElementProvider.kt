@@ -41,7 +41,7 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
     .children[0]
     .children[0]
     .childrenOfType<ZigPrimaryTypeExpr>()[0]
-    .builtinidentifier
+    .builtinIdentifier
 
   fun getDocumentationForBuiltinFunction(name: String): String? {
     val sibling = FN_PROTOS.find { it.identifier?.text == name }?.parent?.parent?.prevSibling ?: return null
@@ -61,7 +61,11 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
       append(DocumentationMarkup.DEFINITION_END)
       append(DocumentationMarkup.CONTENT_START)
       append(
-        DocMarkdownToHtmlConverter.convert(sibling.project, sibling.text.replace("/// ", ""), ZigLanguage.INSTANCE)
+        DocMarkdownToHtmlConverter.convert(
+          sibling.project,
+          sibling.text.replace("/// ", "").replace("///", ""),
+          ZigLanguage.INSTANCE
+        )
       )
       append(DocumentationMarkup.CONTENT_END)
     }

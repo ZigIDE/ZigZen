@@ -29,6 +29,12 @@ public class ZigPrimaryTypeExprImpl extends ZigExprImpl implements ZigPrimaryTyp
 
   @Override
   @Nullable
+  public ZigBuiltinIdentifier getBuiltinIdentifier() {
+    return findChildByClass(ZigBuiltinIdentifier.class);
+  }
+
+  @Override
+  @Nullable
   public ZigContainerDecl getContainerDecl() {
     return findChildByClass(ZigContainerDecl.class);
   }
@@ -67,12 +73,6 @@ public class ZigPrimaryTypeExprImpl extends ZigExprImpl implements ZigPrimaryTyp
   @Nullable
   public ZigStringLiteral getStringLiteral() {
     return findChildByClass(ZigStringLiteral.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getBuiltinidentifier() {
-    return findChildByType(BUILTINIDENTIFIER);
   }
 
   @Override
