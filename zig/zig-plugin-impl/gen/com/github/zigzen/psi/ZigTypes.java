@@ -33,6 +33,7 @@ public interface ZigTypes {
   IElementType BOOL_AND_EXPR = new ZigElementType("BOOL_AND_EXPR");
   IElementType BOOL_OR_EXPR = new ZigElementType("BOOL_OR_EXPR");
   IElementType BREAK_LABEL = new ZigElementType("BREAK_LABEL");
+  IElementType BUILTIN_IDENTIFIER = new ZigElementType("BUILTIN_IDENTIFIER");
   IElementType BYTE_ALIGN = new ZigElementType("BYTE_ALIGN");
   IElementType CALL_CONV = new ZigElementType("CALL_CONV");
   IElementType COMPARE_EXPR = new ZigElementType("COMPARE_EXPR");
@@ -308,6 +309,9 @@ public interface ZigTypes {
       }
       else if (type == BREAK_LABEL) {
         return new ZigBreakLabelImpl(node);
+      }
+      else if (type == BUILTIN_IDENTIFIER) {
+        return new ZigBuiltinIdentifierImpl(node);
       }
       else if (type == BYTE_ALIGN) {
         return new ZigByteAlignImpl(node);

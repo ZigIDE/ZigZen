@@ -8,6 +8,7 @@
     <annotator language="ZIG"
                implementationClass="com.github.zigzen.lang.annotation.ZigAnnotator"/>
     <colorSettingsPage implementation="com.github.zigzen.openapi.options.ZigColorSettingsPage"/>
+    <enterHandlerDelegate implementation="com.github.zigzen.codeInsight.editorActions.enter.ZigInCommentEnterHandlerDelegate"/>
     <fileType language="ZIG"
               extensions="zig"
               fieldName="INSTANCE"

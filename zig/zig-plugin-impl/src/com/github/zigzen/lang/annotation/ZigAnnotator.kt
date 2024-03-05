@@ -48,7 +48,7 @@ class ZigAnnotator : Annotator {
         for (i in element.children.indices) {
           when (val child = element.children[i]) {
             is ZigPrimaryTypeExpr -> {
-              if (child.builtinidentifier?.text == "@import" || child.builtinidentifier?.text == "@cImport") {
+              if (child.builtinIdentifier?.text == "@import" || child.builtinIdentifier?.text == "@cImport") {
                 annotateElement(holder, element.identifier, ZigSyntaxHighlighter.TYPE)
                 types.add(element.identifier.text)
               } else isVariable = true
