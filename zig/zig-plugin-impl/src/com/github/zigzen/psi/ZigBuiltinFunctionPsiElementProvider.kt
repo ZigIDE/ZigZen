@@ -63,7 +63,12 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
       append(
         DocMarkdownToHtmlConverter.convert(
           sibling.project,
-          sibling.text.replace("/// ", "").replace("///", ""),
+          sibling.text.lines().joinToString("\n") {
+            if (it.length == 3)
+              ""
+            else
+              it.replaceFirst("/// ", "")
+          },
           ZigLanguage.INSTANCE
         )
       )
