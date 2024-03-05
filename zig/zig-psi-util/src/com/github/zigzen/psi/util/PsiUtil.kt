@@ -2,6 +2,8 @@
 package com.github.zigzen.psi.util
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.TokenType
+import com.intellij.psi.util.elementType
 
 object PsiUtil {
   inline fun <reified T: PsiElement> parentOrNull(element: PsiElement?, parentType: Class<T>): T? {
@@ -16,5 +18,13 @@ object PsiUtil {
     }
 
     return null
+  }
+
+  fun isEolOrWhitespace(element: PsiElement, offset: Int): Boolean {
+    if (element.node?.elementType != TokenType.WHITE_SPACE)
+      return false
+
+    val positionOfLF = element.node?.text?.indexOf('\n') ?: return false
+    return positionOfLF == -1 || offset <= positionOfLF + element.node.startOffset
   }
 }
