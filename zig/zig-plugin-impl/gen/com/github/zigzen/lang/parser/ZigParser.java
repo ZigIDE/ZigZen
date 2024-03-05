@@ -729,6 +729,18 @@ public class ZigParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // BUILTINIDENTIFIER
+  public static boolean BuiltinIdentifier(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "BuiltinIdentifier")) return false;
+    if (!nextTokenIs(b, BUILTINIDENTIFIER)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, BUILTINIDENTIFIER);
+    exit_section_(b, m, BUILTIN_IDENTIFIER, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // KEYWORD_ALIGN LPAREN Expr RPAREN
   public static boolean ByteAlign(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ByteAlign")) return false;
@@ -2925,7 +2937,7 @@ public class ZigParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // BUILTINIDENTIFIER FnCallArguments
+  // BuiltinIdentifier FnCallArguments
   //   | CHAR_LITERAL
   //   | ContainerDecl
   //   | DOT IDENTIFIER
@@ -2971,12 +2983,12 @@ public class ZigParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // BUILTINIDENTIFIER FnCallArguments
+  // BuiltinIdentifier FnCallArguments
   private static boolean PrimaryTypeExpr_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PrimaryTypeExpr_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, BUILTINIDENTIFIER);
+    r = BuiltinIdentifier(b, l + 1);
     r = r && FnCallArguments(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
