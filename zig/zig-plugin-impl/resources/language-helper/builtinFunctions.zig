@@ -232,12 +232,53 @@ fn cDefine(comptime name: []const u8, value) void {}
 
 /// Parses C code and imports the functions, types, variables, and compatible macro definitions into a new empty struct
 /// type, and then returns that type.
+///
+/// This function parses C code and imports the functions, types, variables, and compatible macro definitions into a new empty struct type,
+/// and then returns that type.
+///
+/// expression is interpreted at compile time. The builtin functions `@cInclude`, `@cDefine`, and `@cUndef` work within this expression,
+/// appending to a temporary buffer which is then parsed as C code.
+///
+/// Usually you should only have one `@cImport` in your entire application, because it saves the compiler from invoking clang multiple
+/// times, and prevents inline functions from being duplicated.
+///
+/// Reasons for having multiple `@cImport` expressions would be:
+/// - To avoid a symbol collision, for example if foo.h and bar.h both #define CONNECTION_COUNT
+/// - To analyze the C code with different preprocessor defines
+///
+/// See also:
+/// - [Import from C Header File](https://ziglang.org/documentation/master/#Import-from-C-Header-File)
+/// - `@cInclude`
+/// - `@cDefine`
+/// - `@cUndef`
 fn cImport(expression) type {}
 
 /// Appends `#include <$path>\n` to the `@cImport` temporary buffer.
+///
+/// This function can only occur inside `@cImport`.
+///
+/// See also:
+/// - [Import from C Header File](https://ziglang.org/documentation/master/#Import-from-C-Header-File)
+/// - `@cImport`
+/// - `@cDefine`
+/// - `@cUndef`
 fn cInclude(comptime path: []const u8) void {}
 
 /// Counts the number of most-significant (leading in a big-endian sense) zeroes in an integer - "count leading zeroes".
+///
+/// `@TypeOf(operand)` must be an integer type or an integer vector type.
+///
+/// `operand` may be an [integer](https://ziglang.org/documentation/master/#Integers) or [vector](https://ziglang.org/documentation/master/#Vectors).
+///
+/// If `operand` is a comptime-known integer, the return type is `comptime_int`. Otherwise, the return type is an unsigned integer or vector
+/// of unsigned integers with the minimum number of bits that can represent the bit count of the integer type.
+///
+/// If `operand` is zero, `@clz` returns the bit width of integer type `T`.
+///
+/// See also:
+///
+/// - `@ctz`
+/// - `@popCount`
 fn clz(operand: anytype) @TypeOf(operand) {}
 
 /// Performs a strong atomic compare-and-exchange operation, returning `null` if the current value is not the given
