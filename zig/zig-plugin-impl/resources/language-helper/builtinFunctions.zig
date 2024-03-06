@@ -282,18 +282,99 @@ fn cInclude(comptime path: []const u8) void {}
 fn clz(operand: anytype) @TypeOf(operand) {}
 
 /// Performs a strong atomic compare-and-exchange operation, returning `null` if the current value is not the given
-/// expected value.
+/// expected value. It's the equivalent of this code, except atomic:
+///
+/// ```zig
+/// fn cmpxchgStrongButNotAtomic(comptime T: type, ptr: *T, expected_value: T, new_value: T) ?T {
+///     const old_value = ptr.*;
+///     if (old_value == expected_value) {
+///         ptr.* = new_value;
+///         return null;
+///     } else {
+///         return old_value;
+///     }
+/// }
+/// ```
+///
+/// If you are using cmpxchg in a retry loop, `@cmpxchgWeak` is the better choice, because it can be implemented more efficiently in
+/// machine instructions.
+///
+/// `T` must be a pointer, a `bool`, a float, an integer or an enum.
+///
+/// `@typeInfo(@TypeOf(ptr)).Pointer.alignment` must be >= `@sizeOf(T)`.
+///
+/// `AtomicOrder` can be found with `@import("std").builtin.AtomicOrder`.
+///
+/// See also:
+/// - `@atomicStore`
+/// - `@atomicLoad`
+/// - `@atomicRmw`
+/// - `@fence`
+/// - `@cmpxchgWeak`
 fn cmpxchgStrong(comptime T: type, ptr: *T, expected_value: T, new_value: T, success_order: AtomicOrder, fail_order: AtomicOrder) ?T {}
 
 /// Performs a weak atomic compare-and-exchange operation, returning `null` if the current value is not the given
-/// expected value.
+/// expected value. It's the equivalent of this code, except atomic:
+///
+/// ```zig
+/// fn cmpxchgWeakButNotAtomic(comptime T: type, ptr: *T, expected_value: T, new_value: T) ?T {
+///     const old_value = ptr.*;
+///     if (old_value == expected_value and usuallyTrueButSometimesFalse()) {
+///         ptr.* = new_value;
+///         return null;
+///     } else {
+///         return old_value;
+///     }
+/// }
+/// ```
+///
+/// If you are using cmpxchg in a retry loop, the sporadic failure will be no problem, and `@cmpxchgWeak` is the better choice, because it
+/// can be implemented more efficiently in machine instructions. However if you need a stronger guarantee, use `@cmpxchgStrong`.
+///
+/// `T` must be a pointer, a `bool`, a float, an integer or an enum.
+///
+/// `@typeInfo(@TypeOf(ptr)).Pointer.alignment` must be >= `@sizeOf(T)`.
+///
+/// `AtomicOrder` can be found with `@import("std").builtin.AtomicOrder`.
+///
+/// See also:
+/// - `@atomicStore`
+/// - `@atomicLoad`
+/// - `@atomicRmw`
+/// - `@fence`
+/// - `@cmpxchgStrong`
 fn cmpxchgWeak(comptime T: type, ptr: *T, expected_value: T, new_value: T, success_order: AtomicOrder, fail_order: AtomicOrder) ?T {}
 
 /// Causes a compile error with the message `msg` when semantically checked.
+///
+/// There are several ways that code avoids being semantically checked, such as using if or switch with compile time constants, and comptime
+/// functions.
 fn compileError(comptime msg: []const u8) noreturn {}
 
 // TODO: figure out proper `args` parameter type
 /// Prints the arguments passed to it at compile-time.
+///
+/// To prevent accidentally leaving compile log statements in a codebase, a compilation error is added to the build, pointing to the compile
+/// log statement. This error prevents code from being generated, but does not otherwise interfere with analysis.
+///
+/// This function can be used to do "printf debugging" on compile-time executing code.
+///
+/// ```zig
+/// const print = @import("std").debug.print;
+///
+/// const num1 = blk: {
+///     var val1: i32 = 99;
+///     @compileLog("comptime val1 = ", val1);
+///     val1 = val1 + 1;
+///     break :blk val1;
+/// };
+///
+/// test "main" {
+///     @compileLog("comptime in main");
+///
+///     print("Runtime in main, num1 = {}.\n", .{num1});
+/// }
+/// ```
 fn compileLog(args: VaList) void {}
 
 /// Removes `const` qualifier from a pointer.
