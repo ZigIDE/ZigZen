@@ -386,24 +386,63 @@ fn cos(value: anytype) @TypeOf(value) {}
 
 /// Counts the number of least-significant (trailing in a big-endian sense) zeroes in an integer - "count trailing
 /// zeroes".
+///
+/// `operand` may be an [integer](https://ziglang.org/documentation/master/#Integers) or [vector](https://ziglang.org/documentation/master/#Vectors).
+///
+/// If `operand` is a comptime-known integer, the return type is `comptime_int`. Otherwise, the return type is an unsigned integer or vector
+/// of unsigned integers with the minimum number of bits that can represent the bit count of the integer type.
+///
+/// If `operand` is zero, `@ctz` returns the bit width of integer type `T`.
+///
+/// See also:
+/// - `@clz`
+/// - `@popCount`
 fn ctz(operand: anytype) @TypeOf(operand) {}
 
 /// Appends `#undef $name` to the `@cImport` temporary buffer.
+///
+/// This function can only occur inside `@cImport`.
+///
+/// See also:
+/// - [Import from C Header File](https://ziglang.org/documentation/master/#Import-from-C-Header-File)
+/// - `@cInclude`
+/// - `@cDefine`
+/// - `@cImport`
 fn cUndef(comptime name: []const u8) void {}
 
 /// Implements the C macro `va_arg`.
+///
+/// See also:
+/// - `@cVaCopy`
+/// - `@cVaEnd`
+/// - `@cVaStart`
 fn cVaArg(operand: *VaList, comptime T: type) T {}
 
 /// Implements the C macro `va_copy`.
+///
+/// See also:
+/// - `@cVaArg`
+/// - `@cVaEnd`
+/// - `@cVaStart`
 fn cVaCopy(src: *VaList) VaList {}
 
 /// Implements the C macro `va_end`.
+///
+/// See also:
+/// - `@cVaAth`
+/// - `@cVaCopy`
+/// - `@cVaStart`
 fn cVaEnd(src: *VaList) void {}
 
 /// Implements the C macro `va_start`. Only valid inside a variadic function.
+///
+/// See also:
+/// - `@cVaArg`
+/// - `@cVaCopy`
+/// - `@cVaEnd`
 fn cVaStart() VaList {}
 
-///Performs exact division. Caller guarantees `denominator != 0` and `@divTrunc(numerator, denominator) * denominator == numerator`.
+/// Performs exact division. Caller guarantees `denominator != 0` and `@divTrunc(numerator, denominator) * denominator == numerator`.
 fn divExact(numerator: T, denominator: T) T {}
 
 /// Performs floored division. Rounds toward negative infinity. For unsigned integers it is the same as `numerator / denominator`.
