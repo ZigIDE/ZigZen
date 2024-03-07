@@ -443,14 +443,41 @@ fn cVaEnd(src: *VaList) void {}
 fn cVaStart() VaList {}
 
 /// Performs exact division. Caller guarantees `denominator != 0` and `@divTrunc(numerator, denominator) * denominator == numerator`.
+///
+/// - `@divExact(6, 3) == 2`
+/// - `@divExact(a, b) * b == a`
+///
+/// For a function that returns a possible error code, use `@import("std").math.divExact`.
+///
+/// See also:
+/// - `@divTrunc`
+/// - `@divFloor`
 fn divExact(numerator: T, denominator: T) T {}
 
 /// Performs floored division. Rounds toward negative infinity. For unsigned integers it is the same as `numerator / denominator`.
 /// Caller guarantees `denominator != 0` and `!(@typeInfo(T) == .Int and T.is_signed and numerator == std.math.minInt(T) and denominator == -1)`.
+///
+/// - `@divFloor(-5, 3) == -2`
+/// - `(@divFloor(a, b) * b) + @mod(a, b) == a`
+///
+/// For a function that returns a possible error code, use `@import("std").math.divFloor`.
+///
+/// See also:
+/// - `@divTrunc`
+/// - `@divExact`
 fn divFloor(numerator: T, denominator: T) T {}
 
 /// Performs truncated division. Rounds toward zero. For unsigned integers it is the same as `numerator / denominator`.
 /// Caller guarantees `denominator != 0` and `!(@typeInfo(T) == .Int and T.is_signed and numerator == std.math.minInt(T) and denominator == -1)`.
+///
+/// - `@divTrunc(-5, 3) == -1`
+/// - `(@divTrunc(a, b) * b) + @rem(a, b) == a`
+///
+/// For a function that returns a possible error code, use `@import("std").math.divTrunc`.
+///
+/// See also:
+/// - `@divFloor`
+/// - `@divExact`
 fn divTrunc(numerator: T, denominator: T) T {}
 
 /// Returns a compile time constant pointer to null-terminated, fixed-size array with length equal to the byte count of
