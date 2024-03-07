@@ -11,14 +11,13 @@ import com.intellij.util.ProcessingContext
 
 class ZigBuiltinFunctionCompletionProvider : CompletionProvider<CompletionParameters>() {
   override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-    val provider = ZigBuiltinFunctionPsiElementProvider.createInstance(parameters.editor.project ?: return)
+    val provider = ZigBuiltinFunctionPsiElementProvider.createInstance(parameters.originalFile.project)
 
     result.addAllElements(provider.getBuiltinFunctionNames().map { name ->
       val fnProto = provider.getBuiltinFunctionAsFnProtoByName(name)!!
-      val element = provider.getBuiltinIdentifierByName(name)!!
 
       LookupElementBuilder
-        .createWithSmartPointer("${name.trimEnd { it == '_' }}()", element)
+        .create("${name.trimEnd { it == '_' }}()")
         .withPresentableText(name)
         .withTailText("(${fnProto.paramDeclList.text})")
         .withTypeText(fnProto.expr.text)
