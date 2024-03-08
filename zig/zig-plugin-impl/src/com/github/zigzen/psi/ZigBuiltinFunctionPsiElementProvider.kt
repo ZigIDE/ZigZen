@@ -8,9 +8,9 @@ import com.intellij.lang.documentation.DocumentationMarkup
 import com.intellij.lang.documentation.QuickDocHighlightingHelper
 import com.intellij.markdown.utils.doc.DocMarkdownToHtmlConverter
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.util.childrenOfType
 import com.intellij.psi.util.elementType
 import com.intellij.util.LocalTimeCounter
 import org.jetbrains.annotations.NotNull
@@ -65,6 +65,16 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
         )
       )
       append(DocumentationMarkup.CONTENT_END)
+
+      append(
+        DocumentationMarkup.BOTTOM_ELEMENT.children(
+          HtmlChunk.link(
+            "https://ziglang.org/documentation/master/#$name",
+            HtmlChunk.fragment(DocumentationMarkup.EXTERNAL_LINK_ICON,
+                               HtmlChunk.text("Zig Language Reference"))
+          )
+        )
+      )
     }
   }
 

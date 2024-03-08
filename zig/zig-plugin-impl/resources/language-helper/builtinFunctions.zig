@@ -1,380 +1,84 @@
 // The list of builtin functions of current Zig master.
 
-/// Returns the absolute value of an integer or a floating point number. Uses a dedicated hardware instruction when
-/// available. The return type is always an unsigned integer of the same bit width as the operand if the operand is
-/// an integer. Unsigned integer operands are supported. The builtin cannot overflow for signed integer operands.
+/// Returns the absolute value of an integer or a floating point number.
 fn abs(value: anytype) @TypeOf(value) {}
 
 /// Converts a pointer from one address space to another. The new address space is inferred based on the result type.
-/// Depending on the current target and address spaces, this cast may be a no-op, a complex operation, or illegal. If
-/// the cast is legal, then the resulting pointer points to the same memory location as the pointer operand. It is
-/// always valid to cast a pointer between the same address spaces.
 fn addrSpaceCast(ptr: anytype) @TypeOf(ptr) {}
 
 /// Performs `a + b` and returns a tuple with the result and a possible overflow bit.
 fn addWithOverflow(a: anytype, b: anytype) struct { @TypeOf(a, b), u1 } {}
 
 /// Changes the alignment of a pointer. The alignment to use is inferred based on the result type.
-///
-/// `ptr` can be `*T`, `?*T`, or `[]T`. A [pointer alignment safety check](https://ziglang.org/documentation/master/#Incorrect-Pointer-Alignment)
-/// is added to the generated code to make sure the pointer is aligned as promised.
 fn alignCast(ptr: anytype) @TypeOf(ptr) {}
 
-/// Returns the number of bytes that this type should be aligned to for the current target to match the C ABI. When
-/// the child type of a pointer has this alignment, the alignment can be omitted from the type.
-///
-/// ```zig
-/// const assert = @import("std").debug.assert;
-/// comptime {
-///    assert(*u32 == *align(@alignOf(u32)) u32);
-/// }
-/// ```
-///
-/// The result is a target-specific compile time constant. It is guaranteed to be less than or equal to `@sizeOf(T)`.
-///
-/// See also:
-/// - [Alignment](https://ziglang.org/documentation/master/#Alignment)
+/// Returns the number of bytes that this type should be aligned to for the current target to match the C ABI.
 fn alignOf(comptime T: type) comptime_int {}
 
-/// Performs [Type Coercion](https://ziglang.org/documentation/master/#Type-Coercion). This cast is allowed when the
-/// conversion is unambiguous and safe, and is the preferred way to convert between types, whenever possible.
+/// Performs [Type Coercion](https://ziglang.org/documentation/master/#Type-Coercion).
 fn as(comptime T: type, expression) T {}
 
 /// Dereferences atomically a pointer to a `T` and returns the value.
-///
-/// `T` must be a pointer, a `bool`, a float, an integer or an enum.
-///
-/// `AtomicOrder` can be found with `@import("std").builtin.AtomicOrder`.
-///
-/// See also:
-/// - `@atomicStore`
-/// - `@atomicLoad`
-/// - `@fence`
-/// - `@cmpxchgWeak`
-/// - `@cmpxchgStrong`
 fn atomicLoad(comptime T: type, ptr: *const T, comptime ordering: AtomicOrder) T {}
 
 /// Dereferences a pointer to a `T` and atomically modifies the value and returns the previous value.
-///
-/// `T` must be a pointer, a `bool`, a float, an integer or an enum.
-///
-/// `AtomicOrder` can be found with `@import("std").builtin.AtomicOrder`.
-///
-/// `AtomicRmwOp` can be found with `@import("std").builtin.AtomicRmwOp`.
-///
-/// See also:
-/// - `@atomicStore`
-/// - `@atomicLoad`
-/// - `@fence`
-/// - `@cmpxchgWeak`
-/// - `@cmpxchgStrong`
 fn atomicRmw(comptime T: type, ptr: *const T, comptime ordering: AtomicOrder) T {}
 
 /// Dereferences a pointer to a `T` and atomically stores the given value.
-///
-/// `T` must be a pointer, a `bool`, a float, an integer or an enum.
-///
-/// `AtomicOrder` can be found with `@import("std").builtin.AtomicOrder`.
-///
-/// See also:
-/// - `@atomicStore`
-/// - `@atomicLoad`
-/// - `@fence`
-/// - `@cmpxchgWeak`
-/// - `@cmpxchgStrong`
 fn atomicStore(comptime T: type, ptr: *T, value: T, comptime ordering: AtomicOrder) void {}
 
 /// Converts a value of one type to another type. The return type is the inferred result type.
-///
-/// Asserts that `@sizeOf(@TypeOf(value)) == @sizeOf(DestType)`.
-///
-/// Asserts that `@typeInfo(DestType) != .Pointer`. Use `@ptrCast` or `@ptrFromInt` if you need this.
-///
-/// Can be used for these things for example:
-/// - Convert `f32` to `u32` bits
-/// - Convert `i32` to `u32` preserving twos complement
-///
-/// Works at compile-time if `value` is known at compile time. It's a compile error to bitcast a value of undefined
-/// layout; this means that, besides the restriction from types which possess dedicated casting builtins (enums,
-/// pointers, error sets), bare structs, error unions, slices, optionals, and any other type without a well-defined
-/// memory layout, also cannot be used in this operation.
 fn bitCast(value: anytype) @TypeOf(value) {}
 
 /// Returns the bit offset of a field relative to its containing struct.
-///
-/// For non [packed structs](https://ziglang.org/documentation/master/#packed-struct), this will always be divisible
-/// by `8`. For packed structs, non-byte-aligned fields will share a byte offset, but they will have different bit
-/// offsets.
-///
-/// See also:
-/// - `@offsetOf`
 fn bitOffsetOf(comptime T: type, comptime field_name: []const u8) comptime_int {}
 
 /// Reverses the bit pattern of an integer value, including the sign bit if applicable.
-///
-/// `@TypeOf(anytype)` accepts any integer type or integer vector type.
-///
-/// For example `0b10110110` (`u8 = 182`, `i8 = -74`) becomes `0b01101101` (`u8 = 109`, `i8 = 109`).
 fn bitReverse(integer: anytype) T {}
 
-/// Returns the number of bits it takes to store `T` in memory if the type were a field in a packed struct or union. The
-/// result is a target-specific compile time constant.
-///
-/// This function measures the size at runtime. For types that are disallowed at runtime, such as `comptime_int` and
-/// `type`, the result is `0`.
-///
-/// See also:
-/// - `@sizeOf`
-/// - `@typeInfo`
+/// Returns the number of bits it takes to store `T` in memory if the type were a field in a packed struct or union.
 fn bitSizeOf(comptime T: type) comptime_int {}
 
-/// This function inserts a platform-specific debug trap instruction which causes debuggers to break there. Unlike for
-/// `@trap()`, execution may continue after this point if the program is resumed.
-///
-/// This function is only valid within function scope.
-///
-/// See also:
-/// - `@trap`
+/// This function inserts a platform-specific debug trap instruction which causes debuggers to break there.
 fn breakpoint() void {}
 
 /// Swaps the byte order of the integer. This converts a big endian integer to a little endian integer, and converts
 /// a little endian integer to a big endian integer.
-///
-/// `@TypeOf(operand)` must be an integer type or an integer vector type with bit count evenly divisible by 8.
-///
-/// `operand` may be an [integer](https://ziglang.org/documentation/master/#Integers) or [vector](https://ziglang.org/documentation/master/#Vectors).
-///
-/// Note that for the purposes of memory layout with respect to endianness, the integer type should be related to the
-/// number of bytes reported by `@sizeOf` bytes. This is demonstrated with `u24`. `@sizeOf(u24) == 4`, which means that
-/// a `u24` stored in memory takes 4 bytes, and those 4 bytes are what are swapped on a little vs big endian system. On
-/// the other hand, if `T` is specified to be `u24`, then only 3 bytes are reversed.
 fn byteSwap(operand: anytype) T {}
 
 // TODO: figure out proper return type
-/// Calls a function, in the same way that invoking an expression with parentheses does:
-///
-/// ```zig
-/// const expect = @import("std").testing.expect;
-///
-/// test "noinline function call" {
-///    try expect(@call(.auto, add, .{3, 9}) == 12);
-/// }
-///
-/// fn add(a: i32, b: i32) i32 {
-///    return a + b;
-/// }
-/// ```
-///
-/// `@call` allows more flexibility than normal function call syntax does. The `CallModifier` enum is reproduced here:
-///
-/// ```zig
-/// pub const CallModifier = enum {
-///    /// Equivalent to function call syntax.
-///    auto,
-///
-///    /// Equivalent to async keyword used with function call syntax.
-///    async_kw,
-///
-///    /// Prevents tail call optimization. This guarantees that the return
-///    /// address will point to the callsite, as opposed to the callsite's
-///    /// callsite. If the call is otherwise required to be tail-called
-///    /// or inlined, a compile error is emitted instead.
-///    never_tail,
-///
-///    /// Guarantees that the call will not be inlined. If the call is
-///    /// otherwise required to be inlined, a compile error is emitted instead.
-///    never_inline,
-///
-///    /// Asserts that the function call will not suspend. This allows a
-///    /// non-async function to call an async function.
-///    no_async,
-///
-///    /// Guarantees that the call will be generated with tail call optimization.
-///    /// If this is not possible, a compile error is emitted instead.
-///    always_tail,
-///
-///    /// Guarantees that the call will inlined at the callsite.
-///    /// If this is not possible, a compile error is emitted instead.
-///    always_inline,
-///
-///    /// Evaluates the call at compile-time. If the call cannot be completed at
-///    /// compile-time, a compile error is emitted instead.
-///    compile_time,
-///};
+/// Calls a function, in the same way that invoking an expression with parentheses does.
 fn call(modifier: CallModifier, function: anytype, args: anytype) T {}
 
-/// Returns the smallest integral value not less than the given floating point number. Uses a dedicated hardware
-/// instruction when available.
+/// Returns the smallest integral value not less than the given floating point number.
 fn ceil(value: anytype) @TypeOf(value) {}
 
 /// Appends `#define $name $value` to the `@cImport` temporary buffer.
-///
-/// This function can only occur inside `@cImport`.
-///
-/// To define without a value, like this:
-///
-/// ```c
-/// #define _GNU_SOURCE
-/// ```
-/// Use the void value, like this:
-///
-/// ```zig
-/// @cDefine("_GNU_SOURCE", {})
-/// ```
-///
-/// See also:
-/// - [Import from C Header File](https://ziglang.org/documentation/master/#Import-from-C-Header-File)
-/// - `@cInclude`
-/// - `@cImport`
-/// - `@cUndef`
-/// - `void`
 fn cDefine(comptime name: []const u8, value) void {}
 
 /// Parses C code and imports the functions, types, variables, and compatible macro definitions into a new empty struct
 /// type, and then returns that type.
-///
-/// This function parses C code and imports the functions, types, variables, and compatible macro definitions into a new empty struct type,
-/// and then returns that type.
-///
-/// expression is interpreted at compile time. The builtin functions `@cInclude`, `@cDefine`, and `@cUndef` work within this expression,
-/// appending to a temporary buffer which is then parsed as C code.
-///
-/// Usually you should only have one `@cImport` in your entire application, because it saves the compiler from invoking clang multiple
-/// times, and prevents inline functions from being duplicated.
-///
-/// Reasons for having multiple `@cImport` expressions would be:
-/// - To avoid a symbol collision, for example if foo.h and bar.h both #define CONNECTION_COUNT
-/// - To analyze the C code with different preprocessor defines
-///
-/// See also:
-/// - [Import from C Header File](https://ziglang.org/documentation/master/#Import-from-C-Header-File)
-/// - `@cInclude`
-/// - `@cDefine`
-/// - `@cUndef`
 fn cImport(expression) type {}
 
 /// Appends `#include <$path>\n` to the `@cImport` temporary buffer.
-///
-/// This function can only occur inside `@cImport`.
-///
-/// See also:
-/// - [Import from C Header File](https://ziglang.org/documentation/master/#Import-from-C-Header-File)
-/// - `@cImport`
-/// - `@cDefine`
-/// - `@cUndef`
 fn cInclude(comptime path: []const u8) void {}
 
 /// Counts the number of most-significant (leading in a big-endian sense) zeroes in an integer - "count leading zeroes".
-///
-/// `@TypeOf(operand)` must be an integer type or an integer vector type.
-///
-/// `operand` may be an [integer](https://ziglang.org/documentation/master/#Integers) or [vector](https://ziglang.org/documentation/master/#Vectors).
-///
-/// If `operand` is a comptime-known integer, the return type is `comptime_int`. Otherwise, the return type is an unsigned integer or vector
-/// of unsigned integers with the minimum number of bits that can represent the bit count of the integer type.
-///
-/// If `operand` is zero, `@clz` returns the bit width of integer type `T`.
-///
-/// See also:
-///
-/// - `@ctz`
-/// - `@popCount`
 fn clz(operand: anytype) @TypeOf(operand) {}
 
 /// Performs a strong atomic compare-and-exchange operation, returning `null` if the current value is not the given
-/// expected value. It's the equivalent of this code, except atomic:
-///
-/// ```zig
-/// fn cmpxchgStrongButNotAtomic(comptime T: type, ptr: *T, expected_value: T, new_value: T) ?T {
-///     const old_value = ptr.*;
-///     if (old_value == expected_value) {
-///         ptr.* = new_value;
-///         return null;
-///     } else {
-///         return old_value;
-///     }
-/// }
-/// ```
-///
-/// If you are using cmpxchg in a retry loop, `@cmpxchgWeak` is the better choice, because it can be implemented more efficiently in
-/// machine instructions.
-///
-/// `T` must be a pointer, a `bool`, a float, an integer or an enum.
-///
-/// `@typeInfo(@TypeOf(ptr)).Pointer.alignment` must be >= `@sizeOf(T)`.
-///
-/// `AtomicOrder` can be found with `@import("std").builtin.AtomicOrder`.
-///
-/// See also:
-/// - `@atomicStore`
-/// - `@atomicLoad`
-/// - `@atomicRmw`
-/// - `@fence`
-/// - `@cmpxchgWeak`
+/// expected value.
 fn cmpxchgStrong(comptime T: type, ptr: *T, expected_value: T, new_value: T, success_order: AtomicOrder, fail_order: AtomicOrder) ?T {}
 
 /// Performs a weak atomic compare-and-exchange operation, returning `null` if the current value is not the given
-/// expected value. It's the equivalent of this code, except atomic:
-///
-/// ```zig
-/// fn cmpxchgWeakButNotAtomic(comptime T: type, ptr: *T, expected_value: T, new_value: T) ?T {
-///     const old_value = ptr.*;
-///     if (old_value == expected_value and usuallyTrueButSometimesFalse()) {
-///         ptr.* = new_value;
-///         return null;
-///     } else {
-///         return old_value;
-///     }
-/// }
-/// ```
-///
-/// If you are using cmpxchg in a retry loop, the sporadic failure will be no problem, and `@cmpxchgWeak` is the better choice, because it
-/// can be implemented more efficiently in machine instructions. However if you need a stronger guarantee, use `@cmpxchgStrong`.
-///
-/// `T` must be a pointer, a `bool`, a float, an integer or an enum.
-///
-/// `@typeInfo(@TypeOf(ptr)).Pointer.alignment` must be >= `@sizeOf(T)`.
-///
-/// `AtomicOrder` can be found with `@import("std").builtin.AtomicOrder`.
-///
-/// See also:
-/// - `@atomicStore`
-/// - `@atomicLoad`
-/// - `@atomicRmw`
-/// - `@fence`
-/// - `@cmpxchgStrong`
+/// expected value.
 fn cmpxchgWeak(comptime T: type, ptr: *T, expected_value: T, new_value: T, success_order: AtomicOrder, fail_order: AtomicOrder) ?T {}
 
 /// Causes a compile error with the message `msg` when semantically checked.
-///
-/// There are several ways that code avoids being semantically checked, such as using if or switch with compile time constants, and comptime
-/// functions.
 fn compileError(comptime msg: []const u8) noreturn {}
 
 // TODO: figure out proper `args` parameter type
 /// Prints the arguments passed to it at compile-time.
-///
-/// To prevent accidentally leaving compile log statements in a codebase, a compilation error is added to the build, pointing to the compile
-/// log statement. This error prevents code from being generated, but does not otherwise interfere with analysis.
-///
-/// This function can be used to do "printf debugging" on compile-time executing code.
-///
-/// ```zig
-/// const print = @import("std").debug.print;
-///
-/// const num1 = blk: {
-///     var val1: i32 = 99;
-///     @compileLog("comptime val1 = ", val1);
-///     val1 = val1 + 1;
-///     break :blk val1;
-/// };
-///
-/// test "main" {
-///     @compileLog("comptime in main");
-///
-///     print("Runtime in main, num1 = {}.\n", .{num1});
-/// }
-/// ```
 fn compileLog(args: VaList) void {}
 
 /// Removes `const` qualifier from a pointer.
@@ -386,202 +90,67 @@ fn cos(value: anytype) @TypeOf(value) {}
 
 /// Counts the number of least-significant (trailing in a big-endian sense) zeroes in an integer - "count trailing
 /// zeroes".
-///
-/// `operand` may be an [integer](https://ziglang.org/documentation/master/#Integers) or [vector](https://ziglang.org/documentation/master/#Vectors).
-///
-/// If `operand` is a comptime-known integer, the return type is `comptime_int`. Otherwise, the return type is an unsigned integer or vector
-/// of unsigned integers with the minimum number of bits that can represent the bit count of the integer type.
-///
-/// If `operand` is zero, `@ctz` returns the bit width of integer type `T`.
-///
-/// See also:
-/// - `@clz`
-/// - `@popCount`
 fn ctz(operand: anytype) @TypeOf(operand) {}
 
 /// Appends `#undef $name` to the `@cImport` temporary buffer.
-///
-/// This function can only occur inside `@cImport`.
-///
-/// See also:
-/// - [Import from C Header File](https://ziglang.org/documentation/master/#Import-from-C-Header-File)
-/// - `@cInclude`
-/// - `@cDefine`
-/// - `@cImport`
 fn cUndef(comptime name: []const u8) void {}
 
 /// Implements the C macro `va_arg`.
-///
-/// See also:
-/// - `@cVaCopy`
-/// - `@cVaEnd`
-/// - `@cVaStart`
 fn cVaArg(operand: *VaList, comptime T: type) T {}
 
 /// Implements the C macro `va_copy`.
-///
-/// See also:
-/// - `@cVaArg`
-/// - `@cVaEnd`
-/// - `@cVaStart`
 fn cVaCopy(src: *VaList) VaList {}
 
 /// Implements the C macro `va_end`.
-///
-/// See also:
-/// - `@cVaAth`
-/// - `@cVaCopy`
-/// - `@cVaStart`
 fn cVaEnd(src: *VaList) void {}
 
 /// Implements the C macro `va_start`. Only valid inside a variadic function.
-///
-/// See also:
-/// - `@cVaArg`
-/// - `@cVaCopy`
-/// - `@cVaEnd`
 fn cVaStart() VaList {}
 
-/// Performs exact division. Caller guarantees `denominator != 0` and `@divTrunc(numerator, denominator) * denominator == numerator`.
-///
-/// - `@divExact(6, 3) == 2`
-/// - `@divExact(a, b) * b == a`
-///
-/// For a function that returns a possible error code, use `@import("std").math.divExact`.
-///
-/// See also:
-/// - `@divTrunc`
-/// - `@divFloor`
+/// Performs exact division.
 fn divExact(numerator: T, denominator: T) T {}
 
-/// Performs floored division. Rounds toward negative infinity. For unsigned integers it is the same as `numerator / denominator`.
-/// Caller guarantees `denominator != 0` and `!(@typeInfo(T) == .Int and T.is_signed and numerator == std.math.minInt(T) and denominator == -1)`.
-///
-/// - `@divFloor(-5, 3) == -2`
-/// - `(@divFloor(a, b) * b) + @mod(a, b) == a`
-///
-/// For a function that returns a possible error code, use `@import("std").math.divFloor`.
-///
-/// See also:
-/// - `@divTrunc`
-/// - `@divExact`
+/// Performs floored division.
 fn divFloor(numerator: T, denominator: T) T {}
 
-/// Performs truncated division. Rounds toward zero. For unsigned integers it is the same as `numerator / denominator`.
-/// Caller guarantees `denominator != 0` and `!(@typeInfo(T) == .Int and T.is_signed and numerator == std.math.minInt(T) and denominator == -1)`.
-///
-/// - `@divTrunc(-5, 3) == -1`
-/// - `(@divTrunc(a, b) * b) + @rem(a, b) == a`
-///
-/// For a function that returns a possible error code, use `@import("std").math.divTrunc`.
-///
-/// See also:
-/// - `@divFloor`
-/// - `@divExact`
+/// Performs truncated division.
 fn divTrunc(numerator: T, denominator: T) T {}
 
 /// Returns a compile time constant pointer to null-terminated, fixed-size array with length equal to the byte count of
-/// the file given by `path`. The contents of the array are the contents of the file. This is equivalent to a string
-/// literal with the file contents.
-///
-/// `path` is absolute or relative to the current file, just like `@import`.
-///
-/// See also:
-/// - `@import`
+/// the file given by `path`.
 fn embedFile(comptime path: []const u8) *const [N:0]u8 {}
 
 // TODO: figure out proper return type
-/// Converts an integer into an [enum](https://ziglang.org/documentation/master/#enum) value. The return type is the inferred result type.
-///
-/// Attempting to convert an integer which represents no value in the chosen enum type invokes safety-checked
-/// [Undefined Behavior](https://ziglang.org/documentation/master/#Undefined-Behavior).
-///
-/// See also:
-/// - `@intFromEnum`
+/// Converts an integer into an [enum](https://ziglang.org/documentation/master/#enum) value.
 fn enumFromInt(integer: anytype) T {}
 
 // TODO: figure out proper return type
-/// Converts an error set or error union value from one error set to another error set. The return type is the inferred result type.
-///
-/// Attempting to convert an error which is not in the destination error set results in safety-protected
-/// [Undefined Behavior](https://ziglang.org/documentation/master/#Undefined-Behavior).
+/// Converts an error set or error union value from one error set to another error set.
 fn errorCast(value: anytype) T {}
 
 /// Converts from the integer representation of an error into [The Global Error Set](https://ziglang.org/documentation/master/#The-Global-Error-Set) type.
-///
-/// It is generally recommended to avoid this cast, as the integer representation of an error is not stable across
-/// source code changes.
-///
-/// Attempting to convert an integer that does not correspond to any error results in safety-protected
-/// [Undefined Behavior](https://ziglang.org/documentation/master/#Undefined-Behavior).
 fn errorFromInt(value: Int(.unsigned, @bitSizeOf(anyerror))) anyerror {}
 
 /// Returns the string representation of an error. The string representation of `error.OutOfMem` is `"OutOfMem"`.
-///
-/// If there are no calls to `@errorName` in an entire application, or all calls have a compile-time known value for
-/// `err`, then no error name table will be generated.
 fn errorName(err: anyerror) [:0]const u8 {}
 
 /// Returns a stack trace object if the binary is built with error return tracing, and this function is invoked in a function that calls
 /// a function with an error or error union return type; otherwise returns `null`.
 fn errorReturnTrace() ?*StackTrace {}
 
-/// Computes the base-e exponential function on a floating point number. Uses a dedicated hardware instruction when available.
+/// Computes the base-e exponential function on a floating point number.
 fn exp(value: anytype) @TypeOf(value) {}
 
-/// Computes the base-2 exponential function on a floating point number. Uses a dedicated hardware instruction when available.
+/// Computes the base-2 exponential function on a floating point number.
 fn exp2(value: anytype) @TypeOf(value) {}
 
 /// Creates a symbol in the output object file.
-///
-/// `declaration` must be one of two things:
-/// - An identifier (x) identifying a function or a variable.
-/// - Field access (x.y) looking up a function or a variable.
-///
-/// This builtin can be called from a `comptime` block to conditionally export symbols. When `declaration` is a function
-/// with the C calling convention and `options.linkage` is `Strong`, this is equivalent to the export keyword used on a
-/// function.
-///
-/// For example:
-/// ```zig
-/// comptime {
-///    @export(internalName, .{ .name = "foo", .linkage = .Strong });
-/// }
-///
-/// fn internalName() callconv(.C) void {}
-/// ```
-/// is equivalent to:
-/// ```zig
-/// export fn foo() void {}
-/// ```
-///
-/// Note that even when using export, the `@"foo"` syntax for identifiers can be used to choose any string for the symbol
-/// name:
-///
-/// ```zig
-/// export fn @"A function name that is a complete sentence."() void {}
-/// ```
-///
-/// See also:
-/// - [Exporting a C Library](https://ziglang.org/documentation/master/#Exporting-a-C-Library)
 fn export_(declaration, comptime options: ExportOptions) void {}
 
-/// Creates a reference to an external symbol in the output object file. `T` must be a pointer type.
-///
-/// See also:
-/// - `@export`
+/// Creates a reference to an external symbol in the output object file.
 fn extern_(T: type, comptime options: ExternOptions) T {}
 
 /// Introduces happens-before edges between operations.
-///
-/// `AtomicOrder` can be found with `@import("std").builtin.AtomicOrder`.
-///
-/// See also:
-/// - `@atomicStore`
-/// - `@atomicLoad`
-/// - `@atomicRmw`
-/// - `@cmpxchgWeak`
-/// - `@cmpxchgStrong`
 fn fence(order: AtomicOrder) void {}
 
 // TODO: figure out proper return type
