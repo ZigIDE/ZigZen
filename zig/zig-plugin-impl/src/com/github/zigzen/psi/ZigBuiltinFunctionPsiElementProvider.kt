@@ -31,12 +31,14 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
     .filterIsInstance<ZigContainerDeclaration>()
     .mapNotNull { it.decl?.fnProto }
 
-  fun getBuiltinFunctionNames(): List<String> = FN_PROTOS.mapNotNull { it.identifier?.text }
+  fun getBuiltinFunctionNames(): List<String> = FN_PROTOS.mapNotNull { it.identifier?.text?.trimEnd('_') }
 
-  fun getBuiltinFunctionAsFnProtoByName(name: String): ZigFnProto? = FN_PROTOS.find { it.identifier?.text == name }
+  fun getBuiltinFunctionAsFnProtoByName(name: String): ZigFnProto? = FN_PROTOS.find {
+    it.identifier?.text?.trimEnd('_') == name
+  }
 
   fun getDocumentationForBuiltinFunction(name: String): String? {
-    val sibling = FN_PROTOS.find { it.identifier?.text == name }?.parent?.parent?.prevSibling ?: return null
+    val sibling = FN_PROTOS.find { it.identifier?.text?.trimEnd('_') == name }?.parent?.parent?.prevSibling ?: return null
 
     if (sibling !is PsiComment) return null
     if (sibling.elementType != ZigTypes.DOC_COMMENT) return null
@@ -48,7 +50,7 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
       append(QuickDocHighlightingHelper.getStyledCodeFragment(
         sibling.project,
         ZigLanguage.INSTANCE,
-        protoText.replace("fn ", "@")
+        protoText.replace("fn ", "@").replace("_", "")
       ))
       append(DocumentationMarkup.DEFINITION_END)
       append(DocumentationMarkup.CONTENT_START)
