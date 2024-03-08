@@ -18,7 +18,7 @@ class ZigBuiltinFunctionCompletionProvider : CompletionProvider<CompletionParame
       val fnProto = provider.getBuiltinFunctionAsFnProtoByName(name)!!
 
       LookupElementBuilder
-        .createWithSmartPointer("${name.trimEnd { it == '_' }}()", ZigElementFactory.createBuiltinIdentifier(parameters.originalFile.project, name))
+        .createWithSmartPointer("${name.trimEnd('_')}()", ZigElementFactory.createBuiltinIdentifier(parameters.originalFile.project, name))
         .withPresentableText(name)
         .withTailText("(${fnProto.paramDeclList.text})")
         .withTypeText(fnProto.expr.text)
