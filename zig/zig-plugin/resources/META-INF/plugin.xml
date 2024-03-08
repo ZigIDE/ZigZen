@@ -1,0 +1,55 @@
+<!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
+<idea-plugin>
+  <id>com.github.zigzen.zig</id>
+  <name>Zig Language</name>
+  <vendor>JetBrains</vendor>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <annotator language="ZIG"
+               implementationClass="com.github.zigzen.lang.annotation.ZigAnnotator"/>
+    <colorSettingsPage implementation="com.github.zigzen.openapi.options.ZigColorSettingsPage"/>
+    <enterHandlerDelegate implementation="com.github.zigzen.codeInsight.editorActions.enter.ZigInCommentEnterHandlerDelegate"/>
+    <fileType language="ZIG"
+              extensions="zig"
+              fieldName="INSTANCE"
+              implementationClass="com.github.zigzen.openapi.ZigFileType"
+              name="Zig File"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.intellij.codeInsight">
+    <parameterNameHints language="ZIG" implementationClass="com.github.zigzen.codeInsight.hints.ZigInlayParameterHintsProvider"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.intellij.lang">
+    <braceMatcher language="ZIG"
+                  implementationClass="com.github.zigzen.lang.ZigBraceMatcher"/>
+    <commenter language="ZIG"
+               implementationClass="com.github.zigzen.lang.ZigCommenter"/>
+    <parserDefinition language="ZIG"
+                      implementationClass="com.github.zigzen.lang.parser.ZigParserDefinition"/>
+    <quoteHandler language="ZIG" implementationClass="com.github.zigzen.codeInsight.editorActions.ZigQuoteHandler"/>
+    <syntaxHighlighterFactory language="ZIG"
+                              implementationClass="com.github.zigzen.openapi.fileTypes.ZigSyntaxHighlighterFactory"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.intellij.completion">
+    <contributor language="ZIG" implementationClass="com.github.zigzen.codeInsight.completion.ZigBuiltinFunctionCompletionContributor"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.intellij.platform.backend.documentation">
+    <psiTargetProvider implementation="com.github.zigzen.backend.documentation.ZigPsiDocumentationTargetProvider"/>
+    <targetProvider implementation="com.github.zigzen.backend.documentation.ZigDocumentationTargetProvider"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.github.zigzen.zig">
+    <toolchainFlavour implementation="com.github.zigzen.lang.toolchain.flavour.ZigSystemPathEnvironmentVariableToolchainFlavour"/>
+    <toolchainProvider implementation="com.github.zigzen.lang.toolchain.ZigLocalToolchainProvider"/>
+  </extensions>
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="com.github.zigzen.zig.toolchainFlavour"
+                    interface="com.github.zigzen.lang.toolchain.flavour.AbstractZigToolchainFlavour"/>
+    <extensionPoint qualifiedName="com.github.zigzen.zig.toolchainProvider"
+                    interface="com.github.zigzen.lang.toolchain.ZigToolchainProvider"/>
+  </extensionPoints>
+</idea-plugin>

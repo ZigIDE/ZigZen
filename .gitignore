@@ -4,6 +4,7 @@
 .idea/gradle_extensions.xml
 .idea/libraries/Gradle__*.xml
 .idea/shelf
+.idea/discord.xml
 .idea/workspace.xml
 /.diff
 /config
@@ -19,3 +20,5 @@ edu/dependencies/build
 native/**/build/
 stale_outputs_checked
 /android
+
+**/zig-cache
