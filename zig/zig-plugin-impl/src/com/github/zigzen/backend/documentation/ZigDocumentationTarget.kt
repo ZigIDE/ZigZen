@@ -2,6 +2,7 @@
 package com.github.zigzen.backend.documentation
 
 import com.github.zigzen.psi.ZigBuiltinFunctionPsiElementProvider
+import com.github.zigzen.psi.ZigBuiltinIdentifier
 import com.github.zigzen.psi.ZigTypes
 import com.intellij.codeInsight.navigation.targetPresentation
 import com.intellij.model.Pointer
@@ -28,8 +29,9 @@ class ZigDocumentationTarget(private val element: PsiElement, private val origin
   override fun computePresentation(): TargetPresentation = targetPresentation(element)
 
   override fun computeDocumentation(): DocumentationResult? {
-    val docs = when (element.elementType) {
-      ZigTypes.BUILTINIDENTIFIER -> provider.getDocumentationForBuiltinFunction(element.text.substring(1)) ?: return null
+    val docs = when  {
+      element is ZigBuiltinIdentifier -> provider.getDocumentationForBuiltinFunction(element.text.substring(1)) ?: return null
+      element.elementType == ZigTypes.BUILTINIDENTIFIER -> provider.getDocumentationForBuiltinFunction(element.text.substring(1)) ?: return null
       else -> return null
     }
 
