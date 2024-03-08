@@ -5,6 +5,7 @@
   <vendor>JetBrains</vendor>
 
   <extensions defaultExtensionNs="com.intellij">
+    <additionalLibraryRootsProvider implementation="com.github.zigzen.openapi.roots.ZigAdditionalLibraryRootsProvider"/>
     <annotator language="ZIG"
                implementationClass="com.github.zigzen.lang.annotation.ZigAnnotator"/>
     <colorSettingsPage implementation="com.github.zigzen.openapi.options.ZigColorSettingsPage"/>
