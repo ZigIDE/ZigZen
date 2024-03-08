@@ -10,6 +10,88 @@ import com.intellij.psi.PsiElement
 import com.intellij.refactoring.suggested.startOffset
 
 class ZigInlayParameterHintsProvider : InlayParameterHintsProvider {
+  private val builtinsWithTrivialParams = listOf(
+    "addrSpaceCast",
+    "addWithOverflow",
+    "alignCast",
+    "alignOf",
+    "as",
+    "bitCast",
+    "bitOffsetOf",
+    "bitSizeOf",
+    "breakpoint",
+    "byteSwap",
+    "bitReverse",
+    "offsetOf",
+    "cDefine",
+    "cImport",
+    "cInclude",
+    "clz",
+    "compileLog",
+    "constCast",
+    "ctz",
+    "cUndef",
+    "divExact",
+    "divFloor",
+    "divTrunc",
+    "embedFile",
+    "enumFromInt",
+    "errorFromInt",
+    "errorName",
+    "errorReturnTrace",
+    "errorCast",
+    "floatCast",
+    "floatFromInt",
+    "frameAddress",
+    "import",
+    "inComptime",
+    "intCast",
+    "intFromBool",
+    "intFromEnum",
+    "intFromError",
+    "intFromFloat",
+    "intFromPtr",
+    "max",
+    "min",
+    "mod",
+    "mulWithOverflow",
+    "popCount",
+    "ptrCast",
+    "ptrFromInt",
+    "rem",
+    "returnAddress",
+    "setCold",
+    "setEvalBranchQuota",
+    "setFloatMode",
+    "setRuntimeSafety",
+    "sizeOf",
+    "src",
+    "sqrt",
+    "sin",
+    "cos",
+    "tan",
+    "exp",
+    "exp2",
+    "log",
+    "log2",
+    "log10",
+    "abs",
+    "floor",
+    "ceil",
+    "trunc",
+    "round",
+    "subWithOverflow",
+    "tagName",
+    "This",
+    "trap",
+    "truncate",
+    "Type",
+    "typeInfo",
+    "typeName",
+    "TypeOf",
+    "volatileCast",
+  )
+
   override fun getDefaultBlackList() = emptySet<String>()
 
   // todo
@@ -31,7 +113,12 @@ class ZigInlayParameterHintsProvider : InlayParameterHintsProvider {
     callArguments: ZigFnCallArguments
   ): List<InlayInfo> {
     val psiElementProvider = ZigBuiltinFunctionPsiElementProvider(builtinIdentifier.project)
-    val fnProto = psiElementProvider.getBuiltinFunctionAsFnProtoByName(builtinIdentifier.text.substring(1)) ?: return emptyList()
+
+    val name = builtinIdentifier.text.substring(1)
+    if (name in builtinsWithTrivialParams)
+      return emptyList()
+
+    val fnProto = psiElementProvider.getBuiltinFunctionAsFnProtoByName(name) ?: return emptyList()
     val paramDeclList = fnProto.paramDeclList.paramDeclList
 
     return callArguments.exprList.exprList.mapIndexedNotNull { index, expr ->
