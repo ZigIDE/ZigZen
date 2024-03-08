@@ -60,8 +60,4 @@ class ZigInCommentEnterHandlerDelegate : EnterHandlerDelegateAdapter() {
 
     return EnterHandlerDelegate.Result.Default
   }
-
-  override fun postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): EnterHandlerDelegate.Result {
-    return super.postProcessEnter(file, editor, dataContext)
-  }
 }
