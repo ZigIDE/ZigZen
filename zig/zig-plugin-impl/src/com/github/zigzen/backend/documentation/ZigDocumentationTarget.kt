@@ -1,6 +1,5 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.github.zigzen.backend.documentation
-
 import com.github.zigzen.psi.ZigBuiltinFunctionPsiElementProvider
 import com.github.zigzen.psi.ZigBuiltinIdentifier
 import com.github.zigzen.psi.ZigTypes
