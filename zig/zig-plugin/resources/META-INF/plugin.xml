@@ -27,6 +27,7 @@
                   implementationClass="com.github.zigzen.lang.ZigBraceMatcher"/>
     <commenter language="ZIG"
                implementationClass="com.github.zigzen.lang.ZigCommenter"/>
+    <formatter language="ZIG" implementationClass="com.github.zigzen.formatting.ZigFormattingModelBuilder"/>
     <parserDefinition language="ZIG"
                       implementationClass="com.github.zigzen.lang.parser.ZigParserDefinition"/>
     <quoteHandler language="ZIG" implementationClass="com.github.zigzen.codeInsight.editorActions.ZigQuoteHandler"/>
