@@ -2,6 +2,7 @@
 package com.github.zigzen.codeInsight.completion
 
 import com.github.zigzen.psi.ZigBuiltinFunctionPsiElementProvider
+import com.github.zigzen.psi.ZigElementFactory
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
@@ -17,7 +18,7 @@ class ZigBuiltinFunctionCompletionProvider : CompletionProvider<CompletionParame
       val fnProto = provider.getBuiltinFunctionAsFnProtoByName(name)!!
 
       LookupElementBuilder
-        .create("${name.trimEnd { it == '_' }}()")
+        .createWithSmartPointer("${name.trimEnd { it == '_' }}()", ZigElementFactory.createBuiltinIdentifier(parameters.originalFile.project, name))
         .withPresentableText(name)
         .withTailText("(${fnProto.paramDeclList.text})")
         .withTypeText(fnProto.expr.text)
