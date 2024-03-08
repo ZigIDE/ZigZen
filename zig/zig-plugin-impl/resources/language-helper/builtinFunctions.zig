@@ -483,20 +483,43 @@ fn divTrunc(numerator: T, denominator: T) T {}
 /// Returns a compile time constant pointer to null-terminated, fixed-size array with length equal to the byte count of
 /// the file given by `path`. The contents of the array are the contents of the file. This is equivalent to a string
 /// literal with the file contents.
+///
+/// `path` is absolute or relative to the current file, just like `@import`.
+///
+/// See also:
+/// - `@import`
 fn embedFile(comptime path: []const u8) *const [N:0]u8 {}
 
 // TODO: figure out proper return type
 /// Converts an integer into an [enum](https://ziglang.org/documentation/master/#enum) value. The return type is the inferred result type.
+///
+/// Attempting to convert an integer which represents no value in the chosen enum type invokes safety-checked
+/// [Undefined Behavior](https://ziglang.org/documentation/master/#Undefined-Behavior).
+///
+/// See also:
+/// - `@intFromEnum`
 fn enumFromInt(integer: anytype) T {}
 
 // TODO: figure out proper return type
 /// Converts an error set or error union value from one error set to another error set. The return type is the inferred result type.
+///
+/// Attempting to convert an error which is not in the destination error set results in safety-protected
+/// [Undefined Behavior](https://ziglang.org/documentation/master/#Undefined-Behavior).
 fn errorCast(value: anytype) T {}
 
 /// Converts from the integer representation of an error into [The Global Error Set](https://ziglang.org/documentation/master/#The-Global-Error-Set) type.
+///
+/// It is generally recommended to avoid this cast, as the integer representation of an error is not stable across
+/// source code changes.
+///
+/// Attempting to convert an integer that does not correspond to any error results in safety-protected
+/// [Undefined Behavior](https://ziglang.org/documentation/master/#Undefined-Behavior).
 fn errorFromInt(value: Int(.unsigned, @bitSizeOf(anyerror))) anyerror {}
 
 /// Returns the string representation of an error. The string representation of `error.OutOfMem` is `"OutOfMem"`.
+///
+/// If there are no calls to `@errorName` in an entire application, or all calls have a compile-time known value for
+/// `err`, then no error name table will be generated.
 fn errorName(err: anyerror) [:0]const u8 {}
 
 /// Returns a stack trace object if the binary is built with error return tracing, and this function is invoked in a function that calls
@@ -510,12 +533,55 @@ fn exp(value: anytype) @TypeOf(value) {}
 fn exp2(value: anytype) @TypeOf(value) {}
 
 /// Creates a symbol in the output object file.
+///
+/// `declaration` must be one of two things:
+/// - An identifier (x) identifying a function or a variable.
+/// - Field access (x.y) looking up a function or a variable.
+///
+/// This builtin can be called from a `comptime` block to conditionally export symbols. When `declaration` is a function
+/// with the C calling convention and `options.linkage` is `Strong`, this is equivalent to the export keyword used on a
+/// function.
+///
+/// For example:
+/// ```zig
+/// comptime {
+///    @export(internalName, .{ .name = "foo", .linkage = .Strong });
+/// }
+///
+/// fn internalName() callconv(.C) void {}
+/// ```
+/// is equivalent to:
+/// ```zig
+/// export fn foo() void {}
+/// ```
+///
+/// Note that even when using export, the `@"foo"` syntax for identifiers can be used to choose any string for the symbol
+/// name:
+///
+/// ```zig
+/// export fn @"A function name that is a complete sentence."() void {}
+/// ```
+///
+/// See also:
+/// - [Exporting a C Library](https://ziglang.org/documentation/master/#Exporting-a-C-Library)
 fn export_(declaration, comptime options: ExportOptions) void {}
 
 /// Creates a reference to an external symbol in the output object file. `T` must be a pointer type.
+///
+/// See also:
+/// - `@export`
 fn extern_(T: type, comptime options: ExternOptions) T {}
 
 /// Introduces happens-before edges between operations.
+///
+/// `AtomicOrder` can be found with `@import("std").builtin.AtomicOrder`.
+///
+/// See also:
+/// - `@atomicStore`
+/// - `@atomicLoad`
+/// - `@atomicRmw`
+/// - `@cmpxchgWeak`
+/// - `@cmpxchgStrong`
 fn fence(order: AtomicOrder) void {}
 
 // TODO: figure out proper return type
