@@ -15,7 +15,8 @@
               fieldName="INSTANCE"
               implementationClass="com.github.zigzen.openapi.ZigFileType"
               name="Zig File"/>
-    <runLineMarkerContributor language="ZIG" implementationClass="com.github.zigzen.execution.lineMarker.ZigRunLineMarkerContributor"/>
+    <runLineMarkerContributor language="ZIG" implementationClass="com.github.zigzen.execution.lineMarker.ZigRunRunLineMarkerContributor"/>
+    <runLineMarkerContributor language="ZIG" implementationClass="com.github.zigzen.execution.lineMarker.ZigTestRunLineMarkerContributor"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij.codeInsight">
