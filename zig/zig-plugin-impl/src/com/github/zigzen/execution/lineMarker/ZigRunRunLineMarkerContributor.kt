@@ -10,7 +10,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 
-class ZigRunLineMarkerContributor : RunLineMarkerContributor() {
+class ZigRunRunLineMarkerContributor : RunLineMarkerContributor() {
   override fun getInfo(element: PsiElement): Info? {
     if (!element.language.`is`(ZigLanguage.INSTANCE))
       return null
