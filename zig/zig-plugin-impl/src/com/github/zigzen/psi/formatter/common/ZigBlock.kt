@@ -34,7 +34,7 @@ class ZigBlock(
   }
 
   override fun getIndent(): Indent {
-    if (node.elementType != ZigTypes.STATEMENT)
+    if (node.elementType == ZigTypes.STATEMENT)
       return Indent.getNormalIndent()
 
     return Indent.getNoneIndent()
