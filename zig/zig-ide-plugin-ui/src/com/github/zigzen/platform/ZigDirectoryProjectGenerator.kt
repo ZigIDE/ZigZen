@@ -7,6 +7,7 @@ import com.github.zigzen.ide.util.projectWizard.ZigProjectSettingsStep
 import com.github.zigzen.lang.toolchain.tool.ZigToolchainZigTool
 import com.github.zigzen.lang.toolchain.tool.zig
 import com.github.zigzen.openapi.ZigZenBundle
+import com.github.zigzen.openapi.components.ZigProjectSettingsService
 import com.intellij.ide.util.PsiNavigationSupport
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep
 import com.intellij.ide.util.projectWizard.CustomStepProjectGenerator
@@ -39,15 +40,18 @@ class ZigDirectoryProjectGenerator : DirectoryProjectGeneratorBase<ZigNewProject
   override fun generateProject(
     project: Project,
     baseDir: VirtualFile,
-    settings: ZigNewProjectConfigurationData,
+    data: ZigNewProjectConfigurationData,
     module: Module
   ) {
-    val toolchain = settings.settings.toolchain
+    val service = ZigProjectSettingsService.getInstance(project)
+    val toolchain = data.settings.toolchain
+    service.state.setToolchain(toolchain)
+
     val zig = toolchain?.zig ?: return
     val projectName = project.name.replace(' ', '-')
 
     val projectFiles = ProgressManager.getInstance().runProcessWithProgressSynchronously<ZigToolchainZigTool.ZigToolchainZigToolGeneratedProjectFiles, Exception>(
-      { zig.initializeProject(baseDir, baseDir.path.toNioPathOrNull(), settings.isBinary) },
+      { zig.initializeProject(baseDir, baseDir.path.toNioPathOrNull(), data.isBinary) },
       ZigZenBundle.IDE_UI_BUNDLE.getMessage("com.github.zigzen.ide.project.creating", projectName),
       true,
       project,
