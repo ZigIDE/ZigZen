@@ -18,11 +18,16 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.components.ZigToolchainFileChooserComboBox
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.Panel
+import java.nio.file.Path
+import java.nio.file.Paths
 import javax.swing.JLabel
 import kotlin.io.path.absolutePathString
 import kotlin.jvm.Throws
 
-class ZigProjectSettingsPanel(private val updateListener: (() -> Unit)? = null) : Disposable {
+class ZigProjectSettingsPanel(
+  private val projectDir: Path = Paths.get("."),
+  private val updateListener: (() -> Unit)? = null
+) : Disposable {
   data class ProjectSettingsData(
     val toolchain: AbstractZigToolchain?,
     val pathToStd: String?,
@@ -64,7 +69,7 @@ class ZigProjectSettingsPanel(private val updateListener: (() -> Unit)? = null) 
         .getInstance()
         .defaultProject
         .service<ZigProjectSettingsService>()
-        .getToolchain(),
+        .getToolchain() ?: AbstractZigToolchain.suggestToolchain(projectDir),
       null,
     )
 
