@@ -69,7 +69,7 @@ class ZigProjectSettingsPanel(
         .getInstance()
         .defaultProject
         .service<ZigProjectSettingsService>()
-        .getToolchain() ?: AbstractZigToolchain.suggestToolchain(projectDir),
+        .toolchain ?: AbstractZigToolchain.suggestToolchain(projectDir),
       null,
     )
 
