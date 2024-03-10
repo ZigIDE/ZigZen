@@ -14,7 +14,7 @@ import com.intellij.openapi.project.Project
   storages = [Storage(StoragePathMacros.WORKSPACE_FILE)],
 )
 class ZigProjectSettingsService(project: Project) : AbstractZigProjectSettingsService<ZigProjectSettings>(project, ZigProjectSettings()) {
-  fun getToolchain() = state.getToolchain()
+  val toolchain = state.toolchain
 
   companion object {
     fun getInstance(project: Project) = project.service<ZigProjectSettingsService>()

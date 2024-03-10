@@ -16,7 +16,7 @@ abstract class AbstractZigCommandLineState<T: AbstractZigLocatableConfiguration<
 
   private fun createGeneralCommandLine(): GeneralCommandLine {
     val service = environment.project.service<ZigProjectSettingsService>()
-    val toolchain = service.getToolchain()
+    val toolchain = service.toolchain
 
     val zigExecutablePath = toolchain?.pathToExecutable("zig")
 

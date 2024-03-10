@@ -36,7 +36,7 @@ class ZigToolchainFileChooserComboBox(onTextChanged: () -> Unit = {})
     }
 
   init {
-    ComboboxSpeedSearch(childComponent)
+    ComboboxSpeedSearch.installOn(childComponent)
     childComponent.editor = editor
     childComponent.isEditable = true
 
