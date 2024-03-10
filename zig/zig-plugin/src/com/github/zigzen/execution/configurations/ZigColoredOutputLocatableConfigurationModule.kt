@@ -4,10 +4,10 @@ package com.github.zigzen.execution.configurations
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.dsl.builder.Panel
 
-class ZigColouredOutputLocatableConfigurationModule<T> : IZigLocatableConfigurationModule<T>
+class ZigColoredOutputLocatableConfigurationModule<T> : IZigLocatableConfigurationModule<T>
 where
-  T: AbstractZigLocatableConfiguration<T>, T: IZigColouredOutputLocatableConfigurationModuleConfigurationManipulator {
-  private val checkbox = JBCheckBox("Enable coloured terminal output")
+  T: AbstractZigLocatableConfiguration<T>, T: IZigColoredOutputLocatableConfigurationModuleConfigurationManipulator {
+  private val checkbox = JBCheckBox("Enable colored terminal output")
 
   override fun applyTo(configuration: T) {
     configuration.setColouredOutput(checkbox.isSelected)
