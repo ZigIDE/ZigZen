@@ -1,0 +1,25 @@
+// Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
+package com.github.zigzen.execution.configurations
+
+import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.dsl.builder.Panel
+
+class ZigColouredOutputLocatableConfigurationModule<T> : IZigLocatableConfigurationModule<T>
+where
+  T: AbstractZigLocatableConfiguration<T>, T: IZigColouredOutputLocatableConfigurationModuleConfigurationManipulator {
+  private val checkbox = JBCheckBox()
+
+  override fun applyTo(configuration: T) {
+    configuration.setColouredOutput(checkbox.isSelected)
+  }
+
+  override fun buildPanel(panel: Panel): Unit = with(panel) {
+    row("Coloured Output:") {
+      cell(checkbox)
+    }
+  }
+
+  override fun resetFrom(configuration: T) {
+    checkbox.isSelected = configuration.isColouredOutput()
+  }
+}
