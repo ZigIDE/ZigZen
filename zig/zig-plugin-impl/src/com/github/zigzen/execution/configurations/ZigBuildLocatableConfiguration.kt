@@ -12,7 +12,7 @@ class ZigBuildLocatableConfiguration(
   project: Project,
   configurationFactory: ConfigurationFactory
 ) : AbstractZigLocatableConfiguration<ZigBuildLocatableConfiguration>(project, configurationFactory, "Zig Build"),
-    IZigColouredOutputLocatableConfigurationModuleConfigurationManipulator {
+    IZigColoredOutputLocatableConfigurationModuleConfigurationManipulator {
   private var colouredOutput = true
 
   override fun buildCommandLineArguments(): MutableList<String> {
@@ -22,7 +22,7 @@ class ZigBuildLocatableConfiguration(
 
   override fun getConfigurationModules(): MutableList<IZigLocatableConfigurationModule<ZigBuildLocatableConfiguration>> {
     val list = super.getConfigurationModules()
-    list.add(ZigColouredOutputLocatableConfigurationModule())
+    list.add(ZigColoredOutputLocatableConfigurationModule())
 
     return list
   }
