@@ -6,10 +6,13 @@ import com.github.zigzen.lang.toolchain.ZigToolchainProvider
 import com.github.zigzen.lang.toolchain.flavour.AbstractZigToolchainFlavour
 import com.github.zigzen.lang.toolchain.tool.zig
 import com.github.zigzen.openapi.ZigZenBundle
+import com.github.zigzen.openapi.components.ZigProjectSettingsService
 import com.github.zigzen.openapi.ui.TaskDebouncer
 import com.github.zigzen.openapi.ui.dsl.pathToDirectoryTextField
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.components.service
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.ZigToolchainFileChooserComboBox
@@ -46,6 +49,8 @@ class ZigProjectSettingsPanel(private val updateListener: (() -> Unit)? = null) 
     }
     set(value) {
       pathToToolchainComboBox.selectedPath = value.toolchain?.location
+      pathToStdTextField.text = value.pathToStd.orEmpty()
+
       update()
     }
 
@@ -54,6 +59,15 @@ class ZigProjectSettingsPanel(private val updateListener: (() -> Unit)? = null) 
   }
 
   fun attachSelfTo(panel: Panel) = with(panel) {
+    data = ProjectSettingsData(
+      ProjectManager
+        .getInstance()
+        .defaultProject
+        .service<ZigProjectSettingsService>()
+        .getToolchain(),
+      null,
+    )
+
     row(ZigZenBundle.IDE_UI_BUNDLE.getMessage("com.github.zigzen.ide.project.ui.toolchain.location")) {
       cell(pathToToolchainComboBox)
         .align(AlignX.FILL)
