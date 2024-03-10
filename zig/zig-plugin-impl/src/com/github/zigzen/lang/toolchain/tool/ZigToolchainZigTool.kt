@@ -34,7 +34,7 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
 
   @OptIn(ExperimentalSerializationApi::class)
   private fun queryEnvironment(): ZigToolchainEnvironment? {
-    val commandLine = createBaseCommandLine("env", workingDirectory = toolchain.location)
+    val commandLine = createBaseCommandLine("env")
     try {
       val process = commandLine.createProcess()
       process.waitFor()

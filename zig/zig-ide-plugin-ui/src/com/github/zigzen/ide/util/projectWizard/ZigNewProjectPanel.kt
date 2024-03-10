@@ -10,7 +10,7 @@ import com.intellij.ui.dsl.builder.Panel
 import kotlin.jvm.Throws
 
 class ZigNewProjectPanel(updateListener: (() -> Unit)? = null) : Disposable {
-  private val zigProjectSettingsPanel = ZigProjectSettingsPanel(updateListener)
+  private val zigProjectSettingsPanel = ZigProjectSettingsPanel(updateListener = updateListener)
 
   var data: ZigNewProjectConfigurationData = ZigNewProjectConfigurationData(zigProjectSettingsPanel.data, true)
 
