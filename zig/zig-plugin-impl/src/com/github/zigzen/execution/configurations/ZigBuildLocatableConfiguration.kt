@@ -10,9 +10,17 @@ import com.intellij.openapi.project.Project
 class ZigBuildLocatableConfiguration(
   project: Project,
   configurationFactory: ConfigurationFactory
-) : AbstractZigLocatableConfiguration<ZigBuildLocatableConfiguration>(project, configurationFactory, "Zig Build") {
+) : AbstractZigLocatableConfiguration<ZigBuildLocatableConfiguration>(project, configurationFactory, "Zig Build"),
+    IZigColouredOutputLocatableConfigurationModuleConfigurationManipulator {
   override fun buildCommandLineArguments(): List<String> {
     TODO("Not yet implemented")
+  }
+
+  override fun getConfigurationModules(): MutableList<IZigLocatableConfigurationModule<ZigBuildLocatableConfiguration>> {
+    val list = super.getConfigurationModules()
+    list.add(ZigColouredOutputLocatableConfigurationModule())
+
+    return list
   }
 
   override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
@@ -20,6 +28,14 @@ class ZigBuildLocatableConfiguration(
   }
 
   override fun suggestedName(): String {
+    TODO("Not yet implemented")
+  }
+
+  override fun isColouredOutput(): Boolean {
+    TODO("Not yet implemented")
+  }
+
+  override fun setColouredOutput(colouredOutput: Boolean) {
     TODO("Not yet implemented")
   }
 }
