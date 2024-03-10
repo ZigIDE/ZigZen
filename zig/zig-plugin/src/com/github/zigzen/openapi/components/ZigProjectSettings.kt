@@ -3,24 +3,20 @@ package com.github.zigzen.openapi.components
 
 import com.github.zigzen.lang.toolchain.AbstractZigToolchain
 import com.github.zigzen.lang.toolchain.ZigToolchainProvider
-import kotlin.io.path.Path
+import com.intellij.openapi.components.BaseState
+import com.intellij.util.xmlb.annotations.Transient
+import java.nio.file.Paths
 import kotlin.io.path.invariantSeparatorsPathString
 
-data class ZigProjectSettings(
-  private var toolchainHomeDirectory: String? = null,
-  private var pathToZigStdlib: String? = null,
-) {
-  fun getToolchain(): AbstractZigToolchain? {
-    if (pathToZigStdlib == null)
-      return null
+class ZigProjectSettings : BaseState() {
+  var toolchainHomeDirectory by string()
+  var pathToZigStdlib by string()
 
-    return ZigToolchainProvider.provideToolchain(Path(pathToZigStdlib!!))
-  }
-
-  fun setToolchain(toolchain: AbstractZigToolchain?) {
-    if (toolchain == null)
-      return
-
-    toolchainHomeDirectory = toolchain.location.invariantSeparatorsPathString
-  }
+  @get:Transient
+  @set:Transient
+  var toolchain: AbstractZigToolchain?
+    get() = toolchainHomeDirectory?.let { ZigToolchainProvider.provideToolchain(Paths.get(it)) }
+    set(value) {
+      toolchainHomeDirectory = value?.location?.invariantSeparatorsPathString
+    }
 }

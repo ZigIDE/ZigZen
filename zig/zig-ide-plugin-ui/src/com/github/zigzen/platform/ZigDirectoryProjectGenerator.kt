@@ -46,7 +46,7 @@ class ZigDirectoryProjectGenerator : DirectoryProjectGeneratorBase<ZigNewProject
     val service = ZigProjectSettingsService.getInstance(project)
     val toolchain = data.settings.toolchain
 
-    service.state.setToolchain(toolchain)
+    service.state.toolchain = toolchain
 
     val zig = toolchain?.zig ?: return
     val projectName = project.name.replace(' ', '-')
