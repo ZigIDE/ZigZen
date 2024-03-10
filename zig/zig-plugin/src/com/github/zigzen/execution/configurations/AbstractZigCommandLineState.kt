@@ -1,7 +1,7 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.github.zigzen.execution.configurations
 
-import com.github.zigzen.execution.process.ZigKillableProcessHandler
+import com.github.zigzen.execution.process.ZigKillableColoredProcessHandler
 import com.github.zigzen.openapi.components.ZigProjectSettingsService
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.configurations.GeneralCommandLine
@@ -12,7 +12,7 @@ abstract class AbstractZigCommandLineState<T: AbstractZigLocatableConfiguration<
   environment: ExecutionEnvironment,
   private val configuration: T
 ) : CommandLineState(environment) {
-  override fun startProcess() = ZigKillableProcessHandler(createGeneralCommandLine())
+  override fun startProcess() = ZigKillableColoredProcessHandler(createGeneralCommandLine())
 
   private fun createGeneralCommandLine(): GeneralCommandLine {
     val service = environment.project.service<ZigProjectSettingsService>()
