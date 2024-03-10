@@ -12,7 +12,8 @@ import kotlin.jvm.Throws
 class ZigNewProjectPanel(updateListener: (() -> Unit)? = null) : Disposable {
   private val zigProjectSettingsPanel = ZigProjectSettingsPanel(updateListener = updateListener)
 
-  var data: ZigNewProjectConfigurationData = ZigNewProjectConfigurationData(zigProjectSettingsPanel.data, true)
+  val data: ZigNewProjectConfigurationData
+    get() = ZigNewProjectConfigurationData(zigProjectSettingsPanel.data, true)
 
   override fun dispose() {
     Disposer.dispose(zigProjectSettingsPanel)
