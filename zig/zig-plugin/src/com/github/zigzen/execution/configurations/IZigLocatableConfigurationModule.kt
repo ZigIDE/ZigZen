@@ -3,7 +3,6 @@ package com.github.zigzen.execution.configurations
 
 import com.intellij.ui.dsl.builder.Panel
 
-
 interface IZigLocatableConfigurationModule<T> {
   fun applyTo(configuration: T)
 
