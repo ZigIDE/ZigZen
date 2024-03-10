@@ -40,5 +40,5 @@ abstract class AbstractZigLocatableConfiguration<T: AbstractZigLocatableConfigur
 
   abstract override fun suggestedName(): String
 
-  fun getConfigurationModules(): List<IZigLocatableConfigurationModule<T>> = listOf(ZigWorkingDirectoryLocatableConfigurationModule())
+  open fun getConfigurationModules(): MutableList<IZigLocatableConfigurationModule<T>> = mutableListOf(ZigWorkingDirectoryLocatableConfigurationModule())
 }
