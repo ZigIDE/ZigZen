@@ -34,7 +34,7 @@ abstract class AbstractZigLocatableConfiguration<T: AbstractZigLocatableConfigur
     JDOMExternalizerUtil.writeField(element, "WORKING_DIRECTORY", workingDirectory?.toString())
   }
 
-  abstract fun buildCommandLineArguments(): List<String>
+  abstract fun buildCommandLineArguments(): MutableList<String>
 
   abstract override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState?
 

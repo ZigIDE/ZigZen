@@ -7,14 +7,14 @@ import com.intellij.ui.dsl.builder.Panel
 class ZigColouredOutputLocatableConfigurationModule<T> : IZigLocatableConfigurationModule<T>
 where
   T: AbstractZigLocatableConfiguration<T>, T: IZigColouredOutputLocatableConfigurationModuleConfigurationManipulator {
-  private val checkbox = JBCheckBox()
+  private val checkbox = JBCheckBox("Enable coloured terminal output")
 
   override fun applyTo(configuration: T) {
     configuration.setColouredOutput(checkbox.isSelected)
   }
 
   override fun buildPanel(panel: Panel): Unit = with(panel) {
-    row("Coloured Output:") {
+    row {
       cell(checkbox)
     }
   }

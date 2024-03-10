@@ -7,4 +7,6 @@ import com.intellij.openapi.project.Project
 
 class ZigBuildConfigurationFactory(configurationType: ConfigurationType) : ConfigurationFactory(configurationType) {
   override fun createTemplateConfiguration(project: Project) = ZigBuildLocatableConfiguration(project, this)
+
+  override fun getId(): String = "zigBuild"
 }
