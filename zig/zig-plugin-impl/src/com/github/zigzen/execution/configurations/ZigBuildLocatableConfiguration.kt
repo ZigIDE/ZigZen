@@ -16,7 +16,7 @@ class ZigBuildLocatableConfiguration(
   private var colouredOutput = true
 
   override fun buildCommandLineArguments(): MutableList<String> {
-    val currentArgs = mutableListOf("build", "--color", if (colouredOutput) { "yes" } else { "no" })
+    val currentArgs = mutableListOf("build", "--color", if (colouredOutput) { "on" } else { "off" })
     return currentArgs
   }
 
