@@ -45,6 +45,7 @@ class ZigDirectoryProjectGenerator : DirectoryProjectGeneratorBase<ZigNewProject
   ) {
     val service = ZigProjectSettingsService.getInstance(project)
     val toolchain = data.settings.toolchain
+
     service.state.setToolchain(toolchain)
 
     val zig = toolchain?.zig ?: return

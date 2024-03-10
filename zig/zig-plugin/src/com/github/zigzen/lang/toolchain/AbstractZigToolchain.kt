@@ -12,4 +12,11 @@ abstract class AbstractZigToolchain(val location: Path) {
   fun patchCommandLine(commandLine: GeneralCommandLine, withSudo: Boolean): GeneralCommandLine = commandLine
 
   fun seeminglyValid(): Boolean = AbstractZigToolchainFlavour.getFlavour(location) != null
+
+  companion object {
+    fun suggestToolchain(projectDir: Path? = null): AbstractZigToolchain? = AbstractZigToolchainFlavour
+      .getApplicableFlavors()
+      .flatMap { it.suggestHomePaths() }
+      .firstNotNullOfOrNull { ZigToolchainProvider.provideToolchain(it) }
+  }
 }
