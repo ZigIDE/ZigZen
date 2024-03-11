@@ -5,10 +5,10 @@ import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.openapi.project.Project
 
-class ZigBuildConfigurationFactory(configurationType: ConfigurationType) : ConfigurationFactory(configurationType) {
-  override fun createTemplateConfiguration(project: Project) = ZigBuildLocatableConfiguration(project, this)
+class ZigRunConfigurationFactory(configurationType: ConfigurationType) : ConfigurationFactory(configurationType) {
+  override fun createTemplateConfiguration(project: Project) = ZigRunLocatableConfiguration(project, this)
 
-  override fun getId() = "zigBuild"
+  override fun getId() = "zigRun"
 
-  override fun getName() = "Zig Build"
+  override fun getName() = "Zig Run"
 }
