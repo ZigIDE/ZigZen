@@ -12,6 +12,8 @@ class ZigConfigurationType : ConfigurationTypeBase(
   NotNullLazyValue.lazy { ZigZenIcons.Zig }) {
   init {
     addFactory(ZigBuildConfigurationFactory(this))
+    addFactory(ZigRunConfigurationFactory(this))
+    addFactory(ZigTestConfigurationFactory(this))
   }
 
   override fun getTag(): String = "zig"
