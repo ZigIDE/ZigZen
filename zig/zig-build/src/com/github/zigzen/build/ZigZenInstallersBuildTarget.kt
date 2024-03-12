@@ -20,9 +20,9 @@ object ZigZenInstallersBuildTarget {
 
         incrementalCompilation = true
         useCompiledClassesFromProjectOutput = false
-        buildStepsToSkip.addAll(listOf(
+        buildStepsToSkip = setOf(
           BuildOptions.MAC_SIGN_STEP,
-        ))
+        )
       }
 
       val context = BuildContextImpl.createContext(
