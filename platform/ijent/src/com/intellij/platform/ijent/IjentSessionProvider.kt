@@ -1,4 +1,4 @@
-// Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.platform.ijent
 
 import com.intellij.execution.CommandLineUtil.posixQuote
@@ -6,14 +6,15 @@ import com.intellij.openapi.components.serviceAsync
 import com.intellij.openapi.diagnostic.debug
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.trace
+import com.intellij.util.io.computeDetached
 import com.intellij.util.io.copyToAsync
 import kotlinx.coroutines.*
 import org.jetbrains.annotations.ApiStatus
 import java.io.InputStream
 import java.io.OutputStream
+import java.nio.file.Path
 import kotlin.io.path.fileSize
 import kotlin.io.path.inputStream
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -108,14 +109,24 @@ suspend fun connectToRunningIjent(ijentName: String, platform: IjentExecFileProv
  *
  * The process terminates automatically only when the IDE exits, or if [IjentApi.close] is called explicitly.
  * [bindToScope] may be useful for terminating the IJent process earlier.
+ *
+ * [pathMapper] is a workaround function that allows to upload IJent to the remote target explicitly.
+ * The argument passed to the function is the path to the corresponding IJent binary on the local machine.
+ * The function must return a path on the remote machine.
+ * If the function returns null, the binary is transferred to the server directly via the same shell process,
+ * which turned out to be unreliable unfortunately.
  */
 // TODO Change string paths to IjentPath.Absolute.
-suspend fun bootstrapOverShellSession(ijentName: String, shellProcess: Process): Pair<String, IjentApi> {
+suspend fun bootstrapOverShellSession(
+  ijentName: String,
+  shellProcess: Process,
+  pathMapper: suspend (Path) -> String?,
+): Pair<String, IjentApi> {
   val remoteIjentPath: String
   val ijentApi = IjentSessionRegistry.instanceAsync().register(ijentName) { ijentCoroutineScope, ijentId ->
     val processWatcher = IjentProcessWatcher.launch(ijentCoroutineScope, shellProcess, ijentId)
 
-    val (path, targetPlatform) = doBootstrapOverShellSession(shellProcess)
+    val (path, targetPlatform) = doBootstrapOverShellSession(shellProcess, pathMapper)
     processWatcher.zeroExitCodeIsExpected = true
     remoteIjentPath = path
 
@@ -143,6 +154,7 @@ suspend fun bootstrapOverShellSession(ijentName: String, shellProcess: Process):
 
 private suspend fun doBootstrapOverShellSession(
   shellProcess: Process,
+  pathMapper: suspend (Path) -> String?,
 ): Pair<String, IjentExecFileProvider.SupportedPlatform> = withContext(Dispatchers.IO) {
   // The boundary is for skipping various banners, greeting messages, PS1, etc.
   val boundary = (0..31).joinToString("") { "abcdefghijklmnopqrstuvwxyz0123456789".random().toString() }
@@ -157,7 +169,6 @@ private suspend fun doBootstrapOverShellSession(
 
     do {
       val line = readLineWithoutBuffering(shellProcess)
-      LOG.trace { "Received greeting line from stdout: $line" }
     }
     while (line != boundary)
 
@@ -174,31 +185,44 @@ private suspend fun doBootstrapOverShellSession(
   // TODO Don't upload a new binary every time if the binary is already on the server. However, hashes must be checked.
   val ijentBinarySize = ijentBinaryOnLocalDisk.fileSize()
 
-  val script =
+  val ijentBinaryPreparedOnTarget = pathMapper(ijentBinaryOnLocalDisk)
+
+  val script = run {
+    val ijentPathUploadScript =
+      pathMapper(ijentBinaryOnLocalDisk)
+        ?.let { "cp ${posixQuote(it)} \$BINARY" }
+      ?: run {
+        "LC_ALL=C head -c $ijentBinarySize > \$BINARY"
+      }
+
     """BINARY="$(mktemp -d)/ijent" """ +
-    """; LC_ALL=C head -c $ijentBinarySize > "${"$"}BINARY" """ +
+    """; $ijentPathUploadScript """ +
     """; chmod 500 "${"$"}BINARY" """ +
     """; echo "${"$"}BINARY" """ +
     "\n"
+  }
 
-  LOG.trace { "Executing script inside a shell: ${script.trimEnd()}" }
+  LOG.debug { "Executing script inside a shell: ${script.trimEnd()}" }
   shellProcess.outputStream.write(script.toByteArray())
   yield()
   shellProcess.outputStream.flush()
 
-  LOG.debug { "Sending the IJent binary for $targetPlatform" }
-  ijentBinaryOnLocalDisk.inputStream().copyToAsync(shellProcess.outputStream)
-  shellProcess.outputStream.flush()
-  LOG.debug { "Sent the IJent binary for $targetPlatform" }
+  if (ijentBinaryPreparedOnTarget == null) {
+    LOG.debug { "Writing $ijentBinarySize bytes of IJent binary into the stream" }
+    ijentBinaryOnLocalDisk.inputStream().copyToAsync(shellProcess.outputStream)
+    shellProcess.outputStream.flush()
+    LOG.debug { "Sent the IJent binary for $targetPlatform" }
+  }
 
   val remotePathToBinary = readLineWithoutBuffering(shellProcess)
 
   val joinedCmd = getIjentGrpcArgv(remotePathToBinary, selfDeleteOnExit = true).joinToString(" ")
   val commandLineArgs =
     """cd ${posixQuote(remotePathToBinary.substringBeforeLast('/'))}""" +
-    """; exec "$(getent passwd "${'$'}(whoami)" | cut -d: -f7)" -c ${posixQuote(joinedCmd)}""" +
+    """; export SHELL="${'$'}(getent passwd "${'$'}(whoami)" | cut -d: -f7)" """ +
+    """; exec "${'$'}SHELL" -c ${posixQuote(joinedCmd)}""" +
     "\n"
-  LOG.trace { "Executing IJent inside a shell: ${commandLineArgs.trimEnd()}" }
+  LOG.debug { "Executing IJent inside a shell: ${commandLineArgs.trimEnd()}" }
 
   shellProcess.outputStream.write(commandLineArgs.toByteArray())
   shellProcess.outputStream.flush()
@@ -207,22 +231,18 @@ private suspend fun doBootstrapOverShellSession(
 }
 
 /** The same stdin and stdout will be used for transferring binary data. Some buffering wrapper may occasionally consume too much data. */
+@OptIn(DelicateCoroutinesApi::class)
 private suspend fun readLineWithoutBuffering(process: Process): String =
-  withContext(Dispatchers.IO) {
+  computeDetached {
     val buffer = StringBuilder()
     val stream = process.inputStream
     while (process.isAlive) {
-      val available = stream.available()
-      if (available > 0) {
-        val c = stream.read()
-        if (c < 0 || c == '\n'.code) {
-          break
-        }
-        buffer.append(c.toChar())
+      ensureActive()
+      val c = stream.read()
+      if (c < 0 || c == '\n'.code) {
+        break
       }
-      else {
-        delay(50.milliseconds) // Just a random timeout, which was chosen without any research.
-      }
+      buffer.append(c.toChar())
     }
     LOG.trace { "Read line from stdout: $buffer" }
     buffer.toString()
