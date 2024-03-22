@@ -3,18 +3,22 @@ package com.github.zigzen.execution.configurations
 
 import com.github.zigzen.icons.ZigZenIcons
 import com.intellij.execution.configurations.ConfigurationTypeBase
+import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.openapi.util.NotNullLazyValue
 
-class ZigConfigurationType : ConfigurationTypeBase(
-  "zig",
-  "Zig",
-  "Zig run configuration",
+@Suppress("CompanionObjectInExtension")
+class ZigTestConfigurationType : ConfigurationTypeBase(
+  "zigTest",
+  "Zig Test",
+  "Zig test run configuration",
   NotNullLazyValue.lazy { ZigZenIcons.Zig }) {
   init {
-    addFactory(ZigBuildConfigurationFactory(this))
-    addFactory(ZigRunConfigurationFactory(this))
     addFactory(ZigTestConfigurationFactory(this))
   }
 
-  override fun getTag(): String = "zig"
+  override fun getTag(): String = "zigTest"
+
+  companion object {
+    fun getInstance() = ConfigurationTypeUtil.findConfigurationType(ZigTestConfigurationType::class.java)
+  }
 }
