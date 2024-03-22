@@ -20,6 +20,8 @@ object ZigZenInstallersBuildTarget {
     val patchNumberPath = BuildPaths.COMMUNITY_ROOT.communityRoot.resolve("patch.txt")
     val patchBuild = Files.readString(patchNumberPath).toInt()
 
+    Files.write(patchNumberPath, "${patchBuild + 1}".toByteArray())
+
     @Suppress("RAW_RUN_BLOCKING")
     runBlocking(Dispatchers.Default) {
       val options = BuildOptions().apply {
@@ -40,7 +42,5 @@ object ZigZenInstallersBuildTarget {
       createBuildTasks(context)
       buildDistributions(context)
     }
-
-    Files.write(patchNumberPath, "${patchBuild + 1}".toByteArray())
   }
 }
