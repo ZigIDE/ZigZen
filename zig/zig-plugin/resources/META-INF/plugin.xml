@@ -9,13 +9,18 @@
     <annotator language="ZIG"
                implementationClass="com.github.zigzen.lang.annotation.ZigAnnotator"/>
     <colorSettingsPage implementation="com.github.zigzen.openapi.options.ZigColorSettingsPage"/>
-    <configurationType implementation="com.github.zigzen.execution.configurations.ZigConfigurationType"/>
+    <configurationType implementation="com.github.zigzen.execution.configurations.ZigBuildConfigurationType"/>
+    <configurationType implementation="com.github.zigzen.execution.configurations.ZigRunConfigurationType"/>
+    <configurationType implementation="com.github.zigzen.execution.configurations.ZigTestConfigurationType"/>
     <enterHandlerDelegate implementation="com.github.zigzen.codeInsight.editorActions.enter.ZigInCommentEnterHandlerDelegate"/>
     <fileType language="ZIG"
               extensions="zig"
               fieldName="INSTANCE"
               implementationClass="com.github.zigzen.openapi.ZigFileType"
               name="Zig File"/>
+    <runConfigurationProducer implementation="com.github.zigzen.execution.configurations.ZigBuildLazyRunConfigurationProducer"/>
+    <runConfigurationProducer implementation="com.github.zigzen.execution.configurations.ZigRunLazyRunConfigurationProducer"/>
+    <runConfigurationProducer implementation="com.github.zigzen.execution.configurations.ZigTestLazyRunConfigurationProducer"/>
     <runLineMarkerContributor language="ZIG" implementationClass="com.github.zigzen.execution.lineMarker.ZigBuildRunLineMarkerContributor"/>
     <runLineMarkerContributor language="ZIG" implementationClass="com.github.zigzen.execution.lineMarker.ZigRunRunLineMarkerContributor"/>
     <runLineMarkerContributor language="ZIG" implementationClass="com.github.zigzen.execution.lineMarker.ZigTestRunLineMarkerContributor"/>
@@ -53,9 +58,7 @@
   </extensions>
 
   <extensionPoints>
-    <extensionPoint qualifiedName="com.github.zigzen.zig.toolchainFlavour"
-                    interface="com.github.zigzen.lang.toolchain.flavour.AbstractZigToolchainFlavour"/>
-    <extensionPoint qualifiedName="com.github.zigzen.zig.toolchainProvider"
-                    interface="com.github.zigzen.lang.toolchain.ZigToolchainProvider"/>
+    <extensionPoint interface="com.github.zigzen.lang.toolchain.flavour.AbstractZigToolchainFlavour" name="toolchainFlavour"/>
+    <extensionPoint interface="com.github.zigzen.lang.toolchain.ZigToolchainProvider" name="toolchainProvider"/>
   </extensionPoints>
 </idea-plugin>
