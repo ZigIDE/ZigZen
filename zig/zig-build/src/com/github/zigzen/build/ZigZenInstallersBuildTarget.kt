@@ -9,14 +9,21 @@ import org.jetbrains.intellij.build.BuildPaths
 import org.jetbrains.intellij.build.createBuildTasks
 import org.jetbrains.intellij.build.impl.BuildContextImpl
 import org.jetbrains.intellij.build.impl.buildDistributions
+import java.nio.file.Files
 
 object ZigZenInstallersBuildTarget {
   @JvmStatic
   fun main(args: Array<String>) {
+    val buildNumberPath = BuildPaths.COMMUNITY_ROOT.communityRoot.resolve("build.txt")
+    val platformBuild = Files.readString(buildNumberPath).removeSuffix(".SNAPSHOT")
+
+    val patchNumberPath = BuildPaths.COMMUNITY_ROOT.communityRoot.resolve("patch.txt")
+    val patchBuild = Files.readString(patchNumberPath).toInt()
+
     @Suppress("RAW_RUN_BLOCKING")
     runBlocking(Dispatchers.Default) {
       val options = BuildOptions().apply {
-        buildNumber = null
+        buildNumber = "$platformBuild.$patchBuild"
 
         incrementalCompilation = true
         useCompiledClassesFromProjectOutput = false
@@ -33,5 +40,7 @@ object ZigZenInstallersBuildTarget {
       createBuildTasks(context)
       buildDistributions(context)
     }
+
+    Files.write(patchNumberPath, "${patchBuild + 1}".toByteArray())
   }
 }
