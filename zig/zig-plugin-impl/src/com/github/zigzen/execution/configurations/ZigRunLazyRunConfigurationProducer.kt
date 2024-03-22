@@ -6,7 +6,6 @@ import com.intellij.execution.actions.ConfigurationFromContext
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import java.nio.file.Path
-import kotlin.io.path.invariantSeparatorsPathString
 
 class ZigRunLazyRunConfigurationProducer : AbstractZigLazyRunConfigurationProducer<ZigRunLocatableConfiguration>() {
   override fun getConfigurationFactory() = ZigRunConfigurationType.getInstance().configurationFactories[0]
@@ -26,7 +25,6 @@ class ZigRunLazyRunConfigurationProducer : AbstractZigLazyRunConfigurationProduc
     virtualFile: VirtualFile
   ): Boolean {
     if (ZigRunRunLineMarkerContributor.instance.elementMatches(element)) {
-      configuration.setFilePath(path.invariantSeparatorsPathString)
       configuration.name = virtualFile.presentableName
       return true
     }
