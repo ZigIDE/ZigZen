@@ -7,7 +7,7 @@ refer to directories on your machine:
 
 ## Getting ZigZen Source Code
 ZigZen source code is available from `github.com/ZigIDE/ZigZen` by either cloning or downloading a zip file (based on a branch) into
-`<ZIGZEN_HOME>`. The default is the *nightly* branch. It contains the source code which will be used to create the next major version of ZigZen.
+`<ZIGZEN_HOME>`. The default is the *241.14494* branch. It contains the source code which will be used to create the 2024.1 version of ZigZen.
 
 These Git operations can also be done through the [IntelliJ IDEA user interface](https://www.jetbrains.com/help/idea/using-git-integration.html).
 
