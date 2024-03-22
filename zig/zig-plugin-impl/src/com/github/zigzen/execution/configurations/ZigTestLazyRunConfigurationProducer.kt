@@ -1,6 +1,8 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.github.zigzen.execution.configurations
 
+import com.github.zigzen.execution.lineMarker.ZigTestRunLineMarkerContributor
+import com.intellij.execution.actions.ConfigurationFromContext
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import java.nio.file.Path
@@ -16,11 +18,21 @@ class ZigTestLazyRunConfigurationProducer : AbstractZigLazyRunConfigurationProdu
     virtualFile: VirtualFile
   ): Boolean = true
 
-  // todo
   override fun setupConfigurationFromContextImpl(
     configuration: ZigTestLocatableConfiguration,
     element: PsiElement,
     path: Path,
     virtualFile: VirtualFile
-  ): Boolean = true
+  ): Boolean {
+    if (ZigTestRunLineMarkerContributor.instance.elementMatches(element)) {
+      configuration.name = "Tests in ${virtualFile.presentableName}"
+      return true
+    }
+
+    return false
+  }
+
+  override fun shouldReplace(self: ConfigurationFromContext, other: ConfigurationFromContext): Boolean {
+    return self.configurationType is ZigTestConfigurationType
+  }
 }
