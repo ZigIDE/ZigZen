@@ -4,14 +4,13 @@ package com.github.zigzen.execution.lineMarker
 import com.github.zigzen.lang.ZigLanguage
 import com.github.zigzen.psi.ZigFnProto
 import com.github.zigzen.psi.ZigTypes
-import com.intellij.execution.lineMarker.ExecutorAction
-import com.intellij.execution.lineMarker.RunLineMarkerContributor
 import com.intellij.icons.AllIcons
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 
-class ZigBuildRunLineMarkerContributor : RunLineMarkerContributor() {
-  override fun getInfo(element: PsiElement): Info? {
+@Suppress("CompanionObjectInExtension")
+class ZigBuildRunLineMarkerContributor : AbstractZigRunLineMarkerContributor() {
+  override fun getDeclaration(element: PsiElement): PsiElement? {
     if (!element.language.`is`(ZigLanguage.INSTANCE))
       return null
 
@@ -27,11 +26,12 @@ class ZigBuildRunLineMarkerContributor : RunLineMarkerContributor() {
     if ((element.containingFile?.virtualFile?.name ?: return null) != "build.zig")
       return null
 
-    return Info(
-      AllIcons.RunConfigurations.TestState.Run,
-      ExecutorAction.getActions(),
-    ) {
-      "Build"
-    }
+    return element
+  }
+
+  override fun getIcon(element: PsiElement) = AllIcons.RunConfigurations.TestState.Run
+
+  companion object {
+    val instance = ZigBuildRunLineMarkerContributor()
   }
 }
