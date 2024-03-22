@@ -23,7 +23,6 @@
     <orderEntry type="module" module-name="intellij.platform.analysis.impl" />
     <orderEntry type="module" module-name="intellij.platform.execution" />
     <orderEntry type="module" module-name="intellij.platform.ide.impl" />
-    <orderEntry type="library" name="pty4j" level="project" />
     <orderEntry type="module" module-name="com.github.zigzen.openapi" />
     <orderEntry type="module" module-name="intellij.platform.lang" />
   </component>

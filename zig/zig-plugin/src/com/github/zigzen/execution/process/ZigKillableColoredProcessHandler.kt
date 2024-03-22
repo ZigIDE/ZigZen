@@ -5,17 +5,10 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.PtyCommandLine
 import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.KillableColoredProcessHandler
-import com.pty4j.PtyProcess
-import java.nio.charset.Charset
 
-class ZigKillableColoredProcessHandler : KillableColoredProcessHandler, AnsiEscapeDecoder.ColoredTextAcceptor {
-  constructor(commandLine: GeneralCommandLine) : super(commandLine) {
+class ZigKillableColoredProcessHandler(commandLine: GeneralCommandLine) : KillableColoredProcessHandler(commandLine), AnsiEscapeDecoder.ColoredTextAcceptor {
+  init {
     setHasPty(commandLine is PtyCommandLine)
-    setShouldDestroyProcessRecursively(!hasPty())
-  }
-
-  constructor(process: Process, commandLine: String, charset: Charset) : super(process,  commandLine, charset) {
-    setHasPty(process is PtyProcess)
     setShouldDestroyProcessRecursively(!hasPty())
   }
 }
