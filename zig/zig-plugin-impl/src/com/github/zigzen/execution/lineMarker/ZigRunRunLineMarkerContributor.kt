@@ -26,8 +26,9 @@ class ZigRunRunLineMarkerContributor : RunLineMarkerContributor() {
 
     return Info(
       AllIcons.RunConfigurations.TestState.Run,
-      ExecutorAction.getActions(0),
-      null
-    )
+      ExecutorAction.getActions(),
+    ) {
+      "Run"
+    }
   }
 }
