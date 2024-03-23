@@ -2,21 +2,33 @@
 package com.github.zigzen.codeInsight.completion
 
 import com.github.zigzen.extapi.psi.ZigPsiFile
-import com.github.zigzen.psi.ZigTypes
+import com.github.zigzen.psi.ZigContainerField
 import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.patterns.PlatformPatterns
-import com.intellij.psi.TokenType
 
-class ZigBuiltinFunctionCompletionContributor : CompletionContributor() {
+class ZigKeywordCompletionContributor : CompletionContributor() {
   init {
     extend(
       CompletionType.BASIC,
       PlatformPatterns
         .psiElement()
-        .withElementType(ZigTypes.BUILTINIDENTIFIER)
+        .withParent(ZigContainerField::class.java)
         .inFile(PlatformPatterns.psiFile(ZigPsiFile::class.java)),
-      ZigBuiltinFunctionCompletionProvider(),
+      ZigKeywordCompletionProvider(listOf(
+        "comptime",
+        "const",
+        "export",
+        "extern",
+        "fn",
+        "inline",
+        "noinline",
+        "pub",
+        "test",
+        "threadlocal",
+        "usingnamespace",
+        "var"
+      ))
     )
   }
 }
