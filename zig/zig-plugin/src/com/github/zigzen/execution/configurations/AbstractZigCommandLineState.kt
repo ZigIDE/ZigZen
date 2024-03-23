@@ -5,6 +5,8 @@ import com.github.zigzen.execution.process.ZigKillableColoredProcessHandler
 import com.github.zigzen.openapi.components.ZigProjectSettingsService
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.components.service
 
@@ -12,7 +14,12 @@ abstract class AbstractZigCommandLineState<T: AbstractZigLocatableConfiguration<
   environment: ExecutionEnvironment,
   private val configuration: T
 ) : CommandLineState(environment) {
-  override fun startProcess() = ZigKillableColoredProcessHandler(createGeneralCommandLine())
+  override fun startProcess(): ProcessHandler {
+    val handler =  ZigKillableColoredProcessHandler(createGeneralCommandLine())
+    ProcessTerminatedListener.attach(handler)
+
+    return handler
+  }
 
   private fun createGeneralCommandLine(): GeneralCommandLine {
     val service = environment.project.service<ZigProjectSettingsService>()
