@@ -45,6 +45,7 @@
 
   <extensions defaultExtensionNs="com.intellij.completion">
     <contributor language="ZIG" implementationClass="com.github.zigzen.codeInsight.completion.ZigBuiltinFunctionCompletionContributor"/>
+    <contributor language="ZIG" implementationClass="com.github.zigzen.codeInsight.completion.ZigKeywordCompletionContributor"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij.platform.backend.documentation">
