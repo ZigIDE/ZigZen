@@ -2,7 +2,7 @@
 <idea-plugin>
   <id>com.github.zigzen.ide</id>
   <name>ZigZen</name>
-  <vendor>JetBrains</vendor>
+  <vendor>ZigIDE</vendor>
 
   <depends>com.github.zigzen.zig</depends>
   <depends>com.github.zigzen.zon</depends>
