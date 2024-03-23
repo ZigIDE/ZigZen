@@ -2,7 +2,7 @@
 <idea-plugin>
   <id>com.github.zigzen.zon</id>
   <name>ZON Language</name>
-  <vendor>JetBrains</vendor>
+  <vendor>ZigIDE</vendor>
 
   <extensions defaultExtensionNs="com.intellij">
     <colorSettingsPage implementation="com.github.zigzen.openapi.options.ZonColorSettingsPage"/>
