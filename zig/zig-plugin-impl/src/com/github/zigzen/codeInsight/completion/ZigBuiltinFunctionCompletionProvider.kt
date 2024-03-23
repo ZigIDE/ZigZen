@@ -26,6 +26,6 @@ class ZigBuiltinFunctionCompletionProvider : CompletionProvider<CompletionParame
         .withInsertHandler { context, _ ->
           context.editor.caretModel.moveCaretRelatively(-1, 0, false, false, true)
         }
-    }.toList())
+    })
   }
 }
