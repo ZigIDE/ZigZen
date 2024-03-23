@@ -2,7 +2,7 @@
 <idea-plugin>
   <id>com.github.zigzen.zig</id>
   <name>Zig Language</name>
-  <vendor>JetBrains</vendor>
+  <vendor>ZigIDE</vendor>
 
   <extensions defaultExtensionNs="com.intellij">
     <additionalLibraryRootsProvider implementation="com.github.zigzen.openapi.roots.ZigAdditionalLibraryRootsProvider"/>
