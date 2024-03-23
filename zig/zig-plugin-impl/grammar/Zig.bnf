@@ -15,24 +15,22 @@
  */
 
 {
-  parserClass="com.github.zigzen.lang.parser.ZigParser"
+  parserClass = "com.github.zigzen.lang.parser.ZigParser"
 
-  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
-  extends(".*Expr")=Expr
+  extends = "com.intellij.extapi.psi.ASTWrapperPsiElement"
+  extends(".*Expr") = Expr
 
-  psiClassPrefix="Zig"
-  psiImplClassSuffix="Impl"
-  psiPackage="com.github.zigzen.psi"
-  psiImplPackage="com.github.zigzen.psi.impl"
+  psiClassPrefix = "Zig"
+  psiImplClassSuffix = "Impl"
+  psiPackage = "com.github.zigzen.psi"
+  psiImplPackage = "com.github.zigzen.psi.impl"
 
-  elementTypeHolderClass="com.github.zigzen.psi.ZigTypes"
-  elementTypeClass="com.github.zigzen.psi.ZigElementType"
+  elementTypeHolderClass = "com.github.zigzen.psi.ZigTypes"
+  elementTypeClass = "com.github.zigzen.psi.ZigElementType"
 
-  tokenTypeClass="com.github.zigzen.psi.ZigTokenType"
+  tokenTypeClass = "com.github.zigzen.psi.ZigTokenType"
   generateTokenAccessors = true
-  tokens=[
-
-    //Symbols
+  tokens = [
     AMPERSAND='&'
     AMPERSANDEQUAL='&='
     ASTERISK='*'
@@ -97,7 +95,6 @@
     SLASHEQUAL='/='
     TILDE='~'
 
-    //Keywords
     KEYWORD_ADDRSPACE='addrspace'
     KEYWORD_ALIGN='align'
     KEYWORD_ALLOWZERO='allowzero'
