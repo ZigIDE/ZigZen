@@ -16,6 +16,10 @@ import org.jdom.Element
 class ZigProjectsService(
   override val project: Project
 ) : Disposable, IZigProjectsService, PersistentStateComponent<Element> {
+  override fun attachZigProject(): Boolean {
+    TODO("Not yet implemented")
+  }
+
   override fun dispose() {
     TODO("Not yet implemented")
   }
