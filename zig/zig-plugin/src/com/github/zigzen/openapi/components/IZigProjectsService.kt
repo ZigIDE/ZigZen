@@ -5,4 +5,6 @@ import com.intellij.openapi.project.Project
 
 interface IZigProjectsService {
   val project: Project
+
+  fun attachZigProject(): Boolean
 }
