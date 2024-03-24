@@ -2,13 +2,12 @@
 package com.github.zigzen.execution.configurations
 
 import com.github.zigzen.execution.process.ZigKillableColoredProcessHandler
-import com.github.zigzen.openapi.components.ZigProjectSettingsService
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.components.service
+import com.intellij.openapi.project.toolchain
 
 abstract class AbstractZigCommandLineState<T: AbstractZigLocatableConfiguration<T>>(
   environment: ExecutionEnvironment,
@@ -22,10 +21,7 @@ abstract class AbstractZigCommandLineState<T: AbstractZigLocatableConfiguration<
   }
 
   private fun createGeneralCommandLine(): GeneralCommandLine {
-    val service = environment.project.service<ZigProjectSettingsService>()
-    val toolchain = service.toolchain
-
-    val zigExecutablePath = toolchain?.pathToExecutable("zig")
+    val zigExecutablePath = environment.project.toolchain?.pathToExecutable("zig")
 
     return GeneralCommandLine()
       .withExePath(zigExecutablePath.toString())
