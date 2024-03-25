@@ -1,11 +1,14 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.github.zigzen.openapi.progress
 
+import com.github.zigzen.openapi.project.StopAction
 import com.github.zigzen.projectModel.ZigProject
 import com.intellij.build.BuildContentDescriptor
+import com.intellij.build.DefaultBuildDescriptor
 import com.intellij.build.SyncViewManager
 import com.intellij.build.progress.BuildProgress
 import com.intellij.build.progress.BuildProgressDescriptor
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
@@ -46,7 +49,16 @@ class ZigSynchronizationTask(
     buildContentDescriptor.isActivateToolWindowWhenFailed = true
     buildContentDescriptor.isActivateToolWindowWhenAdded = false
 
-    TODO()
+    val refreshAction = ActionManager.getInstance().getAction("Zig.RefreshAllProjects")
+    val descriptor = DefaultBuildDescriptor(Any(), "Zig", project.basePath!!, System.currentTimeMillis())
+      .withContentDescriptor { buildContentDescriptor }
+      .withRestartActions(refreshAction, StopAction(progressIndicator))
+
+    return object : BuildProgressDescriptor {
+      override fun getBuildDescriptor() = descriptor
+
+      override fun getTitle() = descriptor.title
+    }
   }
 
   private fun performSynchronization(
