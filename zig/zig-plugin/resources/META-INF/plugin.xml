@@ -4,6 +4,12 @@
   <name>Zig Language</name>
   <vendor>ZigIDE</vendor>
 
+  <actions>
+    <action id="Zig.RefreshAllProjects"
+            class="com.github.zigzen.openapi.project.RefreshZigProjectsAction"
+            icon="AllIcons.Actions.Refresh"/>
+  </actions>
+
   <extensions defaultExtensionNs="com.intellij">
     <additionalLibraryRootsProvider implementation="com.github.zigzen.openapi.roots.ZigAdditionalLibraryRootsProvider"/>
     <annotator language="ZIG"
