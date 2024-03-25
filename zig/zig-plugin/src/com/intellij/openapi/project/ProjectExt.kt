@@ -14,3 +14,6 @@ val Project.toolchain: AbstractZigToolchain?
 
 val Project.zigProjects: IZigProjectsService
   get() = service()
+
+val Project.containsZigProjects: Boolean
+  get() = !zigProjects.allProjects.isEmpty()
