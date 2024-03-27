@@ -3,6 +3,7 @@ package com.github.zigzen.openapi.components
 
 import com.github.zigzen.projectModel.IZigProject
 import com.intellij.openapi.project.Project
+import com.intellij.util.messages.Topic
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
 
@@ -13,4 +14,8 @@ interface IZigProjectsService {
   fun attachZigProject(buildZigZon: Path): Boolean
 
   fun refreshAllProjects(): CompletableFuture<out Collection<IZigProject>>
+
+  companion object {
+    val cargoProjectsRefreshTopic = Topic.create("Zig project refresh", IZigProjectsRefreshListener::class.java)
+  }
 }
