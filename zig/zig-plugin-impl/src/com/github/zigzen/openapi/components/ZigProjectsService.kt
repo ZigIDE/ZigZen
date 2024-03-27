@@ -3,7 +3,7 @@ package com.github.zigzen.openapi.components
 
 import com.github.zigzen.projectModel.ZigProject
 import com.github.zigzen.projectModel.isExistingProject
-import com.github.zigzen.projectModel.refreshProjects
+import com.github.zigzen.projectModel.refreshProject
 import com.github.zigzen.util.concurrency.AsyncValue
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.PersistentStateComponent
@@ -14,6 +14,7 @@ import com.intellij.openapi.project.Project
 import org.jdom.Element
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
+import kotlin.io.path.invariantSeparatorsPathString
 
 @State(
   name = "ZigProjectsService",
@@ -35,26 +36,30 @@ class ZigProjectsService(
       if (projects.isExistingProject(buildZigZon))
         CompletableFuture.completedFuture(projects)
       else
-        projects.refreshProjects(project)
+        projects.refreshProject(project)
     }
 
     return true
   }
 
-  override fun dispose() {
-    TODO("Not yet implemented")
-  }
+  override fun dispose() {}
 
-  override fun getState(): Element? {
-    TODO("Not yet implemented")
+  override fun getState(): Element {
+    val state = Element("state")
+    allProjects.forEach {
+      val projectElement = Element("zigProject")
+      projectElement.setAttribute("buildZigZon", it.buildZigZon.invariantSeparatorsPathString)
+    }
+
+    return state
   }
 
   override fun loadState(state: Element) {
     TODO("Not yet implemented")
   }
 
-  override fun refreshAllProjects(): CompletableFuture<out Collection<ZigProject>> {
-    TODO("Not yet implemented")
+  override fun refreshAllProjects() = modifyZigProjects {
+    it.refreshProject(project)
   }
 
   private fun modifyZigProjects(
