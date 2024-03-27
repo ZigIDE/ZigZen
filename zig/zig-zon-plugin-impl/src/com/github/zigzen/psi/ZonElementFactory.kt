@@ -11,7 +11,7 @@ object ZonElementFactory {
   fun createFile(project: Project, text: String): ZonPsiFile =
     PsiFileFactory.getInstance(project).createFileFromText(
       "psiElementFactory.zon",
-      ZonFileType.INSTANCE,
+      ZonFileType,
       text,
       LocalTimeCounter.currentTime(),
       false,
