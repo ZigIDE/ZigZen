@@ -8,7 +8,7 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
 
 class ZonPsiFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, ZonLanguage.INSTANCE) {
-  override fun getFileType(): FileType = ZonFileType.INSTANCE
+  override fun getFileType(): FileType = ZonFileType
 
   override fun toString(): String = "ZON File"
 }
