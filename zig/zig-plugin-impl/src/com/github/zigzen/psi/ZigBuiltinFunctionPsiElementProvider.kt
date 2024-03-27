@@ -20,7 +20,7 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
 
   private val PSI_FILE = PsiFileFactory.getInstance(project).createFileFromText(
     "builtinFunctions.zig",
-    ZigFileType.INSTANCE,
+    ZigFileType,
     BUILTINS_FILE,
     LocalTimeCounter.currentTime(),
     false,

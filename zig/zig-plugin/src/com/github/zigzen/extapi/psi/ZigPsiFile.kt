@@ -7,7 +7,7 @@ import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.psi.FileViewProvider
 
 class ZigPsiFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, ZigLanguage.INSTANCE) {
-  override fun getFileType() = ZigFileType.INSTANCE
+  override fun getFileType() = ZigFileType
 
   override fun toString() = "Zig File"
 }
