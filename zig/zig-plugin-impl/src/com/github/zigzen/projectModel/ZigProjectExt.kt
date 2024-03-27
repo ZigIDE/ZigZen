@@ -13,7 +13,7 @@ fun Collection<ZigProject>.isExistingProject(buildZigZon: Path): Boolean {
   return any { it.rootDir == buildZigZon.parent }
 }
 
-fun Collection<ZigProject>.refreshProjects(project: Project): CompletableFuture<Collection<ZigProject>> {
+fun Collection<ZigProject>.refreshProject(project: Project): CompletableFuture<Collection<ZigProject>> {
   if (!project.isTrusted())
     return CompletableFuture.completedFuture(this)
 
