@@ -12,7 +12,7 @@ object ZigElementFactory {
   fun createFile(project: Project, text: String): ZigPsiFile =
     PsiFileFactory.getInstance(project).createFileFromText(
       "psiElementFactory.zig",
-      ZigFileType.INSTANCE,
+      ZigFileType,
       text,
       LocalTimeCounter.currentTime(),
       false,

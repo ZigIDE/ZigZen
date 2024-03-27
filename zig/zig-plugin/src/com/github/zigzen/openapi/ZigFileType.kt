@@ -5,7 +5,7 @@ import com.github.zigzen.icons.ZigZenIcons
 import com.github.zigzen.lang.ZigLanguage
 import com.intellij.openapi.fileTypes.LanguageFileType
 
-class ZigFileType : LanguageFileType(ZigLanguage.INSTANCE) {
+object ZigFileType : LanguageFileType(ZigLanguage.INSTANCE) {
   override fun getName() = "Zig File"
 
   override fun getDescription() = "Zig file"
@@ -13,9 +13,4 @@ class ZigFileType : LanguageFileType(ZigLanguage.INSTANCE) {
   override fun getDefaultExtension() = "zig"
 
   override fun getIcon() = ZigZenIcons.Zig
-
-  @Suppress("CompanionObjectInExtension")
-  companion object {
-    val INSTANCE = ZigFileType()
-  }
 }
