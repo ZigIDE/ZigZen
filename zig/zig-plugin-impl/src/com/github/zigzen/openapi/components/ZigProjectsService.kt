@@ -22,6 +22,7 @@ import com.intellij.openapi.util.EmptyRunnable
 import org.jdom.Element
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
+import javax.lang.toZigProjectsRefreshStatus
 import kotlin.io.path.invariantSeparatorsPathString
 
 @Suppress("TestOnlyProblems")
@@ -96,6 +97,11 @@ class ZigProjectsService(
             }
           }
         }
+
+        projects
+      }.handle { projects, error ->
+        val status = error.toZigProjectsRefreshStatus()
+        refreshStatusPublisher.onRefreshFinished(status)
 
         projects
       }
