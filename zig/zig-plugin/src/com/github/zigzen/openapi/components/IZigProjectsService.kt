@@ -16,6 +16,8 @@ interface IZigProjectsService {
   fun refreshAllProjects(): CompletableFuture<out Collection<IZigProject>>
 
   companion object {
-    val cargoProjectsRefreshTopic = Topic.create("Zig project refresh", IZigProjectsRefreshListener::class.java)
+    val zigProjectsTopic = Topic.create("Zig project update", IZigProjectsListener::class.java)
+
+    val zigProjectsRefreshTopic = Topic.create("Zig project refresh", IZigProjectsRefreshListener::class.java)
   }
 }
