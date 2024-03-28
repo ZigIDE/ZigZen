@@ -15,7 +15,6 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.RootsChangeRescanningInfo
 import com.intellij.openapi.project.ex.ProjectEx
 import com.intellij.openapi.roots.ex.ProjectRootManagerEx
 import com.intellij.openapi.util.EmptyRunnable
@@ -75,7 +74,7 @@ class ZigProjectsService(
   private fun modifyZigProjects(
     updater: (Collection<ZigProject>) -> CompletableFuture<Collection<ZigProject>>
   ): CompletableFuture<Collection<ZigProject>> {
-    val refreshStatusPublisher = project.messageBus.syncPublisher(IZigProjectsService.cargoProjectsRefreshTopic)
+    val refreshStatusPublisher = project.messageBus.syncPublisher(IZigProjectsService.zigProjectsRefreshTopic)
 
     val wrappedUpdater = { projects: Collection<ZigProject> ->
       refreshStatusPublisher.onRefreshStarted()
@@ -95,6 +94,9 @@ class ZigProjectsService(
               ProjectRootManagerEx.getInstanceEx(project)
                 .makeRootsChange(EmptyRunnable.INSTANCE, false, true)
             }
+
+            project.messageBus.syncPublisher(IZigProjectsService.zigProjectsTopic)
+              .onUpdated(this, projects)
           }
         }
 
