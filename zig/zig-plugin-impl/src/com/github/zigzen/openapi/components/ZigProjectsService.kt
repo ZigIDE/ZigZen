@@ -8,6 +8,7 @@ import com.github.zigzen.projectModel.refreshProject
 import com.github.zigzen.util.concurrency.AsyncValue
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
@@ -20,11 +21,11 @@ import com.intellij.openapi.roots.ex.ProjectRootManagerEx
 import com.intellij.openapi.util.EmptyRunnable
 import org.jdom.Element
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
 import javax.lang.toZigProjectsRefreshStatus
 import kotlin.io.path.invariantSeparatorsPathString
 
-@Suppress("TestOnlyProblems")
 @State(
   name = "ZigProjectsService",
   storages = [Storage(StoragePathMacros.WORKSPACE_FILE)]
@@ -64,7 +65,22 @@ class ZigProjectsService(
   }
 
   override fun loadState(state: Element) {
-    TODO("Not yet implemented")
+    val zigProjects = state.getChildren("zigProject")
+    val loaded = zigProjects.map {
+      val file = it.getAttributeValue("buildZigZon")
+      val buildZigZon = Paths.get(file)
+
+      ZigProject(buildZigZon, this)
+    }
+
+    projects.updateSync { loaded }
+      .whenComplete { _, _ ->
+        if (System.getProperty(DISABLE_PROJECT_REFRESH_ON_CREATION_PROPERTY, "false").toBooleanStrictOrNull() != true) {
+          invokeLater {
+            refreshAllProjects()
+          }
+        }
+      }
   }
 
   override fun refreshAllProjects() = modifyZigProjects {
@@ -107,5 +123,9 @@ class ZigProjectsService(
 
         projects
       }
+  }
+
+  companion object {
+    const val DISABLE_PROJECT_REFRESH_ON_CREATION_PROPERTY = "zig.disable.refresh.on.creation"
   }
 }
