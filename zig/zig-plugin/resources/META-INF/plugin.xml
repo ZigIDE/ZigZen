@@ -24,6 +24,8 @@
               fieldName="INSTANCE"
               implementationClass="com.github.zigzen.openapi.ZigFileType"
               name="Zig File"/>
+    <projectService serviceImplementation="com.github.zigzen.openapi.components.ZigProjectsService"
+                    serviceInterface="com.github.zigzen.openapi.components.IZigProjectsService"/>
     <runConfigurationProducer implementation="com.github.zigzen.execution.configurations.ZigBuildLazyRunConfigurationProducer"/>
     <runConfigurationProducer implementation="com.github.zigzen.execution.configurations.ZigRunLazyRunConfigurationProducer"/>
     <runConfigurationProducer implementation="com.github.zigzen.execution.configurations.ZigTestLazyRunConfigurationProducer"/>

@@ -50,5 +50,6 @@
     <orderEntry type="module" module-name="com.github.zigzen.psi.util" />
     <orderEntry type="module" module-name="intellij.platform.execution.impl" />
     <orderEntry type="module" module-name="intellij.platform.codeStyle.impl" />
+    <orderEntry type="module" module-name="intellij.platform.core" />
   </component>
 </module>
