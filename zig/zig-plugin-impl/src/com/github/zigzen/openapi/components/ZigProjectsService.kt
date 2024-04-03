@@ -46,7 +46,7 @@ class ZigProjectsService(
       if (projects.isExistingProject(buildZigZon))
         CompletableFuture.completedFuture(projects)
       else
-        projects.refreshProject(project)
+        (projects + ZigProject(buildZigZon, this)).refreshProject(project)
     }
 
     return true

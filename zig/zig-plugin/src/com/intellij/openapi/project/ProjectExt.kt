@@ -6,6 +6,9 @@ import com.github.zigzen.openapi.components.IZigProjectsService
 import com.github.zigzen.openapi.components.ZigProjectSettingsService
 import com.intellij.openapi.components.service
 
+val Project.containsZigProjects: Boolean
+  get() = !zigProjects.allProjects.isEmpty()
+
 val Project.projectSettings: ZigProjectSettingsService
   get() = service()
 
@@ -14,6 +17,3 @@ val Project.toolchain: AbstractZigToolchain?
 
 val Project.zigProjects: IZigProjectsService
   get() = service()
-
-val Project.containsZigProjects: Boolean
-  get() = !zigProjects.allProjects.isEmpty()
