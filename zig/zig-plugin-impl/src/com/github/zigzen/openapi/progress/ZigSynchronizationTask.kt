@@ -20,7 +20,10 @@ class ZigSynchronizationTask(
   project: Project,
   private val zigProjects: Collection<ZigProject>,
   private val result: CompletableFuture<Collection<ZigProject>>
-) : Task.Backgroundable(project, "Reloading Zig projects", true) {
+) : ZigTask, Task.Backgroundable(project, "Reloading Zig projects", true) {
+  override val taskType: ZigTask.ZigTaskType
+    get() = ZigTask.ZigTaskType.ZIG_SYNC
+
   override fun run(indicator: ProgressIndicator) {
     indicator.isIndeterminate = true
 
@@ -65,6 +68,6 @@ class ZigSynchronizationTask(
     indicator: ProgressIndicator,
     progress: BuildProgress<BuildProgressDescriptor>
   ): Collection<ZigProject> {
-    TODO()
+    return zigProjects
   }
 }
