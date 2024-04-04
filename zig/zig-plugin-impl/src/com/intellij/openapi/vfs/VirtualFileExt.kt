@@ -7,6 +7,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ContentEntry
 import com.intellij.openapi.roots.ModuleRootModificationUtil
 
+fun VirtualFile.findBuildZigZon(): VirtualFile? {
+  return if (isDirectory) findChild("build.zig.zon")
+  else takeIf { it.name == "build.zig.zon" }
+}
+
 fun VirtualFile.setupContentRoots(project: Project, setup: ContentEntry.(VirtualFile) -> Unit) {
   val packageModule = ModuleUtilCore.findModuleForFile(this, project) ?: return
   setupContentRoots(packageModule, setup)

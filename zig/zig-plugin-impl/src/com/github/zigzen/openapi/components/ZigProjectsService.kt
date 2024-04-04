@@ -2,6 +2,8 @@
 package com.github.zigzen.openapi.components
 
 import com.github.zigzen.openapi.ZigFileType
+import com.github.zigzen.openapi.externalSystem.autoimport.ZigExternalSystemProjectAware
+import com.github.zigzen.projectModel.IZigProject
 import com.github.zigzen.projectModel.ZigProject
 import com.github.zigzen.projectModel.isExistingProject
 import com.github.zigzen.projectModel.refreshProject
@@ -14,16 +16,20 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
+import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTracker
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectEx
 import com.intellij.openapi.roots.ex.ProjectRootManagerEx
 import com.intellij.openapi.util.EmptyRunnable
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.indexing.LightDirectoryIndex
 import org.jdom.Element
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
 import javax.lang.toZigProjectsRefreshStatus
+import kotlin.io.path.exists
 import kotlin.io.path.invariantSeparatorsPathString
 
 @State(
@@ -33,10 +39,35 @@ import kotlin.io.path.invariantSeparatorsPathString
 class ZigProjectsService(
   override val project: Project
 ) : Disposable, IZigProjectsService, PersistentStateComponent<Element> {
+  init {
+    registerProject(project, this)
+  }
+
   private val projects = AsyncValue<Collection<ZigProject>>(emptyList())
+
+  private val noProjectMarker = ZigProject(Paths.get(""), this)
+
+  @Suppress("IncorrectParentDisposable")
+  private val directoryIndex: LightDirectoryIndex<ZigProject> =
+    LightDirectoryIndex(project, noProjectMarker) { index ->
+      val visited = mutableSetOf<VirtualFile>()
+
+      fun VirtualFile.put(cargoProject: ZigProject) {
+        if (this in visited) return
+        visited += this
+        index.putInfo(this, cargoProject)
+      }
+
+      for (cargoProject in projects.currentValue) {
+        cargoProject.rootDir?.put(cargoProject)
+      }
+    }
 
   override val allProjects: Collection<ZigProject>
     get() = projects.currentValue
+
+  override val hasAtLeastOneValidProject = allProjects.any { it.buildZigZon.exists() }
+  override var initialized: Boolean = false
 
   override fun attachZigProject(buildZigZon: Path): Boolean {
     if (allProjects.isExistingProject(buildZigZon))
@@ -53,6 +84,10 @@ class ZigProjectsService(
   }
 
   override fun dispose() {}
+
+  override fun findProjectForFile(file: VirtualFile) = file.let {
+    directoryIndex.getInfoForFile(it).takeIf { info -> info !== noProjectMarker }
+  }
 
   override fun getState(): Element {
     val state = Element("state")
@@ -113,6 +148,7 @@ class ZigProjectsService(
 
             project.messageBus.syncPublisher(IZigProjectsService.zigProjectsTopic)
               .onUpdated(this, projects)
+            initialized = true
           }
         }
 
@@ -123,6 +159,17 @@ class ZigProjectsService(
 
         projects
       }
+  }
+
+  private fun registerProject(project: Project, disposable: Disposable) {
+    if (project.isDefault)
+      return
+
+    val zigProjectAware = ZigExternalSystemProjectAware(project)
+    val projectTracker = ExternalSystemProjectTracker.getInstance(project)
+
+    projectTracker.register(zigProjectAware, disposable)
+    projectTracker.activate(zigProjectAware.projectId)
   }
 
   companion object {
