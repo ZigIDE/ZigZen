@@ -3,14 +3,12 @@ package com.github.zigzen.openapi.fileTypes
 
 import com.github.zigzen.lang.lexer.ZonLexerAdapter
 import com.github.zigzen.psi.ZonTypes
-import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
-import kotlinx.collections.immutable.persistentMapOf
 
 @Suppress("CompanionObjectInExtension")
 class ZonSyntaxHighlighter : SyntaxHighlighterBase() {
@@ -29,7 +27,7 @@ class ZonSyntaxHighlighter : SyntaxHighlighterBase() {
     val bracesTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_LBRACE", DefaultLanguageHighlighterColors.BRACES)
     val stringTextAttributesKey = TextAttributesKey.createTextAttributesKey("ZON_STRING", DefaultLanguageHighlighterColors.STRING)
 
-    private val textAttributeKeyMap = persistentMapOf(
+    private val textAttributeKeyMap = mapOf(
       Pair(TokenType.BAD_CHARACTER, arrayOf(badCharacterTextAttributesKey)),
       Pair(ZonTypes.COMMENT, arrayOf(commentTextAttributesKey)),
       Pair(ZonTypes.COMMA, arrayOf(commaTextAttributesKey)),
