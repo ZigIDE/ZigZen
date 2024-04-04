@@ -7,7 +7,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.progress.Task
 
-@Service
+@Service(Service.Level.PROJECT)
 class ZigProjectTaskQueueService : Disposable {
   private val queue = BackgroundTaskQueue()
 
