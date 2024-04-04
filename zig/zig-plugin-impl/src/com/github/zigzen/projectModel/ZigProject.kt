@@ -12,7 +12,7 @@ data class ZigProject(
   override val buildZigZon: Path,
   private val projectService: ZigProjectsService
 ) : IZigProject, UserDataHolderBase() {
-  override val presentableName = buildZigZon.parent.fileName.toString()
+  override val presentableName = buildZigZon.parent?.fileName.toString()
 
   override val project = projectService.project
 
