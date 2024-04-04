@@ -23,7 +23,7 @@ import javax.swing.JComponent
 import kotlin.io.path.exists
 
 class ZigSynchronizationTask(
-  val project: Project,
+  project: Project,
   private val zigProjects: Collection<ZigProject>,
   private val result: CompletableFuture<Collection<ZigProject>>
 ) : ZigTask, Task.Backgroundable(project, "Reloading Zig projects", true) {
