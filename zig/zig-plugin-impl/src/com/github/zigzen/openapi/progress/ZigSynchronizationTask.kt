@@ -2,19 +2,25 @@
 package com.github.zigzen.openapi.progress
 
 import com.github.zigzen.openapi.project.StopAction
+import com.github.zigzen.openapi.roots.ZigStandardLibrarySyntheticLibrary
+import com.github.zigzen.projectModel.IZigProject
 import com.github.zigzen.projectModel.ZigProject
 import com.intellij.build.BuildContentDescriptor
 import com.intellij.build.DefaultBuildDescriptor
 import com.intellij.build.SyncViewManager
+import com.intellij.build.events.MessageEvent
 import com.intellij.build.progress.BuildProgress
 import com.intellij.build.progress.BuildProgressDescriptor
+import com.intellij.build.runWithChildProgress
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.toolchain
 import java.util.concurrent.CompletableFuture
 import javax.swing.JComponent
+import kotlin.io.path.exists
 
 class ZigSynchronizationTask(
   project: Project,
@@ -68,6 +74,49 @@ class ZigSynchronizationTask(
     indicator: ProgressIndicator,
     progress: BuildProgress<BuildProgressDescriptor>
   ): Collection<ZigProject> {
-    return zigProjects
+    val toolchain = project.toolchain
+
+    if (toolchain == null) {
+      progress.fail(System.currentTimeMillis(), "Project synchronization failed due to absence of valid toolchain")
+      return zigProjects
+    }
+
+    return zigProjects.map { zigProject ->
+      progress.runWithChildProgress(
+        "Synchronizing project ${zigProject.presentableName}",
+        createContext = { it },
+        action = { childProgress ->
+          if (!zigProject.buildZigZon.parent.exists()) {
+            childProgress.message(
+              "Nonexistent Project",
+              "Project synchronization failed due to nonexistent parent directory. Consider detaching the project.",
+              MessageEvent.Kind.ERROR,
+              null
+            )
+            val stdlibStatus = IZigProject.ProjectUpdateStatus.UpdateFailed("Project directory does not exist")
+            ZigProjectWithStandardLibrary(zigProject.copy(stdlibStatus = stdlibStatus), null)
+          } else {
+            ZigProjectWithStandardLibrary(
+              zigProject,
+              ZigStandardLibrarySyntheticLibrary()
+            )
+          }
+        }
+      )
+    }.attachStandardLibraryToProject()
+  }
+
+  data class ZigProjectWithStandardLibrary(
+    val zigProject: ZigProject,
+    val stdlib: ZigStandardLibrarySyntheticLibrary?
+  )
+
+  private fun List<ZigProjectWithStandardLibrary>.attachStandardLibraryToProject(): List<ZigProject> {
+    return mapNotNull {
+      if (it.stdlib == null)
+        return@mapNotNull null
+
+      it.zigProject.withStdlib(it.stdlib)
+    }
   }
 }
