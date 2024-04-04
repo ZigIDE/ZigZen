@@ -11,9 +11,9 @@ import java.util.concurrent.atomic.AtomicReference
 
 data class ZigProject(
   override val buildZigZon: Path,
-  val stdlib: ZigStandardLibrarySyntheticLibrary,
-  override val stdlibStatus: IZigProject.ProjectUpdateStatus,
-  private val projectService: ZigProjectsService
+  private val projectService: ZigProjectsService,
+  val stdlib: ZigStandardLibrarySyntheticLibrary? = null,
+  override val stdlibStatus: IZigProject.ProjectUpdateStatus = IZigProject.ProjectUpdateStatus.NeedsUpdate,
 ) : IZigProject, UserDataHolderBase() {
   override val presentableName = buildZigZon.parent?.fileName.toString()
 
