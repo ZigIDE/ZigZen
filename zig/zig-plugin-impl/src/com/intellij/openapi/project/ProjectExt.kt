@@ -16,5 +16,3 @@ fun Project.confirmLoadingUntrustedProject(): Boolean {
     IdeBundle.message("untrusted.project.dialog.distrust.button"),
   )
 }
-
-val Project.taskQueue: ZigProjectTaskQueueService get() = service()

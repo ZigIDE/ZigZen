@@ -5,6 +5,9 @@
   <vendor>ZigIDE</vendor>
 
   <actions>
+    <action id="Zig.AttachZigProject"
+            class="com.github.zigzen.openapi.project.AttachZigProjectsAction"
+            icon="AllIcons.General.Add"/>
     <action id="Zig.RefreshAllProjects"
             class="com.github.zigzen.openapi.project.RefreshZigProjectsAction"
             icon="AllIcons.Actions.Refresh"/>
@@ -18,6 +21,7 @@
     <configurationType implementation="com.github.zigzen.execution.configurations.ZigBuildConfigurationType"/>
     <configurationType implementation="com.github.zigzen.execution.configurations.ZigRunConfigurationType"/>
     <configurationType implementation="com.github.zigzen.execution.configurations.ZigTestConfigurationType"/>
+    <editorNotificationProvider implementation="com.github.zigzen.ui.ZigNoProjectNotificationProvider"/>
     <enterHandlerDelegate implementation="com.github.zigzen.codeInsight.editorActions.enter.ZigInCommentEnterHandlerDelegate"/>
     <fileType language="ZIG"
               extensions="zig"
