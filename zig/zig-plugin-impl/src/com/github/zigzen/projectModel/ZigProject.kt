@@ -2,6 +2,7 @@
 package com.github.zigzen.projectModel
 
 import com.github.zigzen.openapi.components.ZigProjectsService
+import com.github.zigzen.openapi.roots.ZigStandardLibrarySyntheticLibrary
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -10,6 +11,8 @@ import java.util.concurrent.atomic.AtomicReference
 
 data class ZigProject(
   override val buildZigZon: Path,
+  val stdlib: ZigStandardLibrarySyntheticLibrary,
+  override val stdlibStatus: IZigProject.ProjectUpdateStatus,
   private val projectService: ZigProjectsService
 ) : IZigProject, UserDataHolderBase() {
   override val presentableName = buildZigZon.parent?.fileName.toString()
@@ -29,4 +32,8 @@ data class ZigProject(
     }
 
   private val cachedRootDir = AtomicReference<VirtualFile>()
+
+  fun withStdlib(result: ZigStandardLibrarySyntheticLibrary): ZigProject {
+    return copy(stdlib = result, stdlibStatus = IZigProject.ProjectUpdateStatus.UpToDate)
+  }
 }
