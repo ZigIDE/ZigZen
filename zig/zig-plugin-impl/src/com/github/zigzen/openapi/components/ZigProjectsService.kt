@@ -3,7 +3,6 @@ package com.github.zigzen.openapi.components
 
 import com.github.zigzen.openapi.ZigFileType
 import com.github.zigzen.openapi.externalSystem.autoimport.ZigExternalSystemProjectAware
-import com.github.zigzen.projectModel.IZigProject
 import com.github.zigzen.projectModel.ZigProject
 import com.github.zigzen.projectModel.isExistingProject
 import com.github.zigzen.projectModel.refreshProject
