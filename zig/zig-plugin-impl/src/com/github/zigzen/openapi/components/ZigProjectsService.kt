@@ -118,6 +118,10 @@ class ZigProjectsService(
       }
   }
 
+  override fun noStateLoaded() {
+    initialized = true
+  }
+
   override fun refreshAllProjects() = modifyZigProjects {
     it.refreshProject(project)
   }
