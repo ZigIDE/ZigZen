@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Build ZigZen Installers (current OS)" type="JetRunConfigurationType">
     <option name="MAIN_CLASS_NAME" value="com.github.zigzen.build.ZigZenInstallersBuildTarget" />
-    <module name="com.github.zigzen.build" />
+    <module name="zigzen.build" />
     <shortenClasspath name="NONE" />
     <option name="VM_PARAMETERS" value="-Dintellij.build.use.compiled.classes=true -Dintellij.build.target.os=current" />
     <method v="2">

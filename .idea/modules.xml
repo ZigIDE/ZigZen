@@ -68,18 +68,6 @@
       <module fileurl="file://$PROJECT_DIR$/android/android/prebuilts/sdktools/android.sdktools.wizardTemplate.impl.iml" filepath="$PROJECT_DIR$/android/android/prebuilts/sdktools/android.sdktools.wizardTemplate.impl.iml" />
       <module fileurl="file://$PROJECT_DIR$/android/android/prebuilts/sdktools/android.sdktools.wizardTemplate.plugin.iml" filepath="$PROJECT_DIR$/android/android/prebuilts/sdktools/android.sdktools.wizardTemplate.plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/android/android/prebuilts/sdktools/android.sdktools.zipflinger.iml" filepath="$PROJECT_DIR$/android/android/prebuilts/sdktools/android.sdktools.zipflinger.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/zig-build/com.github.zigzen.build.iml" filepath="$PROJECT_DIR$/zig/zig-build/com.github.zigzen.build.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/zig-icons/com.github.zigzen.icons.iml" filepath="$PROJECT_DIR$/zig/zig-icons/com.github.zigzen.icons.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/zig-ide-plugin/com.github.zigzen.ide.iml" filepath="$PROJECT_DIR$/zig/zig-ide-plugin/com.github.zigzen.ide.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/zig-ide-plugin-ui/com.github.zigzen.ide.ui.iml" filepath="$PROJECT_DIR$/zig/zig-ide-plugin-ui/com.github.zigzen.ide.ui.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/com.github.zigzen.main.iml" filepath="$PROJECT_DIR$/zig/com.github.zigzen.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/zig-openapi/com.github.zigzen.openapi.iml" filepath="$PROJECT_DIR$/zig/zig-openapi/com.github.zigzen.openapi.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/zig-psi-util/com.github.zigzen.psi.util.iml" filepath="$PROJECT_DIR$/zig/zig-psi-util/com.github.zigzen.psi.util.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/zig-resources/com.github.zigzen.resources.iml" filepath="$PROJECT_DIR$/zig/zig-resources/com.github.zigzen.resources.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/zig-plugin/com.github.zigzen.zig.iml" filepath="$PROJECT_DIR$/zig/zig-plugin/com.github.zigzen.zig.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/zig-plugin-impl/com.github.zigzen.zig.impl.iml" filepath="$PROJECT_DIR$/zig/zig-plugin-impl/com.github.zigzen.zig.impl.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/zig-zon-plugin/com.github.zigzen.zon.iml" filepath="$PROJECT_DIR$/zig/zig-zon-plugin/com.github.zigzen.zon.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/zig-zon-plugin-impl/com.github.zigzen.zon.impl.iml" filepath="$PROJECT_DIR$/zig/zig-zon-plugin-impl/com.github.zigzen.zon.impl.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/feature-usage-database/plugin-community/intellij.ae.database.community.iml" filepath="$PROJECT_DIR$/plugins/feature-usage-database/plugin-community/intellij.ae.database.community.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/feature-usage-database/core/intellij.ae.database.core.iml" filepath="$PROJECT_DIR$/plugins/feature-usage-database/core/intellij.ae.database.core.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/feature-usage-database/counters/intellij.ae.database.counters.community.iml" filepath="$PROJECT_DIR$/plugins/feature-usage-database/counters/intellij.ae.database.counters.community.iml" />
@@ -1338,6 +1326,18 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/kotlin/util/test-generator-api/kotlin.util.test-generator-api.iml" filepath="$PROJECT_DIR$/plugins/kotlin/util/test-generator-api/kotlin.util.test-generator-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/kotlin/util/test-generator-fe10/kotlin.util.test-generator-fe10.iml" filepath="$PROJECT_DIR$/plugins/kotlin/util/test-generator-fe10/kotlin.util.test-generator-fe10.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/kotlin/util/test-generator-fir/kotlin.util.test-generator-fir.iml" filepath="$PROJECT_DIR$/plugins/kotlin/util/test-generator-fir/kotlin.util.test-generator-fir.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-build/zigzen.build.iml" filepath="$PROJECT_DIR$/zig/zig-build/zigzen.build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-icons/zigzen.icons.iml" filepath="$PROJECT_DIR$/zig/zig-icons/zigzen.icons.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-ide-plugin/zigzen.ide.iml" filepath="$PROJECT_DIR$/zig/zig-ide-plugin/zigzen.ide.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-ide-plugin-ui/zigzen.ide.ui.iml" filepath="$PROJECT_DIR$/zig/zig-ide-plugin-ui/zigzen.ide.ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zigzen.main.iml" filepath="$PROJECT_DIR$/zig/zigzen.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-openapi/zigzen.openapi.iml" filepath="$PROJECT_DIR$/zig/zig-openapi/zigzen.openapi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-psi-util/zigzen.psi.util.iml" filepath="$PROJECT_DIR$/zig/zig-psi-util/zigzen.psi.util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-resources/zigzen.resources.iml" filepath="$PROJECT_DIR$/zig/zig-resources/zigzen.resources.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-plugin/zigzen.zig.iml" filepath="$PROJECT_DIR$/zig/zig-plugin/zigzen.zig.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-plugin-impl/zigzen.zig.impl.iml" filepath="$PROJECT_DIR$/zig/zig-plugin-impl/zigzen.zig.impl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-zon-plugin/zigzen.zon.iml" filepath="$PROJECT_DIR$/zig/zig-zon-plugin-impl/zigzen.zon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zig/zig-zon-plugin-impl/zigzen.zon.impl.iml" filepath="$PROJECT_DIR$/zig/zig-zon-plugin-impl/zigzen.zon.impl.iml" />
     </modules>
   </component>
 </project>

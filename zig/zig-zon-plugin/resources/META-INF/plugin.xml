@@ -1,32 +1,32 @@
 <!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
 <idea-plugin>
-  <id>com.github.zigzen.zon</id>
+  <id>zigzen.zon</id>
   <name>ZON Language</name>
   <vendor>ZigIDE</vendor>
 
   <extensions defaultExtensionNs="com.intellij">
-    <colorSettingsPage implementation="com.github.zigzen.openapi.options.ZonColorSettingsPage"/>
-    <breadcrumbsInfoProvider implementation="com.github.zigzen.ui.ZonBreadcrumbsProvider"/>
-    <fileType extensions="zon" fieldName="INSTANCE" implementationClass="com.github.zigzen.openapi.ZonFileType" language="ZON" name="ZON File"/>
+    <colorSettingsPage implementation="zigzen.openapi.options.ZonColorSettingsPage"/>
+    <breadcrumbsInfoProvider implementation="zigzen.ui.ZonBreadcrumbsProvider"/>
+    <fileType extensions="zon" fieldName="INSTANCE" implementationClass="zigzen.openapi.ZonFileType" language="ZON" name="ZON File"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij.completion">
-    <contributor language="ZON" implementationClass="com.github.zigzen.codeInsight.completion.BuildZigZonCompletionContributor"/>
+    <contributor language="ZON" implementationClass="zigzen.codeInsight.completion.BuildZigZonCompletionContributor"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij.lang">
-    <braceMatcher language="ZON" implementationClass="com.github.zigzen.lang.ZonBraceMatcher"/>
-    <commenter language="ZON" implementationClass="com.github.zigzen.lang.ZonCommenter"/>
-    <foldingBuilder language="ZON" implementationClass="com.github.zigzen.lang.folding.ZonFoldingBuilder"/>
-    <formatter language="ZON" implementationClass="com.github.zigzen.formatting.ZonFormattingModelBuilder"/>
-    <parserDefinition language="ZON" implementationClass="com.github.zigzen.lang.parser.ZonParserDefinition"/>
-    <quoteHandler language="ZON" implementationClass="com.github.zigzen.codeInsight.editorActions.ZonQuoteHandler"/>
-    <syntaxHighlighter language="ZON" implementationClass="com.github.zigzen.openapi.fileTypes.ZonSyntaxHighlighter"/>
-    <syntaxHighlighterFactory language="ZON" implementationClass="com.github.zigzen.openapi.fileTypes.ZonSyntaxHighlighterFactory"/>
+    <braceMatcher language="ZON" implementationClass="zigzen.lang.ZonBraceMatcher"/>
+    <commenter language="ZON" implementationClass="zigzen.lang.ZonCommenter"/>
+    <foldingBuilder language="ZON" implementationClass="zigzen.lang.folding.ZonFoldingBuilder"/>
+    <formatter language="ZON" implementationClass="zigzen.formatting.ZonFormattingModelBuilder"/>
+    <parserDefinition language="ZON" implementationClass="zigzen.lang.parser.ZonParserDefinition"/>
+    <quoteHandler language="ZON" implementationClass="zigzen.codeInsight.editorActions.ZonQuoteHandler"/>
+    <syntaxHighlighter language="ZON" implementationClass="zigzen.openapi.fileTypes.ZonSyntaxHighlighter"/>
+    <syntaxHighlighterFactory language="ZON" implementationClass="zigzen.openapi.fileTypes.ZonSyntaxHighlighterFactory"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij.platform.backend.documentation">
-    <psiTargetProvider implementation="com.github.zigzen.backend.documentation.BuildZigZonPsiDocumentationTargetProvider"/>
-    <targetProvider implementation="com.github.zigzen.backend.documentation.BuildZigZonDocumentationTargetProvider"/>
+    <psiTargetProvider implementation="zigzen.backend.documentation.BuildZigZonPsiDocumentationTargetProvider"/>
+    <targetProvider implementation="zigzen.backend.documentation.BuildZigZonDocumentationTargetProvider"/>
   </extensions>
 </idea-plugin>

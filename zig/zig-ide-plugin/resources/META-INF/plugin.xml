@@ -1,16 +1,16 @@
 <!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
 <idea-plugin>
-  <id>com.github.zigzen.ide</id>
+  <id>zigzen.ide</id>
   <name>ZigZen</name>
   <vendor>ZigIDE</vendor>
 
-  <depends>com.github.zigzen.zig</depends>
-  <depends>com.github.zigzen.zon</depends>
+  <depends>zigzen.zig</depends>
+  <depends>zigzen.zon</depends>
 
   <actions>
     <group id="WelcomeScreen.Platform.NewProject">
       <group id="WelcomeScreen.CreateDirectoryProject"
-              class="com.github.zigzen.ide.util.projectWizard.ZigZenNewProjectStep"
+              class="zigzen.ide.util.projectWizard.ZigZenNewProjectStep"
               text="New Project"/>
       <reference ref="WelcomeScreen.OpenDirectoryProject"/>
       <add-to-group group-id="WelcomeScreen.QuickStart" anchor="first"/>
@@ -21,7 +21,7 @@
       <add-to-group group-id="FileOpenGroup" anchor="first"/>
     </group>
 
-    <action id="NewProject" class="com.github.zigzen.ide.actions.ZigZenNewProjectAction" text="Project...">
+    <action id="NewProject" class="zigzen.ide.actions.ZigZenNewProjectAction" text="Project...">
       <override-text place="ProjectWidgetPopup"/>
       <add-to-group group-id="NewProjectOrModuleGroup"/>
       <add-to-group group-id="ProjectWidget.Actions"/>
@@ -34,14 +34,14 @@
       <add-to-group group-id="ProjectWidget.Actions"/>
     </action>
 
-    <action class="com.github.zigzen.ide.actions.ZigCreateFileFromTemplateAction"
+    <action class="zigzen.ide.actions.ZigCreateFileFromTemplateAction"
             id="NewZigFile">
       <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
     </action>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <aboutPopupDescriptionProvider implementation="com.github.zigzen.ide.ZigZenAboutPopupDescriptionProvider"/>
-    <directoryProjectGenerator implementation="com.github.zigzen.platform.ZigDirectoryProjectGenerator"/>
+    <aboutPopupDescriptionProvider implementation="zigzen.ide.ZigZenAboutPopupDescriptionProvider"/>
+    <directoryProjectGenerator implementation="zigzen.platform.ZigDirectoryProjectGenerator"/>
   </extensions>
 </idea-plugin>
