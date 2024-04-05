@@ -2,7 +2,6 @@
 package com.github.zigzen.openapi.progress
 
 import com.github.zigzen.openapi.project.StopAction
-import com.github.zigzen.openapi.roots.ZigStandardLibrarySyntheticLibrary
 import com.github.zigzen.projectModel.IZigProject
 import com.github.zigzen.projectModel.ZigProject
 import com.intellij.build.BuildContentDescriptor
@@ -43,6 +42,13 @@ class ZigSynchronizationTask(
       buildProgress.start(createProjectSynchronizationDescriptor(indicator))
       val refreshedProjects = performSynchronization(indicator, buildProgress)
 
+      val isUpdateFailed = refreshedProjects.any { it.stdlibStatus is IZigProject.ProjectUpdateStatus.UpdateFailed }
+      if (isUpdateFailed) {
+        buildProgress.fail()
+      } else {
+        buildProgress.finish()
+      }
+
       refreshedProjects
     } catch(e: Throwable) {
       if (e is ProcessCanceledException)
@@ -56,7 +62,7 @@ class ZigSynchronizationTask(
 
     result.complete(refreshedProjects)
     val elapsed = System.currentTimeMillis() - start
-    logger.debug("ZigSynchronizationTask finished in $elapsed ms")
+    logger.info("ZigSynchronizationTask finished in $elapsed ms")
   }
 
   private fun createProjectSynchronizationDescriptor(progressIndicator: ProgressIndicator): BuildProgressDescriptor {
@@ -104,7 +110,7 @@ class ZigSynchronizationTask(
           } else {
             ZigProjectWithStandardLibrary(
               zigProject,
-              ZigStandardLibrarySyntheticLibrary()
+              Unit
             )
           }
         }
@@ -114,7 +120,7 @@ class ZigSynchronizationTask(
 
   data class ZigProjectWithStandardLibrary(
     val zigProject: ZigProject,
-    val stdlib: ZigStandardLibrarySyntheticLibrary?
+    val stdlib: Unit?
   )
 
   private fun List<ZigProjectWithStandardLibrary>.attachStandardLibraryToProject(): List<ZigProject> {
@@ -122,7 +128,7 @@ class ZigSynchronizationTask(
       if (it.stdlib == null)
         return@mapNotNull null
 
-      it.zigProject.withStdlib(it.stdlib)
+      it.zigProject
     }
   }
 
