@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="zig" pattern="src[com.github.zigzen.build]:*..*||src[com.github.zigzen.icons]:*..*||src[com.github.zigzen.ide]:*..*||src[com.github.zigzen.ide.ui]:*..*||src[com.github.zigzen.openapi]:*..*||src[com.github.zigzen.psi.util]:*..*||src[com.github.zigzen.resources]:*..*||src[com.github.zigzen.zig]:*..*||src[com.github.zigzen.zig.impl]:*..*||src[com.github.zigzen.zon]:*..*||src[com.github.zigzen.zon.impl]:*..*" />
+  <scope name="zig" pattern="src[zigzen.build]:*..*||src[zigzen.icons]:*..*||src[zigzen.ide]:*..*||src[zigzen.ide.ui]:*..*||src[zigzen.openapi]:*..*||src[zigzen.psi.util]:*..*||src[zigzen.resources]:*..*||src[zigzen.zig]:*..*||src[zigzen.zig.impl]:*..*||src[zigzen.zon.impl]:*..*||src[zigzen.zon.impl]:*..*" />
 </component>
