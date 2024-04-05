@@ -65,7 +65,8 @@ class ZigProjectsService(
   override val allProjects: Collection<ZigProject>
     get() = projects.currentValue
 
-  override val hasAtLeastOneValidProject = allProjects.any { it.buildZigZon.exists() }
+  override val hasAtLeastOneValidProject
+    get() = allProjects.any { it.buildZigZon.exists() }
   override var initialized: Boolean = false
 
   override fun attachZigProject(buildZigZon: Path): Boolean {
