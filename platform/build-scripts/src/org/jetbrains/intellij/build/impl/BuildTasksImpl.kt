@@ -1,6 +1,4 @@
 // Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
-@file:Suppress("ReplacePutWithAssignment", "ReplaceJavaStaticMethodWithKotlinAnalog", "ReplaceGetOrSet")
-
 package org.jetbrains.intellij.build.impl
 
 import com.intellij.openapi.util.JDOMUtil
@@ -29,6 +27,7 @@ import org.jetbrains.idea.maven.aether.ArtifactRepositoryManager
 import org.jetbrains.idea.maven.aether.ProgressConsumer
 import org.jetbrains.intellij.build.*
 import org.jetbrains.intellij.build.TraceManager.spanBuilder
+import org.jetbrains.intellij.build.impl.moduleBased.findProductModulesFile
 import org.jetbrains.intellij.build.impl.productInfo.PRODUCT_INFO_FILE_NAME
 import org.jetbrains.intellij.build.impl.productInfo.ProductInfoLaunchData
 import org.jetbrains.intellij.build.impl.productInfo.checkInArchive
@@ -68,7 +67,6 @@ import kotlin.io.path.*
 internal const val PROPERTIES_FILE_NAME: String = "idea.properties"
 
 class BuildTasksImpl(private val context: BuildContextImpl) : BuildTasks {
-
   override suspend fun zipSourcesOfModules(modules: List<String>, targetFile: Path, includeLibraries: Boolean) {
     zipSourcesOfModules(modules = modules, targetFile = targetFile, includeLibraries = includeLibraries, context = context)
   }
@@ -97,7 +95,7 @@ class BuildTasksImpl(private val context: BuildContextImpl) : BuildTasks {
       platform = distState.platform,
       enabledPluginModules = getEnabledPluginModules(
         pluginsToPublish = distState.pluginsToPublish,
-        productProperties = context.productProperties
+        context = context
       ),
       compilationTasks = compilationTasks,
       context = context,
@@ -213,7 +211,7 @@ private suspend fun localizeModules(context: BuildContext, moduleNames: Collecti
 data class SupportedDistribution(@JvmField val os: OsFamily, @JvmField val arch: JvmArchitecture)
 
 @JvmField
-val SUPPORTED_DISTRIBUTIONS: List<SupportedDistribution> = java.util.List.of(
+val SUPPORTED_DISTRIBUTIONS: List<SupportedDistribution> = listOf(
   SupportedDistribution(os = OsFamily.MACOS, arch = JvmArchitecture.x64),
   SupportedDistribution(os = OsFamily.MACOS, arch = JvmArchitecture.aarch64),
   SupportedDistribution(os = OsFamily.WINDOWS, arch = JvmArchitecture.x64),
@@ -222,12 +220,11 @@ val SUPPORTED_DISTRIBUTIONS: List<SupportedDistribution> = java.util.List.of(
   SupportedDistribution(os = OsFamily.LINUX, arch = JvmArchitecture.aarch64),
 )
 
-private fun isSourceFile(path: String): Boolean {
-  return path.endsWith(".java") && path != "module-info.java" ||
-         path.endsWith(".groovy") ||
-         path.endsWith(".kt") ||
-         path.endsWith(".form")
-}
+private fun isSourceFile(path: String): Boolean =
+  path.endsWith(".java") && path != "module-info.java" ||
+  path.endsWith(".groovy") ||
+  path.endsWith(".kt") ||
+  path.endsWith(".form")
 
 private fun getLocalArtifactRepositoryRoot(global: JpsGlobal): Path {
   JpsModelSerializationDataService.getPathVariablesConfiguration(global)!!.getUserVariableValue("MAVEN_REPOSITORY")?.let {
@@ -638,7 +635,7 @@ private suspend fun compileModulesForDistribution(context: BuildContext): Distri
   val pluginsToPublish = getPluginLayoutsByJpsModuleNames(modules = productLayout.pluginModulesToPublish, productLayout = productLayout)
   filterPluginsToPublish(pluginsToPublish, context)
 
-  var enabledPluginModules = getEnabledPluginModules(pluginsToPublish = pluginsToPublish, productProperties = context.productProperties)
+  var enabledPluginModules = getEnabledPluginModules(pluginsToPublish = pluginsToPublish, context = context)
   // computed only based on a bundled and plugins to publish lists, compatible plugins are not taken in an account by intention
   val projectLibrariesUsedByPlugins = computeProjectLibsUsedByPlugins(enabledPluginModules = enabledPluginModules, context = context)
   val addPlatformCoverage = !productLayout.excludedModuleNames.contains("intellij.platform.coverage") &&
@@ -696,7 +693,7 @@ private suspend fun compileModulesForDistribution(context: BuildContext): Distri
       filterPluginsToPublish(pluginsToPublish, context)
 
       // update enabledPluginModules to reflect changes in pluginsToPublish - used for buildProjectArtifacts
-      enabledPluginModules = getEnabledPluginModules(pluginsToPublish = pluginsToPublish, productProperties = context.productProperties)
+      enabledPluginModules = getEnabledPluginModules(pluginsToPublish = pluginsToPublish, context = context)
     }
   }
 
@@ -813,7 +810,7 @@ private fun CoroutineScope.createMavenArtifactJob(context: BuildContext, distrib
     if (mavenArtifacts.forIdeModules) {
       moduleNames.addAll(distributionState.platformModules)
       val productLayout = context.productProperties.productLayout
-      collectIncludedPluginModules(enabledPluginModules = productLayout.bundledPluginModules, product = productLayout, result = moduleNames)
+      collectIncludedPluginModules(enabledPluginModules = context.bundledPluginModules, product = productLayout, result = moduleNames)
     }
 
     val mavenArtifactsBuilder = MavenArtifactsBuilder(context)
@@ -1371,7 +1368,7 @@ private fun crossPlatformZip(
 
 fun collectModulesToCompile(context: BuildContext, result: MutableSet<String>) {
   val productLayout = context.productProperties.productLayout
-  collectIncludedPluginModules(enabledPluginModules = productLayout.bundledPluginModules, product = productLayout, result = result)
+  collectIncludedPluginModules(enabledPluginModules = context.bundledPluginModules, product = productLayout, result = result)
   collectPlatformModules(result)
   result.addAll(productLayout.productApiModules)
   result.addAll(productLayout.productImplementationModules)
@@ -1399,7 +1396,7 @@ internal suspend fun buildAdditionalAuthoringArtifacts(ide: DevIdeBuild, context
       launch {
         val temporaryStepDirectory = temporaryBuildDirectory.resolve(command.first)
         val targetPath = temporaryStepDirectory.resolve(command.second)
-        ide.runProduct(tempDir = temporaryStepDirectory, arguments = listOf(command.first, targetPath.toString()))
+        ide.runProduct(temporaryStepDirectory, arguments = listOf(command.first, targetPath.toString()), isLongRunning = true)
 
         val targetFile = context.paths.artifactDir.resolve("${command.second}.zip")
         zipWithCompression(
@@ -1586,4 +1583,3 @@ private fun buildInBundlePropertiesLocalization(
     }
   })
 }
-

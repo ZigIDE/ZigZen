@@ -6,6 +6,7 @@ import org.jetbrains.intellij.build.impl.BundledRuntime
 import org.jetbrains.intellij.build.impl.CompilationTasksImpl
 import org.jetbrains.intellij.build.impl.JpsCompilationData
 import org.jetbrains.intellij.build.impl.compilation.PortableCompilationCache
+import org.jetbrains.intellij.build.moduleBased.OriginalModuleRepository
 import org.jetbrains.jps.model.JpsModel
 import org.jetbrains.jps.model.JpsProject
 import org.jetbrains.jps.model.module.JpsModule
@@ -40,6 +41,8 @@ interface CompilationContext {
    */
   val classesOutputDirectory: Path
 
+  val originalModuleRepository: OriginalModuleRepository
+
   fun findRequiredModule(name: String): JpsModule
 
   fun findModule(name: String): JpsModule?
@@ -49,6 +52,10 @@ interface CompilationContext {
   fun getModuleTestsOutputPath(module: JpsModule): String
 
   fun getModuleRuntimeClasspath(module: JpsModule, forTests: Boolean = false): List<String>
+
+  fun findFileInModuleSources(moduleName: String, relativePath: String): Path?
+
+  fun findFileInModuleSources(module: JpsModule, relativePath: String): Path?
 
   fun notifyArtifactBuilt(artifactPath: Path)
 }

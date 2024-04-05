@@ -305,6 +305,11 @@ public abstract class NewJavaToKotlinConverterSingleFileTestGenerated extends Ab
             KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
         }
 
+        @TestMetadata("assignment.java")
+        public void testAssignment() throws Exception {
+            runTest("../../shared/tests/testData/newJ2k/arrayAccessExpression/assignment.java");
+        }
+
         @TestMetadata("expressionIndex.java")
         public void testExpressionIndex() throws Exception {
             runTest("../../shared/tests/testData/newJ2k/arrayAccessExpression/expressionIndex.java");
@@ -4761,6 +4766,11 @@ public abstract class NewJavaToKotlinConverterSingleFileTestGenerated extends Ab
         @TestMetadata("FieldInitializedWithNull.java")
         public void testFieldInitializedWithNull() throws Exception {
             runTest("../../shared/tests/testData/newJ2k/nullability/FieldInitializedWithNull.java");
+        }
+
+        @TestMetadata("FieldWithTypeUseAnnotationAndInitializer.java")
+        public void testFieldWithTypeUseAnnotationAndInitializer() throws Exception {
+            runTest("../../shared/tests/testData/newJ2k/nullability/FieldWithTypeUseAnnotationAndInitializer.java");
         }
 
         @TestMetadata("IndirectOverride.java")

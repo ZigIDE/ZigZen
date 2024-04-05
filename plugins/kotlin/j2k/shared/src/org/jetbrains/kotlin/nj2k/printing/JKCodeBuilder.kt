@@ -4,6 +4,7 @@ package org.jetbrains.kotlin.nj2k.printing
 
 import org.jetbrains.kotlin.builtins.StandardNames
 import org.jetbrains.kotlin.idea.base.plugin.KotlinPluginModeProvider
+import org.jetbrains.kotlin.idea.base.plugin.KotlinPluginModeProvider.Companion.isK1Mode
 import org.jetbrains.kotlin.nj2k.*
 import org.jetbrains.kotlin.nj2k.printing.JKPrinterBase.ParenthesisKind
 import org.jetbrains.kotlin.nj2k.symbols.getDisplayFqName
@@ -22,6 +23,7 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
     private val elementInfoStorage = context.elementsInfoStorage
     private val printer = JKPrinter(context.project, context.importStorage, elementInfoStorage)
     private val commentPrinter = JKCommentPrinter(printer)
+    private val settings = context.converter.settings
 
     fun printCodeOut(root: JKTreeElement): String {
         Visitor().also { root.accept(it) }
@@ -108,7 +110,7 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
 
         override fun visitForInStatementRaw(forInStatement: JKForInStatement) {
             printer.print("for (")
-            forInStatement.declaration.accept(this)
+            forInStatement.variable.accept(this)
             printer.printWithSurroundingSpaces("in")
             forInStatement.iterationExpression.accept(this)
             printer.print(") ")
@@ -308,7 +310,13 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
         override fun visitForLoopVariableRaw(forLoopVariable: JKForLoopVariable) {
             forLoopVariable.annotationList.accept(this)
             forLoopVariable.name.accept(this)
-            if (forLoopVariable.type.present() && forLoopVariable.type.type !is JKContextType) {
+            if (!forLoopVariable.type.present() || forLoopVariable.type.type is JKContextType) return
+
+            val needExplicitType = isK1Mode() || // for K1 nullability inference
+                    settings.specifyLocalVariableTypeByDefault ||
+                    forLoopVariable.type.annotationList.annotations.isNotEmpty()
+
+            if (needExplicitType) {
                 printer.print(": ")
                 forLoopVariable.type.accept(this)
             }
@@ -454,6 +462,13 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
             qualifiedExpression.receiver.accept(this)
             printer.print(".")
             qualifiedExpression.selector.accept(this)
+        }
+
+        override fun visitArrayAccessExpressionRaw(arrayAccessExpression: JKArrayAccessExpression) {
+            arrayAccessExpression.receiver.accept(this)
+            printer.print("[")
+            arrayAccessExpression.indexExpression.accept(this)
+            printer.print("]")
         }
 
         override fun visitArgumentListRaw(argumentList: JKArgumentList) {
@@ -808,20 +823,20 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
 
         override fun visitAssignmentChainAlsoLinkRaw(assignmentChainAlsoLink: JKAssignmentChainAlsoLink) {
             assignmentChainAlsoLink.receiver.accept(this)
-            printer.print(".also({ ")
+            printer.print(".also { ")
             assignmentChainAlsoLink.assignmentStatement.accept(this)
             printer.print(" ")
-            printer.print("})")
+            printer.print("}")
         }
 
         override fun visitAssignmentChainLetLinkRaw(assignmentChainLetLink: JKAssignmentChainLetLink) {
             assignmentChainLetLink.receiver.accept(this)
-            printer.print(".let({ ")
+            printer.print(".let { ")
             assignmentChainLetLink.assignmentStatement.accept(this)
             printer.print("; ")
             assignmentChainLetLink.field.accept(this)
             printer.print(" ")
-            printer.print("})")
+            printer.print("}")
         }
 
         override fun visitKtWhenBlockRaw(ktWhenBlock: JKKtWhenBlock) {

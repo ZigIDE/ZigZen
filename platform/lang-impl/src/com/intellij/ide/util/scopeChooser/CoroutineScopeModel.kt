@@ -1,8 +1,10 @@
 // Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.ide.util.scopeChooser
 
+import com.intellij.codeWithMe.ClientId
 import com.intellij.ide.DataManager
 import com.intellij.ide.util.treeView.WeighedItem
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.impl.Utils
 import com.intellij.openapi.application.ModalityState
@@ -37,6 +39,11 @@ internal class CoroutineScopeModel internal constructor(
   private val options = mutableSetOf<ScopeOption>().apply { addAll(options) }
   private var filter: (ScopeDescriptor) -> Boolean = { true }
 
+  override fun dispose() {
+    listeners.clear()
+    coroutineScope.cancel()
+  }
+
   override fun setOption(option: ScopeOption, value: Boolean) {
     if (value) {
       options.add(option)
@@ -59,6 +66,7 @@ internal class CoroutineScopeModel internal constructor(
   }
 
   override fun refreshScopes(dataContext: DataContext?) {
+    LOG.debug("Scope model refresh request")
     val givenDataContext = dataContext?.let { Utils.createAsyncDataContext(it) }
     var earlyDataContextPromise: Promise<DataContext>? = null
     if (givenDataContext == null && EDT.isCurrentThreadEdt()) {
@@ -68,11 +76,12 @@ internal class CoroutineScopeModel internal constructor(
     }
     coroutineScope.launch(
       start = CoroutineStart.UNDISPATCHED,
-      context = ModalityState.any().asContextElement(),
+      context = ModalityState.any().asContextElement() + ClientId.coroutineContext(),
     ) {
       semaphore.withPermit {
         yield() // dispatch
         runCatching {
+          LOG.debug("Refreshing scopes")
           val effectiveDataContext: DataContext = when {
             givenDataContext != null -> givenDataContext
             earlyDataContextPromise != null -> earlyDataContextPromise.await()
@@ -89,6 +98,7 @@ internal class CoroutineScopeModel internal constructor(
       .then { Utils.createAsyncDataContext(it) }
 
   private fun fireScopesUpdated(scopesSnapshot: ScopesSnapshot) {
+    LOG.debug("Scopes updated")
     listeners.forEach { it.scopesUpdated(scopesSnapshot) }
   }
 
@@ -130,7 +140,13 @@ internal class CoroutineScopeModel internal constructor(
 
     for (provider in ScopeDescriptorProvider.EP_NAME.extensionList) {
       val scopes = readAction {
-        provider.getScopeDescriptors(project, dataContext)
+        try {
+          provider.getScopeDescriptors(project, dataContext)
+        }
+        catch (e: Exception) {
+          LOG.error("Couldn't retrieve scopes from $provider", e)
+          emptyArray()
+        }
       }
       for (descriptor in scopes) {
         if (filter.test(descriptor)) {
@@ -143,7 +159,13 @@ internal class CoroutineScopeModel internal constructor(
       val separatorName = provider.displayName
       if (separatorName.isNullOrEmpty()) continue
       val scopes = readAction {
-        provider.getSearchScopes(project, dataContext)
+        try {
+          provider.getSearchScopes(project, dataContext)
+        }
+        catch (e: Exception) {
+          LOG.error("Couldn't retrieve scopes from $provider", e)
+          emptyList()
+        }
       }
       if (scopes.isEmpty()) continue
       val scopeSeparator = ScopeSeparator(separatorName)

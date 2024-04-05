@@ -81,6 +81,12 @@ interface BuildContext : CompilationContext {
    * Specifies whether the runtime module repository should be added to the distributions, see [BuildOptions.generateRuntimeModuleRepository].
    */
   val generateRuntimeModuleRepository: Boolean
+
+  /**
+   * Returns main modules' names of plugins bundled with the product.
+   * In IDEs, which use path-based loader, this list is specified manually in [ProductModulesLayout.bundledPluginModules] property.
+   */
+  val bundledPluginModules: List<String>
   
   /**
    * see BuildTasksImpl.buildProvidedModuleList
@@ -113,10 +119,6 @@ interface BuildContext : CompilationContext {
                                 isPortableDist: Boolean = false): List<String>
 
   fun findApplicationInfoModule(): JpsModule
-
-  fun findFileInModuleSources(moduleName: String, relativePath: String): Path?
-
-  fun findFileInModuleSources(module: JpsModule, relativePath: String): Path?
 
   suspend fun signFiles(files: List<Path>, options: PersistentMap<String, String> = persistentMapOf()) {
     proprietaryBuildTools.signTool.signFiles(files = files, context = this, options = options)

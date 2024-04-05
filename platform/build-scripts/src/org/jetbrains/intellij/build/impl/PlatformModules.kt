@@ -149,7 +149,7 @@ private fun addModule(relativeJarPath: String,
 }
 
 suspend fun createPlatformLayout(pluginsToPublish: Set<PluginLayout>, context: BuildContext): PlatformLayout {
-  val enabledPluginModules = getEnabledPluginModules(pluginsToPublish = pluginsToPublish, productProperties = context.productProperties)
+  val enabledPluginModules = getEnabledPluginModules(pluginsToPublish = pluginsToPublish, context = context)
   val productLayout = context.productProperties.productLayout
   return createPlatformLayout(
     addPlatformCoverage = !productLayout.excludedModuleNames.contains("intellij.platform.coverage") &&
@@ -209,9 +209,11 @@ internal suspend fun createPlatformLayout(addPlatformCoverage: Boolean,
   // or IJ Platform. As it is a small library and consistency is important across other coroutine libs, bundle to IJ Platform.
   layout.withProjectLibrary(libraryName = "kotlinx-coroutines-slf4j", jarName = APP_JAR)
   // make sure that all ktor libraries bundled into the platform
-  layout.withProjectLibrary(libraryName = "ktor-client-content-negotiation")
-  layout.withProjectLibrary(libraryName = "ktor-client-logging")
-  layout.withProjectLibrary(libraryName = "ktor-serialization-kotlinx-json")
+  layout.withProjectLibraries(listOf(
+    "ktor-client-content-negotiation",
+    "ktor-client-logging",
+    "ktor-serialization-kotlinx-json",
+  ))
 
   // https://jetbrains.team/p/ij/reviews/67104/timeline
   // https://youtrack.jetbrains.com/issue/IDEA-179784
@@ -372,9 +374,9 @@ internal fun computeProjectLibsUsedByPlugins(enabledPluginModules: Set<String>, 
   return result
 }
 
-internal fun getEnabledPluginModules(pluginsToPublish: Set<PluginLayout>, productProperties: ProductProperties): Set<String> {
+internal fun getEnabledPluginModules(pluginsToPublish: Set<PluginLayout>, context: BuildContext): Set<String> {
   val result = LinkedHashSet<String>()
-  result.addAll(productProperties.productLayout.bundledPluginModules)
+  result.addAll(context.bundledPluginModules)
   pluginsToPublish.mapTo(result) { it.mainModule }
   return result
 }

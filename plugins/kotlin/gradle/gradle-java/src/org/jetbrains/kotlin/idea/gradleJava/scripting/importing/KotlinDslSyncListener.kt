@@ -4,7 +4,6 @@ package org.jetbrains.kotlin.idea.gradleJava.scripting.importing
 
 import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskId
 import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskNotificationListener
-import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskNotificationListenerAdapter
 import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskType.RESOLVE_PROJECT
 import com.intellij.openapi.externalSystem.service.execution.ExternalSystemJdkUtil
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
@@ -18,7 +17,7 @@ import org.jetbrains.plugins.gradle.settings.GradleSettings
 import org.jetbrains.plugins.gradle.util.GradleConstants
 import java.util.*
 
-class KotlinDslSyncListener : ExternalSystemTaskNotificationListenerAdapter() {
+class KotlinDslSyncListener : ExternalSystemTaskNotificationListener {
     companion object {
         val instance: KotlinDslSyncListener?
             get() =
@@ -89,16 +88,15 @@ class KotlinDslSyncListener : ExternalSystemTaskNotificationListenerAdapter() {
     override fun onCancel(id: ExternalSystemTaskId) {
         if (!id.isGradleRelatedTask()) return
 
-        val cancelled = synchronized(tasks) { tasks.remove(id) }
+        val sync = synchronized(tasks) { tasks[id] } ?: return
 
         // project may be null in case of new project
         val project = id.findProject() ?: return
-        cancelled?.let {
-            GradleBuildRootsManager.getInstance(project)?.markImportingInProgress(it.workingDir, false)
 
-            if (it.failed) {
-                reportErrors(project, it)
-            }
+        GradleBuildRootsManager.getInstance(project)?.markImportingInProgress(sync.workingDir, false)
+
+        if (sync.failed) {
+            reportErrors(project, sync)
         }
     }
 
