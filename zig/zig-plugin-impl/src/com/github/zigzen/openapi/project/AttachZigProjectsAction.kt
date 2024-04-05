@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.zigProjects
 import com.intellij.openapi.roots.ProjectFileIndex
@@ -42,7 +43,25 @@ class AttachZigProjectsAction : DumbAwareAction() {
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
-  override fun update(e: AnActionEvent) {}
+  override fun update(e: AnActionEvent) {
+    val project = e.project ?: return
+    e.presentation.isEnabledAndVisible = isActionEnabled(e, project)
+  }
+
+  private fun isActionEnabled(e: AnActionEvent, project: Project): Boolean {
+    return when (e.place) {
+      ZigEditorNotificationPanel.ACTION_PLACE -> true
+      else -> {
+        if (DumbService.isDumb(project))
+          return false
+
+        val file = e.getData(PlatformDataKeys.VIRTUAL_FILE)
+        val buildZigZon = file?.findBuildZigZon() ?: return false
+
+        canBeAttached(project, buildZigZon)
+      }
+    }
+  }
 
   companion object {
     fun canBeAttached(project: Project, buildZigZon: VirtualFile): Boolean {
