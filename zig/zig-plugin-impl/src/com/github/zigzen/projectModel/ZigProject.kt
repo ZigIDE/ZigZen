@@ -15,7 +15,8 @@ data class ZigProject(
 ) : IZigProject, UserDataHolderBase() {
   override val presentableName = buildZigZon.parent?.fileName.toString()
 
-  override val project = projectService.project
+  override val project
+    get() = projectService.project
 
   override val rootDir: VirtualFile?
     get() {
