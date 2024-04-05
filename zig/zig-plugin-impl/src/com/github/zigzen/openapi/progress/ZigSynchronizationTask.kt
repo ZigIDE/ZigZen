@@ -13,6 +13,7 @@ import com.intellij.build.progress.BuildProgress
 import com.intellij.build.progress.BuildProgressDescriptor
 import com.intellij.build.runWithChildProgress
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
@@ -31,6 +32,9 @@ class ZigSynchronizationTask(
     get() = ZigTask.ZigTaskType.ZIG_SYNC
 
   override fun run(indicator: ProgressIndicator) {
+    logger.info("Started ZigSynchronizationTask")
+    val start = System.currentTimeMillis()
+
     indicator.isIndeterminate = true
 
     val buildProgress = SyncViewManager.createBuildProgress(project)
@@ -51,6 +55,8 @@ class ZigSynchronizationTask(
     }
 
     result.complete(refreshedProjects)
+    val elapsed = System.currentTimeMillis() - start
+    logger.debug("ZigSynchronizationTask finished in $elapsed ms")
   }
 
   private fun createProjectSynchronizationDescriptor(progressIndicator: ProgressIndicator): BuildProgressDescriptor {
@@ -118,5 +124,9 @@ class ZigSynchronizationTask(
 
       it.zigProject.withStdlib(it.stdlib)
     }
+  }
+
+  companion object {
+    val logger = logger<ZigSynchronizationTask>()
   }
 }
