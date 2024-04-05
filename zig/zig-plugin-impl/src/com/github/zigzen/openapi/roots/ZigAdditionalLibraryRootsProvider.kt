@@ -3,9 +3,8 @@ package com.github.zigzen.openapi.roots
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.AdditionalLibraryRootsProvider
+import com.intellij.openapi.roots.SyntheticLibrary
 
 class ZigAdditionalLibraryRootsProvider : AdditionalLibraryRootsProvider() {
-  override fun getAdditionalProjectLibraries(project: Project) = listOf(
-    ZigStandardLibrarySyntheticLibrary()
-  )
+  override fun getAdditionalProjectLibraries(project: Project): List<SyntheticLibrary> = listOf()
 }
