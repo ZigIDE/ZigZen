@@ -15,20 +15,20 @@
  */
 
 {
-  parserClass = "com.github.zigzen.lang.parser.ZigParser"
+  parserClass = "zigzen.lang.parser.ZigParser"
 
   extends = "com.intellij.extapi.psi.ASTWrapperPsiElement"
   extends(".*Expr") = Expr
 
   psiClassPrefix = "Zig"
   psiImplClassSuffix = "Impl"
-  psiPackage = "com.github.zigzen.psi"
-  psiImplPackage = "com.github.zigzen.psi.impl"
+  psiPackage = "zigzen.psi"
+  psiImplPackage = "zigzen.psi.impl"
 
-  elementTypeHolderClass = "com.github.zigzen.psi.ZigTypes"
-  elementTypeClass = "com.github.zigzen.psi.ZigElementType"
+  elementTypeHolderClass = "zigzen.psi.ZigTypes"
+  elementTypeClass = "zigzen.psi.ZigElementType"
 
-  tokenTypeClass = "com.github.zigzen.psi.ZigTokenType"
+  tokenTypeClass = "zigzen.psi.ZigTokenType"
   generateTokenAccessors = true
   tokens = [
     AMPERSAND='&'

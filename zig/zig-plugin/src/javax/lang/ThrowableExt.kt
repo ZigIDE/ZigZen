@@ -1,7 +1,7 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package javax.lang
 
-import com.github.zigzen.openapi.components.IZigProjectsRefreshListener
+import zigzen.openapi.components.IZigProjectsRefreshListener
 import com.intellij.openapi.progress.ProcessCanceledException
 
 fun Throwable.toZigProjectsRefreshStatus(): IZigProjectsRefreshListener.ZigProjectsRefreshStatus {
