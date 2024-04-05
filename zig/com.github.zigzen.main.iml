@@ -12,9 +12,12 @@
     <orderEntry type="module" module-name="com.github.zigzen.zon.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="com.github.zigzen.resources" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.bootstrap" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.platform.ide.newUiOnboarding" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.lvcs" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.lvcs.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.main" />
+    <orderEntry type="module" module-name="intellij.platform.remoteServers" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.platform.remoteServers.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.resources" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.vcs" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.vcs.impl" scope="RUNTIME" />
