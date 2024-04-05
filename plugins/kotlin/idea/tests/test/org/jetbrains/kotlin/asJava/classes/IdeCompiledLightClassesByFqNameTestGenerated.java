@@ -300,6 +300,11 @@ public abstract class IdeCompiledLightClassesByFqNameTestGenerated extends Abstr
             runTest(compilerTestData("compiler/testData/asJava/lightClasses/lightClassByFqName/CompanionObject.kt"));
         }
 
+        @TestMetadata("CompanionObjectWithAConflictingProperty.kt")
+        public void testCompanionObjectWithAConflictingProperty() throws Exception {
+            runTest(compilerTestData("compiler/testData/asJava/lightClasses/lightClassByFqName/CompanionObjectWithAConflictingProperty.kt"));
+        }
+
         @TestMetadata("Constructors.kt")
         public void testConstructors() throws Exception {
             runTest(compilerTestData("compiler/testData/asJava/lightClasses/lightClassByFqName/Constructors.kt"));
@@ -388,6 +393,11 @@ public abstract class IdeCompiledLightClassesByFqNameTestGenerated extends Abstr
         @TestMetadata("InterfaceTypeParameterAnnotation.kt")
         public void testInterfaceTypeParameterAnnotation() throws Exception {
             runTest(compilerTestData("compiler/testData/asJava/lightClasses/lightClassByFqName/InterfaceTypeParameterAnnotation.kt"));
+        }
+
+        @TestMetadata("InterfaceWithDefaultMethodAndCompanion.kt")
+        public void testInterfaceWithDefaultMethodAndCompanion() throws Exception {
+            runTest(compilerTestData("compiler/testData/asJava/lightClasses/lightClassByFqName/InterfaceWithDefaultMethodAndCompanion.kt"));
         }
 
         @TestMetadata("InvalidJavaIdentifierAsAnnotationArgument.kt")

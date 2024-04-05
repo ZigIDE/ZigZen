@@ -130,14 +130,16 @@ internal class LoggerContext(val log4jAsImplementationForSlf4j: Boolean)
 /**
  * A data class representing the result of a placeholder count operation.
  *
- * @property placeholderRangeList                The list of the ranges, corresponding to the placeholder
+ * @property placeholderRangesList                The list of the ranges, corresponding to the placeholder
  * @property status                              The status of the placeholders ranges extraction.
  *
  * @see countBracesBasedPlaceholders
  */
-internal data class PlaceholderCountResult(val placeholderRangeList: List<TextRange?>, val status: PlaceholdersStatus) {
-  val count = placeholderRangeList.size
+internal data class PlaceholderCountResult(val placeholderRangesList: List<PlaceholderRanges>, val status: PlaceholdersStatus) {
+  val count = placeholderRangesList.size
 }
+
+internal data class PlaceholderRanges(val ranges: List<TextRange?>)
 
 /**
  * A data class representing the context for a placeholder of the logger.
@@ -215,7 +217,7 @@ private fun getImmediateLoggerQualifier(expression: UCallExpression): UExpressio
 }
 
 internal fun findMessageSetterStringArg(node: UCallExpression,
-                               loggerType: LoggerTypeSearcher?): UExpression? {
+                                        loggerType: LoggerTypeSearcher?): UExpression? {
   if (loggerType == null) {
     return null
   }
@@ -249,11 +251,17 @@ internal fun findMessageSetterStringArg(node: UCallExpression,
 }
 
 /**
- * @return The count of additional arguments, or null if it is impossible to count.
+ * Additional argument for logging is an argument that is not located in the same method as string with placeholders.
+ * For example:
+ * ```java
+ * LOG.atInfo().addArgument(arg).log("{}");
+ * ```
+ * here "arg" is additional argument
+ * @return the list of [UExpression] corresponding to the additional argument or null if it is impossible to count.
  */
-internal fun findAdditionalArgumentCount(node: UCallExpression,
-                                loggerType: LoggerTypeSearcher,
-                                allowIntermediateMessage: Boolean): List<UExpression>? {
+internal fun findAdditionalArguments(node: UCallExpression,
+                                     loggerType: LoggerTypeSearcher,
+                                     allowIntermediateMessage: Boolean): List<UExpression>? {
   val uExpressions = mutableListOf<UExpression>()
   if (loggerType != SLF4J_BUILDER_HOLDER) {
     return emptyList()
@@ -266,7 +274,8 @@ internal fun findAdditionalArgumentCount(node: UCallExpression,
     if (currentCall is UCallExpression) {
       val methodName = currentCall.methodName ?: return null
       if (methodName == ADD_ARGUMENT_METHOD_NAME) {
-        uExpressions.add(currentCall.valueArguments.first())
+        val argument = currentCall.valueArguments.first() ?: return null
+        uExpressions.add(argument)
         currentCall = currentCall.receiver
         continue
       }
@@ -337,7 +346,12 @@ private fun countFormattedBasedPlaceholders(holders: List<LoggingStringPartEvalu
     return PlaceholderCountResult(emptyList(), PlaceholdersStatus.ERROR_TO_PARSE_STRING)
   }
 
-  val placeholderRangeList = validators.map { it.range }
+  val placeholderRangeList = validators.map { metaValidator ->
+    PlaceholderRanges(
+      if (metaValidator is FormatDecode.MultiValidator) metaValidator.validators.map { validator -> validator.range }
+      else listOf(metaValidator.range)
+    )
+  }
   if (placeholderRangeList.size != validators.size) {
     return PlaceholderCountResult(emptyList(), PlaceholdersStatus.ERROR_TO_PARSE_STRING)
   }
@@ -348,14 +362,16 @@ private fun countFormattedBasedPlaceholders(holders: List<LoggingStringPartEvalu
 internal fun getPlaceholderContext(
   uCallExpression: UCallExpression,
   mapper: CallMapper<LoggerTypeSearcher>,
-  log4jAsImplementationForSlf4j: Boolean
+  log4jAsImplementationForSlf4j: Boolean? = null
 ): PlaceholderContext? {
   val method = uCallExpression.resolveToUElement() as? UMethod ?: return null
 
   val searcher = mapper.mapFirst(uCallExpression) ?: return null
   val arguments = uCallExpression.valueArguments
 
-  val loggerType = searcher.findType(uCallExpression, LoggerContext(log4jAsImplementationForSlf4j)) ?: return null
+  val loggerType = searcher.findType(uCallExpression, LoggerContext(
+    log4jAsImplementationForSlf4j ?: LoggingUtil.hasBridgeFromSlf4jToLog4j2(uCallExpression)
+  )) ?: return null
 
   if (arguments.isEmpty() && searcher != SLF4J_BUILDER_HOLDER) return null
   val parameters = method.uastParameters
@@ -366,7 +382,7 @@ internal fun getPlaceholderContext(
   if (parameters.isEmpty() || arguments.isEmpty()) {
     //try to find String somewhere else
     logStringArgument = findMessageSetterStringArg(uCallExpression, searcher) ?: return null
-    placeholderParameters = findAdditionalArgumentCount(uCallExpression, searcher, true) ?: return null
+    placeholderParameters = findAdditionalArguments(uCallExpression, searcher, true) ?: return null
   }
   else {
     val index = getLogStringIndex(parameters) ?: return null
@@ -382,8 +398,8 @@ internal fun getPlaceholderContext(
         return null
       }
     }
-    val additionalArgumentCount = findAdditionalArgumentCount(uCallExpression, searcher, false) ?: return null
-    placeholderParameters += additionalArgumentCount
+    val additionalArguments = findAdditionalArguments(uCallExpression, searcher, false) ?: return null
+    placeholderParameters += additionalArguments
     logStringArgument = arguments[index - 1]
   }
 
@@ -417,7 +433,7 @@ internal fun hasThrowableType(lastArgument: UExpression): Boolean {
 private fun countBracesBasedPlaceholders(holders: List<LoggingStringPartEvaluator.PartHolder>, loggerType: PlaceholderLoggerType): PlaceholderCountResult {
   var count = 0
   var full = true
-  val placeholderRangeList: MutableList<TextRange> = mutableListOf()
+  val placeholderRangeList: MutableList<PlaceholderRanges> = mutableListOf()
   for (holderIndex in holders.indices) {
     val partHolder = holders[holderIndex]
     if (!partHolder.isConstant) {
@@ -445,7 +461,11 @@ private fun countBracesBasedPlaceholders(holders: List<LoggingStringPartEvaluato
       else if (c == '}') {
         if (lastPlaceholderIndex != -1) {
           count++
-          placeholderRangeList.add(TextRange(lastPlaceholderIndex, lastPlaceholderIndex + 2))
+          placeholderRangeList.add(
+            PlaceholderRanges(
+              listOf(TextRange(lastPlaceholderIndex, lastPlaceholderIndex + 2))
+            )
+          )
           lastPlaceholderIndex = -1
         }
       }

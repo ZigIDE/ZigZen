@@ -281,7 +281,7 @@ object CommunityRepositoryModules {
   )
 
   private fun androidDesignPlugin(mainModuleName: String = "intellij.android.design-plugin.descriptor"): PluginLayout {
-    return plugin (mainModuleName) { spec ->
+    return plugin (mainModuleName, auto = true) { spec ->
       spec.directoryName = "design-tools"
       spec.mainJarName = "design-tools.jar"
 
@@ -302,9 +302,7 @@ object CommunityRepositoryModules {
 
       // libs:
       spec.withProjectLibrary("layoutlib")
-      spec.withProjectLibrary("asm-tools")
 
-      spec.withProjectLibrary("studio-analytics-proto") // This is to avoid this library leaking into project jars
       // :libs
 
       //"resources": [
@@ -333,7 +331,7 @@ object CommunityRepositoryModules {
                                         additionalModulesToJars: Map<String, String> = emptyMap(),
                                         allPlatforms: Boolean,
                                         addition: ((PluginLayout.PluginLayoutSpec) -> Unit)?): PluginLayout =
-    plugin(mainModuleName) { spec ->
+    plugin(mainModuleName, auto = true) { spec ->
       spec.directoryName = "android"
       spec.mainJarName = "android.jar"
       spec.withCustomVersion(object : PluginLayout.VersionEvaluator {
@@ -348,6 +346,8 @@ object CommunityRepositoryModules {
           }
         }
       })
+
+      spec.excludeProjectLibrary("Gradle")
 
       // modules:
       // adt-ui.jar
@@ -379,10 +379,10 @@ object CommunityRepositoryModules {
       spec.withModule("intellij.android.kotlin.output.parser", "android-kotlin.jar")
 
       // android-profilers.jar
-      spec. withModule("intellij.android.profilers.atrace", "android-profilers.jar")
-      spec. withModule("intellij.android.profilers.ui", "android-profilers.jar")
-      spec. withModule("intellij.android.profilers", "android-profilers.jar")
-      spec. withModule("intellij.android.transportDatabase", "android-profilers.jar")
+      spec.withModule("intellij.android.profilers.atrace", "android-profilers.jar")
+      spec.withModule("intellij.android.profilers.ui", "android-profilers.jar")
+      spec.withModule("intellij.android.profilers", "android-profilers.jar")
+      spec.withModule("intellij.android.transportDatabase", "android-profilers.jar")
 
       // android-rt.jar
       //tools/adt/idea/rt:intellij.android.rt <= REMOVED
@@ -605,10 +605,8 @@ object CommunityRepositoryModules {
       //spec.withModuleLibrary("compose-desktop-ui", "intellij.android.adt.ui.compose", "")
       //spec.withModuleLibrary("skiko", "intellij.android.adt.ui.compose", "")
 
-      spec.withProjectLibrary("aapt-proto")
       spec.withProjectLibrary("android-test-plugin-host-device-info-proto")
       spec.withProjectLibrary("asm-tools")
-      spec.withProjectLibrary("emulator-proto")
 
       val ffmpegVersion = "6.0-1.5.9"
       val javacppVersion = "1.5.9"
@@ -656,7 +654,6 @@ object CommunityRepositoryModules {
       //tools/adt/idea/.idea/libraries:firebase_java_proto <= REMOVED
       // We do not bundle Google API client in IJ
       //spec.withProjectLibrary("google-api-client")
-      spec.withProjectLibrary("google-baksmali")
       spec.withProjectLibrary("google-dexlib2")
       //spec.withProjectLibrary("gradle-shared-proto")
       spec.withProjectLibrary("HdrHistogram")
@@ -673,13 +670,11 @@ object CommunityRepositoryModules {
       //spec.withProjectLibrary("oauth2")
       spec.withProjectLibrary("perfetto-proto")
       spec.withProjectLibrary("sqlite-inspector-proto")
-      spec.withProjectLibrary("sqlite")
       spec.withProjectLibrary("studio-analytics-proto")
       spec.withProjectLibrary("studio-grpc")
       spec.withProjectLibrary("studio-proto")
       spec.withProjectLibrary("transport-proto")
       spec.withProjectLibrary("utp-core-proto-jarjar")
-      spec.withProjectLibrary("zxing-core")
       spec.withModuleLibrary("libandroid-core-proto", "intellij.android.core", "")
       spec.withModuleLibrary("libandroid-core-proto", "intellij.android.projectSystem.gradle", "")
       spec.withModuleLibrary("libstudio.android-test-plugin-host-retention-proto", "intellij.android.core", "")
@@ -751,9 +746,6 @@ object CommunityRepositoryModules {
       // END OF BAZEL FILE
 
       // here go some differences from original Android Studio layout
-
-      //these project-level libraries are used from Android plugin only, so it's better to include them into its lib directory
-      spec.withProjectLibrary("HdrHistogram")
 
       for (entry in additionalModulesToJars.entries) {
         spec.withModule(entry.key, entry.value)

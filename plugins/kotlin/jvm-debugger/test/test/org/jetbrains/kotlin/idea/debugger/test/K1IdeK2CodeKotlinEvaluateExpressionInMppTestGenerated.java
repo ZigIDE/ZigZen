@@ -1640,6 +1640,11 @@ public abstract class K1IdeK2CodeKotlinEvaluateExpressionInMppTestGenerated exte
                 runTest("testData/evaluation/singleBreakpoint/multilineExpressionAtBreakpoint.kt");
             }
 
+            @TestMetadata("nestedGenerics.kt")
+            public void testNestedGenerics() throws Exception {
+                runTest("testData/evaluation/singleBreakpoint/nestedGenerics.kt");
+            }
+
             @TestMetadata("nestedInlineArguments.kt")
             public void testNestedInlineArguments() throws Exception {
                 runTest("testData/evaluation/singleBreakpoint/nestedInlineArguments.kt");
@@ -1718,6 +1723,11 @@ public abstract class K1IdeK2CodeKotlinEvaluateExpressionInMppTestGenerated exte
             @TestMetadata("privatePropertyWithNonDefaultAccessor.kt")
             public void testPrivatePropertyWithNonDefaultAccessor() throws Exception {
                 runTest("testData/evaluation/singleBreakpoint/privatePropertyWithNonDefaultAccessor.kt");
+            }
+
+            @TestMetadata("privateToplevelField.kt")
+            public void testPrivateToplevelField() throws Exception {
+                runTest("testData/evaluation/singleBreakpoint/privateToplevelField.kt");
             }
 
             @TestMetadata("privateToplevelProperty.kt")
