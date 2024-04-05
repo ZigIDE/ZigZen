@@ -95,6 +95,7 @@ open class ZigProjectsService(
     allProjects.forEach {
       val projectElement = Element("zigProject")
       projectElement.setAttribute("buildZigZon", it.buildZigZon.invariantSeparatorsPathString)
+      state.addContent(projectElement)
     }
 
     return state
@@ -146,6 +147,7 @@ open class ZigProjectsService(
               fileTypeManager.associateExtension(ZigFileType, ZigFileType.defaultExtension)
             }
 
+            directoryIndex.resetIndex()
             if ((project as? ProjectEx)?.isLight != true) {
               ProjectRootManagerEx.getInstanceEx(project)
                 .makeRootsChange(EmptyRunnable.INSTANCE, false, true)
