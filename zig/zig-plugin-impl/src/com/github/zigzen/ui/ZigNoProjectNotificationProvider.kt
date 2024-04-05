@@ -29,7 +29,7 @@ class ZigNoProjectNotificationProvider(project: Project) : AbstractZigEditorNoti
     if (!ApplicationManager.getApplication().isDispatchThread)
       return null
 
-    if (file.fileType !is ZigFileType && file.name != "build.zig.zon")
+    if (!(file.fileType is ZigFileType || file.name == "build.zig.zon"))
       return null
 
     if (areNotificationsDisabledForVirtualFile(file))
@@ -45,7 +45,7 @@ class ZigNoProjectNotificationProvider(project: Project) : AbstractZigEditorNoti
     if (!zigProjectService.hasAtLeastOneValidProject)
       return createNoZigProjectsPanel(file)
 
-    if (file.name != "build.zig.zon") {
+    if (file.name == "build.zig.zon") {
       if (AttachZigProjectsAction.canBeAttached(project, file)) {
         return createNoZigProjectsForFilePanel(file)
       }
