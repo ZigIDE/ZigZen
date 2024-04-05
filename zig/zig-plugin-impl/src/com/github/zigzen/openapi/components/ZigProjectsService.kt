@@ -35,8 +35,9 @@ import kotlin.io.path.invariantSeparatorsPathString
   name = "ZigProjectsService",
   storages = [Storage(StoragePathMacros.WORKSPACE_FILE)]
 )
-class ZigProjectsService(
-  override val project: Project
+@Suppress("LeakingThis")
+open class ZigProjectsService(
+  final override val project: Project
 ) : Disposable, IZigProjectsService, PersistentStateComponent<Element> {
   init {
     registerProject(project, this)
