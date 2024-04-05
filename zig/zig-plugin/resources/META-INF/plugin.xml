@@ -1,77 +1,77 @@
 <!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
 <idea-plugin>
-  <id>com.github.zigzen.zig</id>
+  <id>zigzen.zig</id>
   <name>Zig Language</name>
   <vendor>ZigIDE</vendor>
 
   <actions>
     <action id="Zig.AttachZigProject"
-            class="com.github.zigzen.openapi.project.AttachZigProjectsAction"
+            class="zigzen.openapi.project.AttachZigProjectsAction"
             icon="AllIcons.General.Add"/>
     <action id="Zig.RefreshAllProjects"
-            class="com.github.zigzen.openapi.project.RefreshZigProjectsAction"
+            class="zigzen.openapi.project.RefreshZigProjectsAction"
             icon="AllIcons.Actions.Refresh"/>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <additionalLibraryRootsProvider implementation="com.github.zigzen.openapi.roots.ZigAdditionalLibraryRootsProvider"/>
+    <additionalLibraryRootsProvider implementation="zigzen.openapi.roots.ZigAdditionalLibraryRootsProvider"/>
     <annotator language="ZIG"
-               implementationClass="com.github.zigzen.lang.annotation.ZigAnnotator"/>
-    <colorSettingsPage implementation="com.github.zigzen.openapi.options.ZigColorSettingsPage"/>
-    <configurationType implementation="com.github.zigzen.execution.configurations.ZigBuildConfigurationType"/>
-    <configurationType implementation="com.github.zigzen.execution.configurations.ZigRunConfigurationType"/>
-    <configurationType implementation="com.github.zigzen.execution.configurations.ZigTestConfigurationType"/>
-    <editorNotificationProvider implementation="com.github.zigzen.ui.ZigNoProjectNotificationProvider"/>
-    <enterHandlerDelegate implementation="com.github.zigzen.codeInsight.editorActions.enter.ZigInCommentEnterHandlerDelegate"/>
+               implementationClass="zigzen.lang.annotation.ZigAnnotator"/>
+    <colorSettingsPage implementation="zigzen.openapi.options.ZigColorSettingsPage"/>
+    <configurationType implementation="zigzen.execution.configurations.ZigBuildConfigurationType"/>
+    <configurationType implementation="zigzen.execution.configurations.ZigRunConfigurationType"/>
+    <configurationType implementation="zigzen.execution.configurations.ZigTestConfigurationType"/>
+    <editorNotificationProvider implementation="zigzen.ui.ZigNoProjectNotificationProvider"/>
+    <enterHandlerDelegate implementation="zigzen.codeInsight.editorActions.enter.ZigInCommentEnterHandlerDelegate"/>
     <fileType language="ZIG"
               extensions="zig"
               fieldName="INSTANCE"
-              implementationClass="com.github.zigzen.openapi.ZigFileType"
+              implementationClass="zigzen.openapi.ZigFileType"
               name="Zig File"/>
-    <projectService serviceImplementation="com.github.zigzen.openapi.components.ZigProjectsService"
-                    serviceInterface="com.github.zigzen.openapi.components.IZigProjectsService"/>
-    <runConfigurationProducer implementation="com.github.zigzen.execution.configurations.ZigBuildLazyRunConfigurationProducer"/>
-    <runConfigurationProducer implementation="com.github.zigzen.execution.configurations.ZigRunLazyRunConfigurationProducer"/>
-    <runConfigurationProducer implementation="com.github.zigzen.execution.configurations.ZigTestLazyRunConfigurationProducer"/>
-    <runLineMarkerContributor language="ZIG" implementationClass="com.github.zigzen.execution.lineMarker.ZigBuildRunLineMarkerContributor"/>
-    <runLineMarkerContributor language="ZIG" implementationClass="com.github.zigzen.execution.lineMarker.ZigRunRunLineMarkerContributor"/>
-    <runLineMarkerContributor language="ZIG" implementationClass="com.github.zigzen.execution.lineMarker.ZigTestRunLineMarkerContributor"/>
+    <projectService serviceImplementation="zigzen.openapi.components.ZigProjectsService"
+                    serviceInterface="zigzen.openapi.components.IZigProjectsService"/>
+    <runConfigurationProducer implementation="zigzen.execution.configurations.ZigBuildLazyRunConfigurationProducer"/>
+    <runConfigurationProducer implementation="zigzen.execution.configurations.ZigRunLazyRunConfigurationProducer"/>
+    <runConfigurationProducer implementation="zigzen.execution.configurations.ZigTestLazyRunConfigurationProducer"/>
+    <runLineMarkerContributor language="ZIG" implementationClass="zigzen.execution.lineMarker.ZigBuildRunLineMarkerContributor"/>
+    <runLineMarkerContributor language="ZIG" implementationClass="zigzen.execution.lineMarker.ZigRunRunLineMarkerContributor"/>
+    <runLineMarkerContributor language="ZIG" implementationClass="zigzen.execution.lineMarker.ZigTestRunLineMarkerContributor"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij.codeInsight">
-    <parameterNameHints language="ZIG" implementationClass="com.github.zigzen.codeInsight.hints.ZigInlayParameterHintsProvider"/>
+    <parameterNameHints language="ZIG" implementationClass="zigzen.codeInsight.hints.ZigInlayParameterHintsProvider"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij.lang">
     <braceMatcher language="ZIG"
-                  implementationClass="com.github.zigzen.lang.ZigBraceMatcher"/>
+                  implementationClass="zigzen.lang.ZigBraceMatcher"/>
     <commenter language="ZIG"
-               implementationClass="com.github.zigzen.lang.ZigCommenter"/>
-    <formatter language="ZIG" implementationClass="com.github.zigzen.formatting.ZigFormattingModelBuilder"/>
+               implementationClass="zigzen.lang.ZigCommenter"/>
+    <formatter language="ZIG" implementationClass="zigzen.formatting.ZigFormattingModelBuilder"/>
     <parserDefinition language="ZIG"
-                      implementationClass="com.github.zigzen.lang.parser.ZigParserDefinition"/>
-    <quoteHandler language="ZIG" implementationClass="com.github.zigzen.codeInsight.editorActions.ZigQuoteHandler"/>
+                      implementationClass="zigzen.lang.parser.ZigParserDefinition"/>
+    <quoteHandler language="ZIG" implementationClass="zigzen.codeInsight.editorActions.ZigQuoteHandler"/>
     <syntaxHighlighterFactory language="ZIG"
-                              implementationClass="com.github.zigzen.openapi.fileTypes.ZigSyntaxHighlighterFactory"/>
+                              implementationClass="zigzen.openapi.fileTypes.ZigSyntaxHighlighterFactory"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij.completion">
-    <contributor language="ZIG" implementationClass="com.github.zigzen.codeInsight.completion.ZigBuiltinFunctionCompletionContributor"/>
-    <contributor language="ZIG" implementationClass="com.github.zigzen.codeInsight.completion.ZigKeywordCompletionContributor"/>
+    <contributor language="ZIG" implementationClass="zigzen.codeInsight.completion.ZigBuiltinFunctionCompletionContributor"/>
+    <contributor language="ZIG" implementationClass="zigzen.codeInsight.completion.ZigKeywordCompletionContributor"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij.platform.backend.documentation">
-    <psiTargetProvider implementation="com.github.zigzen.backend.documentation.ZigPsiDocumentationTargetProvider"/>
-    <targetProvider implementation="com.github.zigzen.backend.documentation.ZigDocumentationTargetProvider"/>
+    <psiTargetProvider implementation="zigzen.backend.documentation.ZigPsiDocumentationTargetProvider"/>
+    <targetProvider implementation="zigzen.backend.documentation.ZigDocumentationTargetProvider"/>
   </extensions>
 
-  <extensions defaultExtensionNs="com.github.zigzen.zig">
-    <toolchainFlavour implementation="com.github.zigzen.lang.toolchain.flavour.ZigSystemPathEnvironmentVariableToolchainFlavour"/>
-    <toolchainProvider implementation="com.github.zigzen.lang.toolchain.ZigLocalToolchainProvider"/>
+  <extensions defaultExtensionNs="zigzen.zig">
+    <toolchainFlavour implementation="zigzen.lang.toolchain.flavour.ZigSystemPathEnvironmentVariableToolchainFlavour"/>
+    <toolchainProvider implementation="zigzen.lang.toolchain.ZigLocalToolchainProvider"/>
   </extensions>
 
   <extensionPoints>
-    <extensionPoint interface="com.github.zigzen.lang.toolchain.flavour.AbstractZigToolchainFlavour" name="toolchainFlavour"/>
-    <extensionPoint interface="com.github.zigzen.lang.toolchain.ZigToolchainProvider" name="toolchainProvider"/>
+    <extensionPoint interface="zigzen.lang.toolchain.flavour.AbstractZigToolchainFlavour" name="toolchainFlavour"/>
+    <extensionPoint interface="zigzen.lang.toolchain.ZigToolchainProvider" name="toolchainProvider"/>
   </extensionPoints>
 </idea-plugin>
