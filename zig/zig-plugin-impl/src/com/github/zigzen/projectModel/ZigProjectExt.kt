@@ -54,10 +54,10 @@ fun setupProjectRoots(project: Project) {
       if (project.isDisposed) return@runWriteAction
       ProjectRootManagerEx.getInstanceEx(project).mergeRootsChangesDuring {
         project.zigProjects.allProjects.forEach {
-          it.rootDir?.setupContentRoots(it.project) {
-            addExcludeFolder("zig-cache")
-            addExcludeFolder("zig-out")
-            addSourceFolder("src", false)
+          it.rootDir?.setupContentRoots(it.project) { contentRoot ->
+            addExcludeFolder("${contentRoot.url}/zig-cache")
+            addExcludeFolder("${contentRoot.url}/zig-out")
+            addSourceFolder("${contentRoot}/src", false)
           }
         }
       }
