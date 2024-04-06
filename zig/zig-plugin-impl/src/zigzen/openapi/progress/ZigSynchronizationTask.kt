@@ -1,16 +1,14 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package zigzen.openapi.progress
 
+import com.intellij.build.*
 import zigzen.openapi.project.StopAction
 import zigzen.projectModel.IZigProject
 import zigzen.projectModel.ZigProject
-import com.intellij.build.BuildContentDescriptor
-import com.intellij.build.DefaultBuildDescriptor
-import com.intellij.build.SyncViewManager
+import com.intellij.build.events.BuildEventsNls
 import com.intellij.build.events.MessageEvent
 import com.intellij.build.progress.BuildProgress
 import com.intellij.build.progress.BuildProgressDescriptor
-import com.intellij.build.runWithChildProgress
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProcessCanceledException
@@ -18,6 +16,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.toolchain
+import com.intellij.openapi.util.NlsContexts
 import zigzen.lang.toolchain.AbstractZigToolchain
 import zigzen.projectModel.ZigStandardLibrary
 import java.util.concurrent.CompletableFuture
@@ -140,7 +139,15 @@ class ZigSynchronizationTask(
     val toolchain: AbstractZigToolchain,
     val progressIndicator: ProgressIndicator,
     val syncProgress: BuildProgress<BuildProgressDescriptor>
-  )
+  ) {
+    @Suppress("DialogTitleCapitalization")
+    fun <T> runWithChildProgress(@NlsContexts.ProgressTitle title: String, action: (ZigSynchronizationContext) -> T): T {
+      progressIndicator.checkCanceled()
+      progressIndicator.text = title
+
+      return syncProgress.runWithChildProgressCatchingException(title, { copy(syncProgress = it) }, action)
+    }
+  }
 
   companion object {
     val logger = logger<ZigSynchronizationTask>()
