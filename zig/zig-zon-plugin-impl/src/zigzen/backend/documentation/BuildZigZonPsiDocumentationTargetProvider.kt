@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement
 
 class BuildZigZonPsiDocumentationTargetProvider : PsiDocumentationTargetProvider {
   override fun documentationTarget(element: PsiElement, originalElement: PsiElement?): DocumentationTarget? {
-    if (element.language.`is`(ZonLanguage.INSTANCE))
+    if (element.language.`is`(ZonLanguage))
       return BuildZigZonDocumentationTarget(element, originalElement)
 
     return null
