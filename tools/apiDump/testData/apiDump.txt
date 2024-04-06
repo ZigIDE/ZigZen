@@ -1,5 +1,5 @@
 *f:com.intellij.tools.apiDump.testData.ApiExperimentalClassWithCompanion
-- sf:Companion:com.intellij.tools.apiDump.testData.ApiExperimentalClassWithCompanion$Companion
+- *sf:Companion:com.intellij.tools.apiDump.testData.ApiExperimentalClassWithCompanion$Companion
 *f:com.intellij.tools.apiDump.testData.ApiExperimentalClassWithCompanion$Companion
 f:com.intellij.tools.apiDump.testData.ClassWithApiExperimentalCompanion
 - *sf:Companion:com.intellij.tools.apiDump.testData.ClassWithApiExperimentalCompanion$Companion
@@ -85,15 +85,9 @@ c:com.intellij.tools.apiDump.testData.JPublicClass
 - s:publicStaticMethod():V
 c:com.intellij.tools.apiDump.testData.JPublicClassInternalInterface
 - <init>():V
-- s:publicStaticMethod():V
 c:com.intellij.tools.apiDump.testData.JPublicClassInternalSuper
 - <init>():V
 - clone():com.intellij.tools.apiDump.testData.JPublicClassInternalSuper
-- b:clone():java.lang.Object
-- psf:protectedStaticFinalMethod():V
-- ps:protectedStaticMethod():V
-- sf:publicStaticFinalMethod():V
-- s:publicStaticMethod():V
 f:com.intellij.tools.apiDump.testData.JPublicFinalClass
 - <init>():V
 com.intellij.tools.apiDump.testData.JPublicInterface
@@ -130,6 +124,22 @@ f:com.intellij.tools.apiDump.testData.KtFieldAnnotations
 f:com.intellij.tools.apiDump.testData.KtPublicClass
 *f:com.intellij.tools.apiDump.testData.KtPublicClass$ApiExperimentalClass
 f:com.intellij.tools.apiDump.testData.KtPublicClass$PublicClass
+f:com.intellij.tools.apiDump.testData.defaultParameters.KtChildClass
+- com.intellij.tools.apiDump.testData.defaultParameters.KtMiddleClass
+- <init>():V
+- function(I,I,I):V
+- genericFunction(I,D,I):java.lang.Double
+com.intellij.tools.apiDump.testData.defaultParameters.KtInterface
+- a:function(I,I,I):V
+- bs:function$default(com.intellij.tools.apiDump.testData.defaultParameters.KtInterface,I,I,I,I,java.lang.Object):V
+- a:genericFunction(I,java.lang.Object,I):java.lang.Object
+- bs:genericFunction$default(com.intellij.tools.apiDump.testData.defaultParameters.KtInterface,I,java.lang.Object,I,I,java.lang.Object):java.lang.Object
+a:com.intellij.tools.apiDump.testData.defaultParameters.KtMiddleClass
+- com.intellij.tools.apiDump.testData.defaultParameters.KtInterface
+- <init>():V
+f:com.intellij.tools.apiDump.testData.defaultParameters.KtTestKt
+- sf:function(I,I,I):V
+- bs:function$default(I,I,I,I,java.lang.Object):V
 *c:com.intellij.tools.apiDump.testData.experimental.JPublicClass
 - <init>():V
 *c:com.intellij.tools.apiDump.testData.experimental.JPublicClass$PublicClass
@@ -142,19 +152,11 @@ c:com.intellij.tools.apiDump.testData.generics.JGenericChildClass
 - com.intellij.tools.apiDump.testData.generics.JGenericMiddleClass
 - <init>():V
 - acceptingAT(java.lang.Double[]):V
-- b:acceptingAT(java.lang.Number[]):V
-- b:acceptingAT(java.lang.Object[]):V
 - acceptingLT(java.util.List):V
 - acceptingT(java.lang.Double):V
-- b:acceptingT(java.lang.Number):V
-- b:acceptingT(java.lang.Object):V
 - returningAT():java.lang.Double[]
-- b:returningAT():java.lang.Number[]
-- b:returningAT():java.lang.Object[]
 - returningLT():java.lang.Iterable
 - returningT():java.lang.Double
-- b:returningT():java.lang.Number
-- b:returningT():java.lang.Object
 com.intellij.tools.apiDump.testData.generics.JGenericInterface
 - a:acceptingAT(java.lang.Object[]):V
 - a:acceptingLT(java.util.List):V
@@ -166,12 +168,58 @@ a:com.intellij.tools.apiDump.testData.generics.JGenericMiddleClass
 - com.intellij.tools.apiDump.testData.generics.JGenericInterface
 - <init>():V
 - acceptingAT(java.lang.Number[]):V
-- b:acceptingAT(java.lang.Object[]):V
 - acceptingLT(java.util.List):V
 - a:acceptingT(java.lang.Number):V
-- b:acceptingT(java.lang.Object):V
 - returningAT():java.lang.Number[]
-- b:returningAT():java.lang.Object[]
 - returningLT():java.lang.Iterable
 - returningT():java.lang.Number
-- b:returningT():java.lang.Object
+f:com.intellij.tools.apiDump.testData.generics2.JChildClasses
+c:com.intellij.tools.apiDump.testData.generics2.JChildClasses$JChildClassFromMiddleWithAbstractOverride
+- com.intellij.tools.apiDump.testData.generics2.JGenericMiddleClassWithAbstractOverride
+- <init>():V
+- genericMethod(java.lang.Double):java.lang.Double
+c:com.intellij.tools.apiDump.testData.generics2.JChildClasses$JChildClassFromMiddleWithOverride
+- com.intellij.tools.apiDump.testData.generics2.JGenericMiddleClassWithOverride
+- <init>():V
+c:com.intellij.tools.apiDump.testData.generics2.JChildClasses$JChildClassFromMiddleWithoutOverride
+- com.intellij.tools.apiDump.testData.generics2.JGenericMiddleClass
+- <init>():V
+- genericMethod(java.lang.Double):java.lang.Double
+c:com.intellij.tools.apiDump.testData.generics2.JChildClasses$JChildClassWithOverrideFromMiddleWithOverride
+- com.intellij.tools.apiDump.testData.generics2.JGenericMiddleClassWithOverride
+- <init>():V
+- genericMethod(java.lang.Double):java.lang.Double
+com.intellij.tools.apiDump.testData.generics2.JGenericInterface
+- a:genericMethod(java.lang.Object):java.lang.Object
+a:com.intellij.tools.apiDump.testData.generics2.JGenericMiddleClass
+- com.intellij.tools.apiDump.testData.generics2.JGenericInterface
+- <init>():V
+a:com.intellij.tools.apiDump.testData.generics2.JGenericMiddleClassWithAbstractOverride
+- com.intellij.tools.apiDump.testData.generics2.JGenericInterface
+- <init>():V
+- a:genericMethod(java.lang.Number):java.lang.Number
+a:com.intellij.tools.apiDump.testData.generics2.JGenericMiddleClassWithOverride
+- com.intellij.tools.apiDump.testData.generics2.JGenericInterface
+- <init>():V
+- genericMethod(java.lang.Number):java.lang.Number
+c:com.intellij.tools.apiDump.testData.inheritFromPackageLocal.JPublicClassFromPackageLocalRunnable
+- java.lang.Runnable
+- <init>():V
+- run():V
+f:com.intellij.tools.apiDump.testData.inheritFromPackageLocal.JPublicFinalInheritor
+- publicField:java.lang.Object
+- <init>():V
+- packagePrivateMethodWithPackagePrivateReturnType():com.intellij.tools.apiDump.testData.inheritFromPackageLocal.JPublicFinalInheritor
+- publicMethod():V
+- s:publicStaticMethod():V
+c:com.intellij.tools.apiDump.testData.inheritFromPackageLocal.JPublicInheritor
+- p:protectedField:java.lang.Object
+- publicField:java.lang.Object
+- <init>():V
+- p:<init>(B):V
+- packagePrivateMethodWithPackagePrivateReturnType():com.intellij.tools.apiDump.testData.inheritFromPackageLocal.JPublicInheritor
+- p:protectedMethod():V
+- p:protectedMethodWithPackagePrivateReturnType():com.intellij.tools.apiDump.testData.inheritFromPackageLocal.JPackageLocalClass
+- ps:protectedStaticMethod():V
+- publicMethod():V
+- s:publicStaticMethod():V
