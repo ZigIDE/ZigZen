@@ -5,10 +5,10 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="zigzen.ide" scope="RUNTIME" />
-    <orderEntry type="module" module-name="zigzen.ide.ui" />
+    <orderEntry type="module" module-name="zigzen.ide.ui" scope="RUNTIME" />
     <orderEntry type="module" module-name="zigzen.zig" scope="RUNTIME" />
     <orderEntry type="module" module-name="zigzen.zig.impl" scope="RUNTIME" />
-    <orderEntry type="module" module-name="zigzen.zon.impl" scope="RUNTIME" />
+    <orderEntry type="module" module-name="zigzen.zon" scope="RUNTIME" />
     <orderEntry type="module" module-name="zigzen.zon.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="zigzen.resources" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.bootstrap" scope="RUNTIME" />

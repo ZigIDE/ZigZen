@@ -3,12 +3,9 @@ package zigzen.lang
 
 import com.intellij.lang.Language
 
-class ZonLanguage : Language("ZON") {
+@Suppress("JavaIoSerializableObjectMustHaveReadResolve")
+object ZonLanguage : Language("ZON") {
   override fun getDisplayName() = "ZON"
 
   override fun isCaseSensitive() = true
-
-  companion object {
-    val INSTANCE = ZonLanguage()
-  }
 }
