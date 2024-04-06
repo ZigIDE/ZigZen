@@ -19,7 +19,7 @@ class ZonParserDefinition : ParserDefinition {
 
   override fun createParser(project: Project?) = ZonParser()
 
-  override fun getFileNodeType() = FILE
+  override fun getFileNodeType() = IFileElementType(ZonLanguage)
 
   override fun getCommentTokens() = TokenSet.create(ZonTypes.COMMENT)
 
@@ -28,8 +28,4 @@ class ZonParserDefinition : ParserDefinition {
   override fun createElement(node: ASTNode?): PsiElement = ZonTypes.Factory.createElement(node)
 
   override fun createFile(viewProvider: FileViewProvider) = ZonPsiFile(viewProvider)
-
-  companion object {
-    val FILE = IFileElementType(ZonLanguage.INSTANCE)
-  }
 }

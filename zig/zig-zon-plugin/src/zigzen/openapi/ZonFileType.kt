@@ -5,7 +5,7 @@ import zigzen.icons.ZigZenIcons
 import zigzen.lang.ZonLanguage
 import com.intellij.openapi.fileTypes.LanguageFileType
 
-object ZonFileType : LanguageFileType(ZonLanguage.INSTANCE) {
+object ZonFileType : LanguageFileType(ZonLanguage) {
   override fun getName() = "ZON File"
 
   override fun getDescription() = "ZON file"
