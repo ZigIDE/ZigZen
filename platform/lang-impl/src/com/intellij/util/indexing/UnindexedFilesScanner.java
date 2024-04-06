@@ -1,6 +1,7 @@
 // Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.util.indexing;
 
+import com.google.common.util.concurrent.SettableFuture;
 import com.intellij.diagnostic.PerformanceWatcher;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
@@ -63,7 +64,7 @@ import static com.intellij.openapi.project.UnindexedFilesScannerExecutor.shouldS
 import static com.intellij.util.indexing.UnindexedFilesScannerStartupKt.FIRST_SCANNING_REQUESTED;
 
 @ApiStatus.Internal
-public class UnindexedFilesScanner extends FilesScanningTaskBase {
+public final class UnindexedFilesScanner extends FilesScanningTaskBase {
 
   private static final int DELAY_IN_TESTS_MS = SystemProperties.getIntProperty("scanning.delay.before.start.in.tests.ms", 0);
 
@@ -92,6 +93,9 @@ public class UnindexedFilesScanner extends FilesScanningTaskBase {
   private final @Nullable List<IndexableFilesIterator> myPredefinedIndexableFilesIterators;
   private final FutureScanningRequestToken myFutureScanningRequestToken;
   private boolean flushQueueAfterScanning = true;
+  private final @Nullable Boolean shouldHideProgressInSmartMode;
+  private final @NotNull SettableFuture<@NotNull ProjectScanningHistory> futureScanningHistory;
+  private final @Nullable Predicate<IndexedFile> forceReindexTrigger;
 
   @TestOnly
   public UnindexedFilesScanner(@NotNull Project project) {
@@ -101,8 +105,17 @@ public class UnindexedFilesScanner extends FilesScanningTaskBase {
     this(project, false, false, false, null, null, null, ScanningType.FULL, null);
   }
 
-  public UnindexedFilesScanner(@NotNull Project project, @Nullable String indexingReason) {
+
+  public UnindexedFilesScanner(@NotNull Project project,
+                               @Nullable String indexingReason) {
     this(project, false, false, false, null, null, indexingReason, ScanningType.FULL, null);
+  }
+
+  public UnindexedFilesScanner(@NotNull Project project,
+                               @Nullable String indexingReason,
+                               @Nullable Boolean shouldHideProgressInSmartMode) {
+    this(project, false, false, false, null, null, indexingReason, ScanningType.FULL, null, shouldHideProgressInSmartMode,
+         null);
   }
 
   public UnindexedFilesScanner(@NotNull Project project,
@@ -122,6 +135,37 @@ public class UnindexedFilesScanner extends FilesScanningTaskBase {
                                @Nullable String indexingReason,
                                @NotNull ScanningType scanningType,
                                @Nullable Future<?> startCondition) {
+    this(project, startSuspended, onProjectOpen, isIndexingFilesFilterUpToDate, predefinedIndexableFilesIterators, mark, indexingReason,
+         scanningType, startCondition, null, null);
+  }
+
+  public UnindexedFilesScanner(@NotNull Project project,
+                               boolean startSuspended,
+                               boolean onProjectOpen,
+                               boolean isIndexingFilesFilterUpToDate,
+                               @Nullable List<IndexableFilesIterator> predefinedIndexableFilesIterators,
+                               @Nullable StatusMark mark,
+                               @Nullable String indexingReason,
+                               @NotNull ScanningType scanningType,
+                               @Nullable Future<?> startCondition,
+                               @Nullable Boolean shouldHideProgressInSmartMode,
+                               @Nullable Predicate<IndexedFile> forceReindexTrigger) {
+    this(project, startSuspended, onProjectOpen, isIndexingFilesFilterUpToDate, predefinedIndexableFilesIterators,
+         mark, indexingReason, scanningType, startCondition, shouldHideProgressInSmartMode, SettableFuture.create(), forceReindexTrigger);
+  }
+
+  private UnindexedFilesScanner(@NotNull Project project,
+                                boolean startSuspended,
+                                boolean onProjectOpen,
+                                boolean isIndexingFilesFilterUpToDate,
+                                @Nullable List<IndexableFilesIterator> predefinedIndexableFilesIterators,
+                                @Nullable StatusMark mark,
+                                @Nullable String indexingReason,
+                                @NotNull ScanningType scanningType,
+                                @Nullable Future<?> startCondition,
+                                @Nullable Boolean shouldHideProgressInSmartMode,
+                                @NotNull SettableFuture<@NotNull ProjectScanningHistory> futureScanningHistory,
+                                @Nullable Predicate<IndexedFile> forceReindexTrigger) {
     super(project);
     myProject = project;
     myStartSuspended = startSuspended;
@@ -146,12 +190,24 @@ public class UnindexedFilesScanner extends FilesScanningTaskBase {
     if (isFullIndexUpdate()) {
       myProject.putUserData(CONTENT_SCANNED, null);
     }
+    this.shouldHideProgressInSmartMode = shouldHideProgressInSmartMode;
+    this.futureScanningHistory = futureScanningHistory;
+    this.forceReindexTrigger = forceReindexTrigger;
+  }
+
+  private boolean defaultHideProgressInSmartModeStrategy() {
+    return Registry.is("scanning.hide.progress.in.smart.mode", true) &&
+           myProject.getUserData(FIRST_SCANNING_REQUESTED) == FirstScanningState.REQUESTED;
   }
 
   @Override
-  protected boolean shouldHideProgressInSmartMode() {
-    return Registry.is("scanning.hide.progress.in.smart.mode", true) &&
-           myProject.getUserData(FIRST_SCANNING_REQUESTED) == FirstScanningState.REQUESTED;
+  final protected boolean shouldHideProgressInSmartMode() {
+    if (shouldHideProgressInSmartMode != null) {
+      return shouldHideProgressInSmartMode;
+    }
+    else {
+      return defaultHideProgressInSmartModeStrategy();
+    }
   }
 
   @Override
@@ -181,6 +237,27 @@ public class UnindexedFilesScanner extends FilesScanningTaskBase {
     oldTask.myFutureScanningRequestToken.markSuccessful();
     myFutureScanningRequestToken.markSuccessful();
     LOG.assertTrue(!(myStartCondition != null && oldTask.myStartCondition != null), "Merge of two start conditions is not implemented");
+    Boolean mergedHideProgress;
+    if (shouldHideProgressInSmartMode == null) {
+      mergedHideProgress = oldTask.shouldHideProgressInSmartMode;
+    }
+    else if (oldTask.shouldHideProgressInSmartMode != null) {
+      assert oldTask.shouldHideProgressInSmartMode != null && shouldHideProgressInSmartMode != null;
+      mergedHideProgress = (shouldHideProgressInSmartMode && oldTask.shouldHideProgressInSmartMode);
+      ;
+    }
+    else {
+      mergedHideProgress = shouldHideProgressInSmartMode;
+    }
+
+    SettableFuture<ProjectScanningHistory> mergedScanningHistoryFuture = SettableFuture.create();
+    futureScanningHistory.setFuture(mergedScanningHistoryFuture);
+    oldTask.futureScanningHistory.setFuture(mergedScanningHistoryFuture);
+
+    final Predicate<IndexedFile> triggerA = getForceReindexingTrigger();
+    final Predicate<IndexedFile> triggerB = oldTask.getForceReindexingTrigger();
+    Predicate<IndexedFile> mergedPredicate = f -> (triggerA != null && triggerA.test(f)) ||
+                                                  (triggerB != null && triggerB.test(f));
     return new UnindexedFilesScanner(
       myProject,
       myStartSuspended,
@@ -190,7 +267,8 @@ public class UnindexedFilesScanner extends FilesScanningTaskBase {
       StatusMark.mergeStatus(myProvidedStatusMark, oldTask.myProvidedStatusMark),
       reason,
       ScanningType.Companion.merge(oldTask.myScanningType, oldTask.myScanningType),
-      myStartCondition != null ? myStartCondition : oldTask.myStartCondition
+      myStartCondition != null ? myStartCondition : oldTask.myStartCondition,
+      mergedHideProgress, mergedScanningHistoryFuture, mergedPredicate
     );
   }
 
@@ -421,8 +499,8 @@ public class UnindexedFilesScanner extends FilesScanningTaskBase {
     return new Pair<>(orderedProviders, mark);
   }
 
-  protected @Nullable Predicate<IndexedFile> getForceReindexingTrigger() {
-    return null;
+  private @Nullable Predicate<IndexedFile> getForceReindexingTrigger() {
+    return forceReindexTrigger;
   }
 
   private void collectIndexableFilesConcurrently(@NotNull Project project,
@@ -549,11 +627,17 @@ public class UnindexedFilesScanner extends FilesScanningTaskBase {
     myProject.putUserData(INDEX_UPDATE_IN_PROGRESS, true);
     myFilterHandler.scanningStarted(myProject, isFullIndexUpdate());
     try {
-      performScanningAndIndexing(indicator, progressReporter);
+      ProjectScanningHistory history = performScanningAndIndexing(indicator, progressReporter);
+      futureScanningHistory.set(history);
+    }
+    catch (Throwable t) {
+      futureScanningHistory.setException(t);
+      throw t;
     }
     finally {
       myProject.putUserData(INDEX_UPDATE_IN_PROGRESS, false);
       myFilterHandler.scanningCompleted(myProject);
+      LOG.assertTrue(futureScanningHistory.isDone(), "futureScanningHistory.isDone should be true");
     }
   }
 
@@ -607,7 +691,7 @@ public class UnindexedFilesScanner extends FilesScanningTaskBase {
     return "UnindexedFilesScanner[" + myProject.getName() + partialInfo + "]";
   }
 
-  public void queue() {
+  public @NotNull Future<@NotNull ProjectScanningHistory> queue() {
     // Delay scanning tasks until after all the scheduled dumb tasks are finished.
     // For example, PythonLanguageLevelPusher.initExtra is invoked from RequiredForSmartModeActivity and may submit additional dumb tasks.
     // We want scanning to start after all these "extra" dumb tasks are finished.
@@ -625,6 +709,7 @@ public class UnindexedFilesScanner extends FilesScanningTaskBase {
     else {
       UnindexedFilesScannerExecutor.getInstance(myProject).submitTask(this);
     }
+    return futureScanningHistory;
   }
 
   @Override

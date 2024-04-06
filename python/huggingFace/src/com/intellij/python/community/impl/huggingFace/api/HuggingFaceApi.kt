@@ -11,7 +11,6 @@ import com.intellij.python.community.impl.huggingFace.cache.HuggingFaceMdCardsCa
 import com.intellij.python.community.impl.huggingFace.documentation.HuggingFaceDocumentationPlaceholdersUtil
 import com.intellij.python.community.impl.huggingFace.documentation.HuggingFaceReadmeCleaner
 import com.intellij.python.community.impl.huggingFace.service.HuggingFaceCoroutine
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.Nls
@@ -21,21 +20,22 @@ import java.time.Instant
 object HuggingFaceApi {
   private val nextLinkRegex = Regex("""<(.+)>; rel="next"""")
 
-  fun fillCacheWithBasicApiData(endpoint: HuggingFaceEntityKind, cache: HuggingFaceCache, maxCount: Int) {
+  suspend fun fillCacheWithBasicApiData(
+    endpoint: HuggingFaceEntityKind,
+    cache: HuggingFaceCache,
+    maxCount: Int
+  ) {
+    var nextPageUrl: String? = HuggingFaceURLProvider.fetchApiDataUrl(endpoint).toString()
 
-    HuggingFaceCoroutine.Utils.ioScope.launch {
-      var nextPageUrl: String? = HuggingFaceURLProvider.fetchApiDataUrl(endpoint).toString()
+    while (nextPageUrl != null && cache.getCacheSize() < maxCount) {
+      val response = HuggingFaceHttpClient.downloadContentAndHeaders(nextPageUrl)
+        .getOrDefault(HfHttpResponseWithHeaders(null, null))
 
-      while (nextPageUrl != null && cache.getCacheSize() < maxCount) {
-        val response = HuggingFaceHttpClient.downloadContentAndHeaders(nextPageUrl)
-          .getOrDefault(HfHttpResponseWithHeaders(null, null))
-
-        response.content?.let {
-          val dataMap = parseBasicEntityData(endpoint, it)
-          cache.saveEntities(dataMap)
-        }
-        nextPageUrl = extractNextPageUrl(response.linkHeader)
+      response.content?.let {
+        val dataMap = parseBasicEntityData(endpoint, it)
+        cache.saveEntities(dataMap)
       }
+      nextPageUrl = extractNextPageUrl(response.linkHeader)
     }
   }
 
@@ -74,7 +74,7 @@ object HuggingFaceApi {
   }
 
   @Nls
-  fun fetchOrRetrieveModelCard(entityDataApiContent: HuggingFaceEntityBasicApiData,
+  suspend fun fetchOrRetrieveModelCard(entityDataApiContent: HuggingFaceEntityBasicApiData,
                                entityId: String,
                                entityKind: HuggingFaceEntityKind,
                                prefix: String = "markdown"): String {
