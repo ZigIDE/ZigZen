@@ -18,6 +18,8 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.toolchain
+import zigzen.lang.toolchain.AbstractZigToolchain
+import zigzen.projectModel.ZigStandardLibrary
 import java.util.concurrent.CompletableFuture
 import javax.swing.JComponent
 import kotlin.io.path.exists
@@ -110,18 +112,13 @@ class ZigSynchronizationTask(
           } else {
             ZigProjectWithStandardLibrary(
               zigProject,
-              Unit
+              ZigStandardLibrary()
             )
           }
         }
       )
     }.attachStandardLibraryToProject()
   }
-
-  data class ZigProjectWithStandardLibrary(
-    val zigProject: ZigProject,
-    val stdlib: Unit?
-  )
 
   private fun List<ZigProjectWithStandardLibrary>.attachStandardLibraryToProject(): List<ZigProject> {
     return mapNotNull {
@@ -132,9 +129,20 @@ class ZigSynchronizationTask(
     }
   }
 
+  data class ZigProjectWithStandardLibrary(
+    val zigProject: ZigProject,
+    val stdlib: ZigStandardLibrary?
+  )
+
+  data class ZigSynchronizationContext(
+    val project: Project,
+    val oldZigProject: ZigProject,
+    val toolchain: AbstractZigToolchain,
+    val progressIndicator: ProgressIndicator,
+    val syncProgress: BuildProgress<BuildProgressDescriptor>
+  )
+
   companion object {
     val logger = logger<ZigSynchronizationTask>()
   }
 }
-
-// BRB
