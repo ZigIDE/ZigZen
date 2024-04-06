@@ -4,4 +4,4 @@ package zigzen.psi
 import zigzen.lang.ZonLanguage
 import com.intellij.psi.tree.IElementType
 
-class ZonElementType(debugName: String) : IElementType(debugName, ZonLanguage.INSTANCE)
+class ZonElementType(debugName: String) : IElementType(debugName, ZonLanguage)
