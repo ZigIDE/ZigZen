@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider
 
 class ZonBreadcrumbsProvider : BreadcrumbsProvider {
-  override fun getLanguages() = arrayOf(ZonLanguage.INSTANCE)
+  override fun getLanguages() = arrayOf(ZonLanguage)
 
   override fun acceptElement(element: PsiElement) = element is ZonStructProperty
 
