@@ -15,8 +15,6 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.toolchain
-import com.intellij.openapi.util.NlsContexts
-import zigzen.lang.toolchain.AbstractZigToolchain
 import zigzen.projectModel.ZigStandardLibrary
 import java.util.concurrent.CompletableFuture
 import javax.swing.JComponent
@@ -123,6 +121,7 @@ class ZigSynchronizationTask(
       if (it.stdlib == null)
         return@mapNotNull null
 
+      it.zigProject.withStandardLibrary(it.stdlib)
       it.zigProject
     }
   }
@@ -131,22 +130,6 @@ class ZigSynchronizationTask(
     val zigProject: ZigProject,
     val stdlib: ZigStandardLibrary?
   )
-
-  data class ZigSynchronizationContext(
-    val project: Project,
-    val oldZigProject: ZigProject,
-    val toolchain: AbstractZigToolchain,
-    val progressIndicator: ProgressIndicator,
-    val syncProgress: BuildProgress<BuildProgressDescriptor>
-  ) {
-    @Suppress("DialogTitleCapitalization")
-    fun <T> runWithChildProgress(@NlsContexts.ProgressTitle title: String, action: (ZigSynchronizationContext) -> T): T {
-      progressIndicator.checkCanceled()
-      progressIndicator.text = title
-
-      return syncProgress.runWithChildProgressCatchingException(title, { copy(syncProgress = it) }, action)
-    }
-  }
 
   companion object {
     val logger = logger<ZigSynchronizationTask>()
