@@ -2,9 +2,13 @@
 package zigzen.openapi.roots
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.zigProjects
 import com.intellij.openapi.roots.AdditionalLibraryRootsProvider
 import com.intellij.openapi.roots.SyntheticLibrary
+import zigzen.projectModel.ZigProject
+import zigzen.projectModel.libraries
 
 class ZigAdditionalLibraryRootsProvider : AdditionalLibraryRootsProvider() {
-  override fun getAdditionalProjectLibraries(project: Project): List<SyntheticLibrary> = listOf()
+  override fun getAdditionalProjectLibraries(project: Project): List<SyntheticLibrary> =
+    project.zigProjects.allProjects.map { (it as ZigProject).libraries }.flatten()
 }
