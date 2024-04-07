@@ -67,18 +67,18 @@ open class ZigProjectsService(
     get() = projects.currentValue
 
   override val hasAtLeastOneValidProject
-    get() = allProjects.any { it.buildZigZon.exists() }
+    get() = allProjects.any { it.buildZig.exists() }
   override var initialized: Boolean = false
 
-  override fun attachZigProject(buildZigZon: Path): Boolean {
-    if (allProjects.isExistingProject(buildZigZon))
+  override fun attachZigProject(buildZig: Path): Boolean {
+    if (allProjects.isExistingProject(buildZig))
       return false
 
     modifyZigProjects { projects ->
-      if (projects.isExistingProject(buildZigZon))
+      if (projects.isExistingProject(buildZig))
         CompletableFuture.completedFuture(projects)
       else
-        (projects + ZigProject(buildZigZon, this)).refreshProject(project)
+        (projects + ZigProject(buildZig, this)).refreshProject(project)
     }
 
     return true
@@ -94,7 +94,7 @@ open class ZigProjectsService(
     val state = Element("state")
     allProjects.forEach {
       val projectElement = Element("zigProject")
-      projectElement.setAttribute("buildZigZon", it.buildZigZon.invariantSeparatorsPathString)
+      projectElement.setAttribute("buildZig", it.buildZig.invariantSeparatorsPathString)
       state.addContent(projectElement)
     }
 
@@ -104,10 +104,10 @@ open class ZigProjectsService(
   override fun loadState(state: Element) {
     val zigProjects = state.getChildren("zigProject")
     val loaded = zigProjects.map {
-      val file = it.getAttributeValue("buildZigZon")
-      val buildZigZon = Paths.get(file)
+      val file = it.getAttributeValue("buildZig")
+      val buildZig = Paths.get(file)
 
-      ZigProject(buildZigZon, this)
+      ZigProject(buildZig, this)
     }
 
     projects.updateSync { loaded }

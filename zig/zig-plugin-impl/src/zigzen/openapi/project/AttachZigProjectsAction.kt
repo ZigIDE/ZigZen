@@ -13,7 +13,7 @@ import com.intellij.openapi.project.zigProjects
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.findBuildZigZon
+import com.intellij.openapi.vfs.findBuildZig
 
 class AttachZigProjectsAction : DumbAwareAction() {
   override fun actionPerformed(e: AnActionEvent) {
@@ -24,13 +24,13 @@ class AttachZigProjectsAction : DumbAwareAction() {
                  ZigEditorNotificationPanel.ACTION_PLACE -> {
                    val file = e.getData(PlatformDataKeys.VIRTUAL_FILE)
 
-                   if (file?.name == "build.zig.zon") file
+                   if (file?.name == "build.zig") file
                    else return
                  }
                  else -> e.getData(PlatformDataKeys.VIRTUAL_FILE)
                } ?: return
 
-    val manifest = file.findBuildZigZon() ?: return
+    val manifest = file.findBuildZig() ?: return
 
     if (!project.zigProjects.attachZigProject(manifest.toNioPath())) {
       Messages.showErrorDialog(
@@ -56,23 +56,23 @@ class AttachZigProjectsAction : DumbAwareAction() {
           return false
 
         val file = e.getData(PlatformDataKeys.VIRTUAL_FILE)
-        val buildZigZon = file?.findBuildZigZon() ?: return false
+        val buildZig = file?.findBuildZig() ?: return false
 
-        canBeAttached(project, buildZigZon)
+        canBeAttached(project, buildZig)
       }
     }
   }
 
   companion object {
-    fun canBeAttached(project: Project, buildZigZon: VirtualFile): Boolean {
-      require(buildZigZon.name == "build.zig.zon")
+    fun canBeAttached(project: Project, buildZig: VirtualFile): Boolean {
+      require(buildZig.name == "build.zig")
 
-      if (!ProjectFileIndex.getInstance(project).isInContent(buildZigZon))
+      if (!ProjectFileIndex.getInstance(project).isInContent(buildZig))
         return false
 
-      val path = buildZigZon.toNioPath()
+      val path = buildZig.toNioPath()
 
-      return !project.zigProjects.allProjects.any { it.buildZigZon == path }
+      return !project.zigProjects.allProjects.any { it.buildZig == path }
     }
   }
 }

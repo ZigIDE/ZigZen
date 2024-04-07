@@ -15,7 +15,7 @@ interface IZigProjectsService {
   val hasAtLeastOneValidProject: Boolean
   val initialized: Boolean
 
-  fun attachZigProject(buildZigZon: Path): Boolean
+  fun attachZigProject(buildZig: Path): Boolean
 
   fun findProjectForFile(file: VirtualFile): IZigProject?
 
