@@ -9,7 +9,7 @@ import java.nio.file.Path
 
 interface IZigProject : UserDataHolderEx {
   val project: Project
-  val buildZigZon: Path
+  val buildZig: Path
   val rootDir: VirtualFile?
 
   val presentableName: String

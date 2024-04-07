@@ -99,7 +99,7 @@ class ZigSynchronizationTask(
         "Synchronizing project ${zigProject.presentableName}",
         createContext = { it },
         action = { childProgress ->
-          if (!zigProject.buildZigZon.parent.exists()) {
+          if (!zigProject.buildZig.parent.exists()) {
             childProgress.message(
               "Nonexistent Project",
               "Project synchronization failed due to nonexistent parent directory. Consider detaching the project.",
