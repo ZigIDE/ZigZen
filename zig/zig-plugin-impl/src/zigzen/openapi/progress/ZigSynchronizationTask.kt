@@ -5,7 +5,6 @@ import com.intellij.build.*
 import zigzen.openapi.project.StopAction
 import zigzen.projectModel.IZigProject
 import zigzen.projectModel.ZigProject
-import com.intellij.build.events.BuildEventsNls
 import com.intellij.build.events.MessageEvent
 import com.intellij.build.progress.BuildProgress
 import com.intellij.build.progress.BuildProgressDescriptor
