@@ -17,11 +17,11 @@ import com.intellij.util.ui.EdtInvocationManager.invokeAndWaitIfNeeded
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
 
-fun Collection<ZigProject>.isExistingProject(buildZigZon: Path): Boolean {
-  if (any { it.buildZigZon == buildZigZon })
+fun Collection<ZigProject>.isExistingProject(buildZig: Path): Boolean {
+  if (any { it.buildZig == buildZig })
     return true
 
-  return any { it.rootDir == buildZigZon.parent }
+  return any { it.rootDir == buildZig.parent }
 }
 
 fun Collection<ZigProject>.refreshProject(project: Project): CompletableFuture<Collection<ZigProject>> {
