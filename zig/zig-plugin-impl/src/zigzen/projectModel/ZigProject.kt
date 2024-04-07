@@ -11,7 +11,8 @@ import java.util.concurrent.atomic.AtomicReference
 data class ZigProject(
   override val buildZig: Path,
   private val projectService: ZigProjectsService,
-  override val stdlibStatus: IZigProject.ProjectUpdateStatus = IZigProject.ProjectUpdateStatus.NeedsUpdate,
+  override var stdlibStatus: IZigProject.ProjectUpdateStatus = IZigProject.ProjectUpdateStatus.NeedsUpdate,
+  var standardLibrary: ZigStandardLibrary? = null,
 ) : IZigProject, UserDataHolderBase() {
   override val presentableName = buildZig.parent?.fileName.toString()
 
@@ -31,4 +32,9 @@ data class ZigProject(
     }
 
   private val cachedRootDir = AtomicReference<VirtualFile>()
+
+  fun withStandardLibrary(library: ZigStandardLibrary) {
+    stdlibStatus = IZigProject.ProjectUpdateStatus.UpToDate
+    standardLibrary = library
+  }
 }
