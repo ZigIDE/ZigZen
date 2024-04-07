@@ -9,11 +9,11 @@ import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicReference
 
 data class ZigProject(
-  override val buildZigZon: Path,
+  override val buildZig: Path,
   private val projectService: ZigProjectsService,
   override val stdlibStatus: IZigProject.ProjectUpdateStatus = IZigProject.ProjectUpdateStatus.NeedsUpdate,
 ) : IZigProject, UserDataHolderBase() {
-  override val presentableName = buildZigZon.parent?.fileName.toString()
+  override val presentableName = buildZig.parent?.fileName.toString()
 
   override val project
     get() = projectService.project
@@ -24,7 +24,7 @@ data class ZigProject(
       if (cached != null && cached.isValid)
         return cached
 
-      val file = LocalFileSystem.getInstance().findFileByIoFile(buildZigZon.parent.toFile())
+      val file = LocalFileSystem.getInstance().findFileByIoFile(buildZig.parent.toFile())
       cachedRootDir.set(file)
 
       return file
