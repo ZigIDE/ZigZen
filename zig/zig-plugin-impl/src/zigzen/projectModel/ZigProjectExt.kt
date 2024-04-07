@@ -9,13 +9,30 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectEx
+import com.intellij.openapi.project.toolchain
 import com.intellij.openapi.project.zigProjects
 import com.intellij.openapi.roots.ProjectFileIndex
+import com.intellij.openapi.roots.SyntheticLibrary
 import com.intellij.openapi.roots.ex.ProjectRootManagerEx
 import com.intellij.openapi.vfs.setupContentRoots
 import com.intellij.util.ui.EdtInvocationManager.invokeAndWaitIfNeeded
+import zigzen.icons.ZigZenIcons
+import zigzen.lang.toolchain.tool.zig
+import zigzen.openapi.roots.ZigSyntheticLibrary
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
+
+val ZigProject.libraries: Collection<SyntheticLibrary>
+  get() = buildList {
+    if (standardLibrary != null)
+      ZigSyntheticLibrary(
+        "stdlib",
+        project.toolchain!!.zig.environment!!.version.rawVersion,
+        ZigZenIcons.Zig,
+        setOf(), // todo
+        setOf(), // todo
+      )
+  }
 
 fun Collection<ZigProject>.isExistingProject(buildZig: Path): Boolean {
   if (any { it.buildZig == buildZig })
