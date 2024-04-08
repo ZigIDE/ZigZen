@@ -11,6 +11,7 @@ interface IZigProject : UserDataHolderEx {
   val project: Project
   val buildZig: Path
   val rootDir: VirtualFile?
+  val workspace: IZigWorkspace?
 
   val presentableName: String
 
