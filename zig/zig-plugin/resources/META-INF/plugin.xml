@@ -28,6 +28,7 @@
               fieldName="INSTANCE"
               implementationClass="zigzen.openapi.ZigFileType"
               name="Zig File"/>
+    <projectOpenProcessor implementation="zigzen.projectImport.ZigProjectOpenProcessor"/>
     <projectService serviceImplementation="zigzen.openapi.components.ZigProjectsService"
                     serviceInterface="zigzen.openapi.components.IZigProjectsService"/>
     <runConfigurationProducer implementation="zigzen.execution.configurations.ZigBuildLazyRunConfigurationProducer"/>
