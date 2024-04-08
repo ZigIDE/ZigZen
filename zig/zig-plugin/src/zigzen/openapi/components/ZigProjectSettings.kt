@@ -3,12 +3,11 @@ package zigzen.openapi.components
 
 import zigzen.lang.toolchain.AbstractZigToolchain
 import zigzen.lang.toolchain.ZigToolchainProvider
-import com.intellij.openapi.components.BaseState
 import com.intellij.util.xmlb.annotations.Transient
 import java.nio.file.Paths
 import kotlin.io.path.invariantSeparatorsPathString
 
-class ZigProjectSettings : BaseState() {
+class ZigProjectSettings : AbstractZigProjectSettingsService.AbstractZigProjectSettings<ZigProjectSettings>() {
   var toolchainHomeDirectory by string()
   var pathToZigStdlib by string()
 
@@ -19,4 +18,11 @@ class ZigProjectSettings : BaseState() {
     set(value) {
       toolchainHomeDirectory = value?.location?.invariantSeparatorsPathString
     }
+
+  override fun copy(): ZigProjectSettings {
+    val state = ZigProjectSettings()
+    state.copyFrom(this)
+
+    return state
+  }
 }

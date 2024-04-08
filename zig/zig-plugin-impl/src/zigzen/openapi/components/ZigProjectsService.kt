@@ -17,13 +17,16 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTracker
 import com.intellij.openapi.fileTypes.FileTypeManager
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.*
 import com.intellij.openapi.project.ex.ProjectEx
+import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.ex.ProjectRootManagerEx
 import com.intellij.openapi.util.EmptyRunnable
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.LightDirectoryIndex
 import org.jdom.Element
+import zigzen.lang.toolchain.AbstractZigToolchain
+import zigzen.projectModel.IZigProject
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
@@ -86,6 +89,18 @@ open class ZigProjectsService(
 
   override fun dispose() {}
 
+  override fun discoverZigProjectsAndRefresh(): CompletableFuture<out Collection<IZigProject>> {
+    val buildZig = suggestBuildZigs().firstOrNull()
+      ?: return CompletableFuture.completedFuture(projects.currentValue)
+
+    return modifyZigProjects { projects ->
+      if (hasAtLeastOneValidProject)
+        return@modifyZigProjects CompletableFuture.completedFuture(projects)
+
+      listOf(ZigProject(buildZig.toNioPath(), this)).refreshProject(project)
+    }
+  }
+
   override fun findProjectForFile(file: VirtualFile) = file.let {
     directoryIndex.getInfoForFile(it).takeIf { info -> info !== noProjectMarker }
   }
@@ -127,6 +142,10 @@ open class ZigProjectsService(
   override fun refreshAllProjects() = modifyZigProjects {
     it.refreshProject(project)
   }
+
+  override fun suggestBuildZigs(): Sequence<VirtualFile> =
+    project.modules.asSequence().flatMap { ModuleRootManager.getInstance(it).contentRoots.asSequence() }
+      .mapNotNull { it.findChild("build.zig") }
 
   private fun modifyZigProjects(
     updater: (Collection<ZigProject>) -> CompletableFuture<Collection<ZigProject>>
@@ -181,5 +200,42 @@ open class ZigProjectsService(
 
   companion object {
     const val DISABLE_PROJECT_REFRESH_ON_CREATION_PROPERTY = "zig.disable.refresh.on.creation"
+
+    private fun discoverZigToolchain(project: Project) {
+      val path = project.guessProjectDir()?.toNioPath()
+      val toolchain = AbstractZigToolchain.suggestToolchain(path) ?: return
+
+      invokeLater {
+        if (project.isDisposed)
+          return@invokeLater
+
+        val oldToolchain = project.projectSettings.toolchain
+        if (oldToolchain != null && oldToolchain.seeminglyValid())
+          return@invokeLater
+
+        runWriteAction {
+          project.projectSettings.modify {
+            it.toolchain = toolchain
+          }
+        }
+
+        // todo: show balloon
+      }
+    }
+
+    fun guessAndSetupZigProject(project: Project): Boolean {
+      val toolchain = project.projectSettings.toolchain
+      if (toolchain == null || !toolchain.seeminglyValid()) {
+        discoverZigToolchain(project)
+        return true
+      }
+
+      if (!project.zigProjects.hasAtLeastOneValidProject) {
+        project.zigProjects.discoverZigProjectsAndRefresh()
+        return true
+      }
+
+      return false
+    }
   }
 }
