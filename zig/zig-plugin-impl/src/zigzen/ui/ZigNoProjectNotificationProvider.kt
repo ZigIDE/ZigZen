@@ -45,7 +45,7 @@ class ZigNoProjectNotificationProvider(project: Project) : AbstractZigEditorNoti
     if (!zigProjectService.hasAtLeastOneValidProject)
       return createNoZigProjectsPanel(file)
 
-    if (file.name == "build.zig.zon" || file.name == "build.zig") {
+    if (file.name == "build.zig") {
       if (AttachZigProjectsAction.canBeAttached(project, file)) {
         return createNoZigProjectsForFilePanel(file)
       }
