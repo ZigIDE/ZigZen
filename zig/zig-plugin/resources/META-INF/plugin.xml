@@ -29,6 +29,7 @@
               implementationClass="zigzen.openapi.ZigFileType"
               name="Zig File"/>
     <notificationGroup displayType="BALLOON" id="zigzen.notification"/>
+    <postStartupActivity implementation="zigzen.openapi.startup.ZigProjectStartupActivity"/>
     <projectOpenProcessor implementation="zigzen.projectImport.ZigProjectOpenProcessor"/>
     <projectService serviceImplementation="zigzen.openapi.components.ZigProjectsService"
                     serviceInterface="zigzen.openapi.components.IZigProjectsService"/>
