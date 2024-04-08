@@ -1,6 +1,7 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package zigzen.openapi.components
 
+import com.intellij.notification.NotificationType
 import zigzen.openapi.ZigFileType
 import zigzen.openapi.externalSystem.autoimport.ZigExternalSystemProjectAware
 import zigzen.projectModel.ZigProject
@@ -26,6 +27,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.LightDirectoryIndex
 import org.jdom.Element
 import zigzen.lang.toolchain.AbstractZigToolchain
+import zigzen.notification.ZigNotificationUtil.showBalloon
 import zigzen.projectModel.IZigProject
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -219,7 +221,9 @@ open class ZigProjectsService(
           }
         }
 
-        // todo: show balloon
+        @Suppress("DialogTitleCapitalization")
+        project.showBalloon("Using Zig", NotificationType.INFORMATION)
+        project.zigProjects.discoverZigProjectsAndRefresh()
       }
     }
 
