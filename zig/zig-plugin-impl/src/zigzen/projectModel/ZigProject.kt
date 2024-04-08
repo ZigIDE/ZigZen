@@ -13,6 +13,7 @@ data class ZigProject(
   private val projectService: ZigProjectsService,
   override var stdlibStatus: IZigProject.ProjectUpdateStatus = IZigProject.ProjectUpdateStatus.NeedsUpdate,
   var standardLibrary: ZigStandardLibrary? = null,
+  private val rawWorkspace: IZigWorkspace? = null,
 ) : IZigProject, UserDataHolderBase() {
   override val presentableName = buildZig.parent?.fileName.toString()
 
@@ -30,6 +31,13 @@ data class ZigProject(
 
       return file
     }
+
+  override val workspace: IZigWorkspace? by lazy(LazyThreadSafetyMode.PUBLICATION) {
+    val rawWorkspace = rawWorkspace ?: return@lazy null
+    val standardLibrary = standardLibrary ?: return@lazy null
+
+    rawWorkspace.withStandardLibrary(standardLibrary)
+  }
 
   private val cachedRootDir = AtomicReference<VirtualFile>()
 
