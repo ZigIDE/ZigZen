@@ -22,5 +22,7 @@ interface IZigProject : UserDataHolderEx {
     class UpdateFailed(@Suppress("UnstableApiUsage") @NlsContexts.Tooltip val reason: String) : ProjectUpdateStatus(2) {
       override fun toString(): String = reason
     }
+
+    fun merge(other: ProjectUpdateStatus): ProjectUpdateStatus = if (priority >= other.priority) this else other
   }
 }

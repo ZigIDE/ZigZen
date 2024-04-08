@@ -17,9 +17,13 @@ interface IZigProjectsService {
 
   fun attachZigProject(buildZig: Path): Boolean
 
+  fun discoverZigProjectsAndRefresh(): CompletableFuture<out Collection<IZigProject>>
+
   fun findProjectForFile(file: VirtualFile): IZigProject?
 
   fun refreshAllProjects(): CompletableFuture<out Collection<IZigProject>>
+
+  fun suggestBuildZigs(): Sequence<VirtualFile>
 
   companion object {
     val zigProjectsTopic = Topic.create("Zig project update", IZigProjectsListener::class.java)
