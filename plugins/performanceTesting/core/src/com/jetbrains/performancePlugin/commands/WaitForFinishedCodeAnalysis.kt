@@ -73,7 +73,7 @@ class ListenerState(val project: Project, val cs: CoroutineScope) {
   private fun ensureLockedIfNeeded() {
     synchronized(stateLock) {
       if (!sessions.isEmpty() && !locked) {
-        LOG.info("Highlighting began")
+        LOG.info("Highlighting began with ${sessions.keys.joinToString(separator = ",\n") { it.description }}")
         highlightingFinishedEverywhere.acquire()
         locked = true
       }
@@ -113,7 +113,7 @@ class ListenerState(val project: Project, val cs: CoroutineScope) {
   fun registerOpenedEditors(openedEditors: List<TextEditor>) {
     val listener = SimpleEditedDocumentsListener(project)
     synchronized(stateLock) {
-      for (fileEditor in openedEditors) {
+      for (fileEditor in openedEditors.getWorthy()) {
         sessions[fileEditor] = ExceptionWithTime.createForOpenedEditor(fileEditor)
         fileEditor.editor.document.addDocumentListener(listener, fileEditor)
       }
@@ -123,7 +123,7 @@ class ListenerState(val project: Project, val cs: CoroutineScope) {
 
   fun registerEditedDocuments(textEditors: List<TextEditor>) {
     synchronized(stateLock) {
-      for (fileEditor in textEditors) {
+      for (fileEditor in textEditors.getWorthy()) {
         sessions[fileEditor] = ExceptionWithTime.createForEditedEditor(fileEditor)
       }
       ensureLockedIfNeeded()
@@ -167,34 +167,47 @@ class ListenerState(val project: Project, val cs: CoroutineScope) {
 
     companion object {
       @RequiresReadLock
-      fun create(editor: TextEditor, project: Project): HighlightedEditor {
-        if (UIUtil.isShowing(editor.getComponent())) {
-          return VisibleEditor(editor, DaemonCodeAnalyzerImpl.isHighlightingCompleted(editor, project))
-        }
-        else {
+      fun create(editor: TextEditor, project: Project, isCancelled: Boolean, isFinishedInDumbMode: Boolean): HighlightedEditor {
+        if (!UIUtil.isShowing(editor.getComponent())) {
+          LOG.info("Invisible editor ${editor.description}")
           return InvisibleEditor(editor)
         }
-      }
-
-      fun createIncompletelyHighlighted(editor: TextEditor): HighlightedEditor {
-        return IncompletelyHighlightedEditor(editor)
+        else if (isFinishedInDumbMode || isCancelled) {
+          LOG.info("Unfinished editor ${editor.description}")
+          return IncompletelyHighlightedEditor(editor)
+        }
+        else {
+          val isHighlighted = DaemonCodeAnalyzerImpl.isHighlightingCompleted(editor, project)
+          LOG.info("Visible editor ${editor.description}\nisHighlighted $isHighlighted")
+          return VisibleEditor(editor, isHighlighted)
+        }
       }
     }
   }
 
-  internal fun registerAnalysisFinished(highlightedEditors: List<HighlightedEditor>) {
+  internal fun registerAnalysisFinished(highlightedEditors: Map<TextEditor, HighlightedEditor>) {
     val currentTime = System.currentTimeMillis()
     synchronized(stateLock) {
-      for (highlightedEditor in highlightedEditors) {
-        LOG.info("daemon stopped for ${highlightedEditor.editor.description}, " +
-                 "shouldWaitForHighlighting=${highlightedEditor.shouldWaitForNextHighlighting}")
-        val exceptionWithTime: ExceptionWithTime? = sessions[highlightedEditor.editor]
-        if (highlightedEditor.shouldWaitForNextHighlighting || exceptionWithTime?.wasStartedInLimitedSetup == true) {
-          ExceptionWithTime.markAnalysisFinished(exceptionWithTime)
+      val iterator = sessions.entries.iterator()
+      while (iterator.hasNext()) {
+        val (editor, exceptionWithTime) = iterator.next()
+        val highlightedEditor = highlightedEditors[editor]
+        if (highlightedEditor == null) {
+          if (!UIUtil.isShowing(editor.getComponent())) {
+            iterator.remove()
+          }
         }
         else {
-          val oldData = sessions.remove(highlightedEditor.editor)
-          LOG.info(ExceptionWithTime.getLogHighlightingMessage(currentTime, highlightedEditor.editor, oldData))
+          val shouldWait = highlightedEditor.shouldWaitForNextHighlighting || exceptionWithTime.wasStartedInLimitedSetup
+          LOG.info("daemon stopped for ${highlightedEditor.editor.description}, " +
+                   "shouldWaitForHighlighting=${shouldWait}")
+          if (shouldWait) {
+            ExceptionWithTime.markAnalysisFinished(exceptionWithTime)
+          }
+          else {
+            iterator.remove()
+            LOG.info(ExceptionWithTime.getLogHighlightingMessage(currentTime, highlightedEditor.editor, exceptionWithTime))
+          }
         }
       }
       unlockIfNeeded()
@@ -235,13 +248,9 @@ internal class WaitForFinishedCodeAnalysisListener(private val project: Project)
     val worthy = fileEditors.getWorthy()
     if (worthy.isEmpty()) return
 
-    val highlightedEditors: List<ListenerState.HighlightedEditor> = runReadAction {
-      if (isCancelled || DumbService.isDumb(project)) {
-        worthy.map { ListenerState.HighlightedEditor.createIncompletelyHighlighted(it) }
-      }
-      else {
-        worthy.map { ListenerState.HighlightedEditor.create(it, project) }
-      }
+    val highlightedEditors: Map<TextEditor, ListenerState.HighlightedEditor> = runReadAction {
+      val isFinishedInDumbMode = DumbService.isDumb(project)
+      worthy.associateWith { ListenerState.HighlightedEditor.create(it, project, isCancelled = isCancelled, isFinishedInDumbMode = isFinishedInDumbMode) }
     }
 
     project.service<ListenerState>().registerAnalysisFinished(highlightedEditors)
@@ -250,7 +259,11 @@ internal class WaitForFinishedCodeAnalysisListener(private val project: Project)
 
 // See DaemonFusReporter. Reality in DaemonCodeAnalyzerImpl is a bit more complicated, probably including other editors if the file has Psi
 private fun Collection<FileEditor>.getWorthy(): List<TextEditor> =
-  mapNotNull { if (it is TextEditor && it.editor.editorKind == EditorKind.MAIN_EDITOR) return@mapNotNull it else null }
+  mapNotNull {
+    if (it !is TextEditor || it.editor.editorKind != EditorKind.MAIN_EDITOR) null
+    else if (it is TextEditorWithPreview) it.textEditor
+    else it
+  }
 
 internal class WaitForFinishedCodeAnalysisFileEditorListener : FileOpenedSyncListener {
   init {

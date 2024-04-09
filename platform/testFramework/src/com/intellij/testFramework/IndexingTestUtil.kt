@@ -5,10 +5,7 @@ import com.intellij.openapi.application.ApplicationListener
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.runBlockingMaybeCancellable
-import com.intellij.openapi.project.DumbServiceImpl
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.project.UnindexedFilesScannerExecutor
+import com.intellij.openapi.project.*
 import com.intellij.openapi.util.Disposer
 import com.intellij.platform.util.coroutines.namedChildScope
 import kotlinx.coroutines.*
@@ -21,7 +18,7 @@ class IndexingTestUtil(private val project: Project) {
     if (project.isDisposed) return
 
     val listenerDisposable = Disposer.newDisposable()
-    val parentDisposable = UnindexedFilesScannerExecutor.getInstance(project)
+    val parentDisposable = UnindexedFilesScannerExecutor.getInstance(project) as UnindexedFilesScannerExecutorImpl
     Disposer.register(parentDisposable, listenerDisposable)
 
     ApplicationManager.getApplication().addApplicationListener(object : ApplicationListener {
@@ -50,7 +47,8 @@ class IndexingTestUtil(private val project: Project) {
         at com.intellij.openapi.application.WriteAction.compute(WriteAction.java:95)
         ...
        */
-      // non-volatile: only updated on writing thread
+      // Volatile: any thread could be write thread
+      @Volatile
       private var nested: Int = 1 // 1 because at least one write action is currently happenings
 
       override fun beforeWriteActionStart(action: Any) {
@@ -80,7 +78,7 @@ class IndexingTestUtil(private val project: Project) {
       thisLogger().info("waitNow will be waiting, thread=${Thread.currentThread()}", Throwable())
     }
 
-    if (ApplicationManager.getApplication().isWriteIntentLockAcquired) {
+    if (ApplicationManager.getApplication().isDispatchThread) {
       val scope = GlobalScope.namedChildScope("Indexing waiter", Dispatchers.IO)
       val waiting = scope.launch { suspendUntilIndexesAreReady() }
       try {
