@@ -21,6 +21,9 @@ interface IZigWorkspace {
     val rootDirectory: Path
     val dependencies: Collection<IZigDependency>
 
+    val workspace: IZigWorkspace
+
+    val id: String
     val name: String
   }
 
