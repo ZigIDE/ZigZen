@@ -2,7 +2,6 @@
 package com.intellij.platform.workspace.jps.entities
 
 import com.intellij.openapi.util.NlsSafe
-import com.intellij.platform.workspace.storage.EntityInformation
 import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
@@ -287,7 +286,7 @@ open class LibraryEntityImpl(private val dataSource: LibraryEntityData) : Librar
   }
 }
 
-class LibraryEntityData : WorkspaceEntityData.WithCalculableSymbolicId<LibraryEntity>(), SoftLinkable {
+class LibraryEntityData : WorkspaceEntityData<LibraryEntity>(), SoftLinkable {
   lateinit var name: String
   lateinit var tableId: LibraryTableId
   var typeId: LibraryTypeId? = null
@@ -412,18 +411,8 @@ class LibraryEntityData : WorkspaceEntityData.WithCalculableSymbolicId<LibraryEn
     return clonedEntity
   }
 
-  override fun symbolicId(): SymbolicEntityId<*> {
-    return LibraryId(name, tableId)
-  }
-
   override fun getEntityInterface(): Class<out WorkspaceEntity> {
     return LibraryEntity::class.java
-  }
-
-  override fun serialize(ser: EntityInformation.Serializer) {
-  }
-
-  override fun deserialize(de: EntityInformation.Deserializer) {
   }
 
   override fun createDetachedEntity(parents: List<WorkspaceEntity.Builder<*>>): WorkspaceEntity.Builder<*> {

@@ -2,7 +2,6 @@
 package com.intellij.platform.workspace.storage.testEntities.entities
 
 import com.intellij.platform.workspace.storage.*
-import com.intellij.platform.workspace.storage.EntityInformation
 import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
@@ -139,7 +138,7 @@ open class LinkedListEntityImpl(private val dataSource: LinkedListEntityData) : 
   }
 }
 
-class LinkedListEntityData : WorkspaceEntityData.WithCalculableSymbolicId<LinkedListEntity>(), SoftLinkable {
+class LinkedListEntityData : WorkspaceEntityData<LinkedListEntity>(), SoftLinkable {
   lateinit var myName: String
   lateinit var next: LinkedListEntityId
 
@@ -206,18 +205,8 @@ class LinkedListEntityData : WorkspaceEntityData.WithCalculableSymbolicId<Linked
       "com.intellij.platform.workspace.storage.testEntities.entities.LinkedListEntity") as EntityMetadata
   }
 
-  override fun symbolicId(): SymbolicEntityId<*> {
-    return LinkedListEntityId(myName)
-  }
-
   override fun getEntityInterface(): Class<out WorkspaceEntity> {
     return LinkedListEntity::class.java
-  }
-
-  override fun serialize(ser: EntityInformation.Serializer) {
-  }
-
-  override fun deserialize(de: EntityInformation.Deserializer) {
   }
 
   override fun createDetachedEntity(parents: List<WorkspaceEntity.Builder<*>>): WorkspaceEntity.Builder<*> {

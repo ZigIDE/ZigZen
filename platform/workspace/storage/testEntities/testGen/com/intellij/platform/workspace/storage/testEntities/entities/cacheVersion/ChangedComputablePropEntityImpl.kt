@@ -2,13 +2,11 @@
 package com.intellij.platform.workspace.storage.testEntities.entities.cacheVersion
 
 import com.intellij.platform.workspace.storage.*
-import com.intellij.platform.workspace.storage.EntityInformation
 import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
 import com.intellij.platform.workspace.storage.GeneratedCodeImplVersion
 import com.intellij.platform.workspace.storage.MutableEntityStorage
-import com.intellij.platform.workspace.storage.SymbolicEntityId
 import com.intellij.platform.workspace.storage.WorkspaceEntity
 import com.intellij.platform.workspace.storage.impl.ConnectionId
 import com.intellij.platform.workspace.storage.impl.ModifiableWorkspaceEntityBase
@@ -119,7 +117,7 @@ open class ChangedComputablePropEntityImpl(private val dataSource: ChangedComput
   }
 }
 
-class ChangedComputablePropEntityData : WorkspaceEntityData.WithCalculableSymbolicId<ChangedComputablePropEntity>() {
+class ChangedComputablePropEntityData : WorkspaceEntityData<ChangedComputablePropEntity>() {
   lateinit var text: String
 
   internal fun isTextInitialized(): Boolean = ::text.isInitialized
@@ -147,18 +145,8 @@ class ChangedComputablePropEntityData : WorkspaceEntityData.WithCalculableSymbol
       "com.intellij.platform.workspace.storage.testEntities.entities.cacheVersion.ChangedComputablePropEntity") as EntityMetadata
   }
 
-  override fun symbolicId(): SymbolicEntityId<*> {
-    return com.intellij.platform.workspace.storage.testEntities.entities.cacheVersion.ChangedComputablePropEntityId(text)
-  }
-
   override fun getEntityInterface(): Class<out WorkspaceEntity> {
     return ChangedComputablePropEntity::class.java
-  }
-
-  override fun serialize(ser: EntityInformation.Serializer) {
-  }
-
-  override fun deserialize(de: EntityInformation.Deserializer) {
   }
 
   override fun createDetachedEntity(parents: List<WorkspaceEntity.Builder<*>>): WorkspaceEntity.Builder<*> {

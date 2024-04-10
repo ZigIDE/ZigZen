@@ -1,7 +1,6 @@
 // Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.platform.workspace.storage.testEntities.entities.currentVersion
 
-import com.intellij.platform.workspace.storage.EntityInformation
 import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
@@ -119,7 +118,7 @@ open class ChangedComputablePropEntityImpl(private val dataSource: ChangedComput
   }
 }
 
-class ChangedComputablePropEntityData : WorkspaceEntityData.WithCalculableSymbolicId<ChangedComputablePropEntity>() {
+class ChangedComputablePropEntityData : WorkspaceEntityData<ChangedComputablePropEntity>() {
   lateinit var text: String
 
   internal fun isTextInitialized(): Boolean = ::text.isInitialized
@@ -147,19 +146,8 @@ class ChangedComputablePropEntityData : WorkspaceEntityData.WithCalculableSymbol
       "com.intellij.platform.workspace.storage.testEntities.entities.currentVersion.ChangedComputablePropEntity") as EntityMetadata
   }
 
-  override fun symbolicId(): SymbolicEntityId<*> {
-    return com.intellij.platform.workspace.storage.testEntities.entities.currentVersion.ChangedComputablePropEntityId(
-      listOf(text, "more text", text))
-  }
-
   override fun getEntityInterface(): Class<out WorkspaceEntity> {
     return ChangedComputablePropEntity::class.java
-  }
-
-  override fun serialize(ser: EntityInformation.Serializer) {
-  }
-
-  override fun deserialize(de: EntityInformation.Deserializer) {
   }
 
   override fun createDetachedEntity(parents: List<WorkspaceEntity.Builder<*>>): WorkspaceEntity.Builder<*> {

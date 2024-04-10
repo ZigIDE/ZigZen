@@ -2,7 +2,6 @@
 package org.jetbrains.kotlin.idea.core.script.ucache
 
 import com.intellij.platform.workspace.storage.*
-import com.intellij.platform.workspace.storage.EntityInformation
 import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
@@ -165,7 +164,7 @@ open class KotlinScriptEntityImpl(private val dataSource: KotlinScriptEntityData
   }
 }
 
-class KotlinScriptEntityData : WorkspaceEntityData.WithCalculableSymbolicId<KotlinScriptEntity>(), SoftLinkable {
+class KotlinScriptEntityData : WorkspaceEntityData<KotlinScriptEntity>(), SoftLinkable {
   lateinit var path: String
   lateinit var dependencies: MutableSet<KotlinScriptLibraryId>
 
@@ -252,18 +251,8 @@ class KotlinScriptEntityData : WorkspaceEntityData.WithCalculableSymbolicId<Kotl
     return clonedEntity
   }
 
-  override fun symbolicId(): SymbolicEntityId<*> {
-    return KotlinScriptId(path)
-  }
-
   override fun getEntityInterface(): Class<out WorkspaceEntity> {
     return KotlinScriptEntity::class.java
-  }
-
-  override fun serialize(ser: EntityInformation.Serializer) {
-  }
-
-  override fun deserialize(de: EntityInformation.Deserializer) {
   }
 
   override fun createDetachedEntity(parents: List<WorkspaceEntity.Builder<*>>): WorkspaceEntity.Builder<*> {

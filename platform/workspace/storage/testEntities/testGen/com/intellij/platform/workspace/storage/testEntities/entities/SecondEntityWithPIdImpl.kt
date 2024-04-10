@@ -2,13 +2,11 @@
 package com.intellij.platform.workspace.storage.testEntities.entities
 
 import com.intellij.platform.workspace.storage.*
-import com.intellij.platform.workspace.storage.EntityInformation
 import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
 import com.intellij.platform.workspace.storage.GeneratedCodeImplVersion
 import com.intellij.platform.workspace.storage.MutableEntityStorage
-import com.intellij.platform.workspace.storage.SymbolicEntityId
 import com.intellij.platform.workspace.storage.WorkspaceEntity
 import com.intellij.platform.workspace.storage.impl.ConnectionId
 import com.intellij.platform.workspace.storage.impl.ModifiableWorkspaceEntityBase
@@ -118,7 +116,7 @@ open class SecondEntityWithPIdImpl(private val dataSource: SecondEntityWithPIdDa
   }
 }
 
-class SecondEntityWithPIdData : WorkspaceEntityData.WithCalculableSymbolicId<SecondEntityWithPId>() {
+class SecondEntityWithPIdData : WorkspaceEntityData<SecondEntityWithPId>() {
   lateinit var data: String
 
   internal fun isDataInitialized(): Boolean = ::data.isInitialized
@@ -146,18 +144,8 @@ class SecondEntityWithPIdData : WorkspaceEntityData.WithCalculableSymbolicId<Sec
       "com.intellij.platform.workspace.storage.testEntities.entities.SecondEntityWithPId") as EntityMetadata
   }
 
-  override fun symbolicId(): SymbolicEntityId<*> {
-    return SecondPId(data)
-  }
-
   override fun getEntityInterface(): Class<out WorkspaceEntity> {
     return SecondEntityWithPId::class.java
-  }
-
-  override fun serialize(ser: EntityInformation.Serializer) {
-  }
-
-  override fun deserialize(de: EntityInformation.Deserializer) {
   }
 
   override fun createDetachedEntity(parents: List<WorkspaceEntity.Builder<*>>): WorkspaceEntity.Builder<*> {

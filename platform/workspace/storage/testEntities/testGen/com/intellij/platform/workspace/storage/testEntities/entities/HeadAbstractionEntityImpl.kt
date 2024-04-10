@@ -2,13 +2,11 @@
 package com.intellij.platform.workspace.storage.testEntities.entities
 
 import com.intellij.platform.workspace.storage.*
-import com.intellij.platform.workspace.storage.EntityInformation
 import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
 import com.intellij.platform.workspace.storage.GeneratedCodeImplVersion
 import com.intellij.platform.workspace.storage.MutableEntityStorage
-import com.intellij.platform.workspace.storage.SymbolicEntityId
 import com.intellij.platform.workspace.storage.WorkspaceEntity
 import com.intellij.platform.workspace.storage.annotations.Abstract
 import com.intellij.platform.workspace.storage.annotations.Child
@@ -167,7 +165,7 @@ open class HeadAbstractionEntityImpl(private val dataSource: HeadAbstractionEnti
   }
 }
 
-class HeadAbstractionEntityData : WorkspaceEntityData.WithCalculableSymbolicId<HeadAbstractionEntity>() {
+class HeadAbstractionEntityData : WorkspaceEntityData<HeadAbstractionEntity>() {
   lateinit var data: String
 
   internal fun isDataInitialized(): Boolean = ::data.isInitialized
@@ -195,18 +193,8 @@ class HeadAbstractionEntityData : WorkspaceEntityData.WithCalculableSymbolicId<H
       "com.intellij.platform.workspace.storage.testEntities.entities.HeadAbstractionEntity") as EntityMetadata
   }
 
-  override fun symbolicId(): SymbolicEntityId<*> {
-    return HeadAbstractionSymbolicId(data)
-  }
-
   override fun getEntityInterface(): Class<out WorkspaceEntity> {
     return HeadAbstractionEntity::class.java
-  }
-
-  override fun serialize(ser: EntityInformation.Serializer) {
-  }
-
-  override fun deserialize(de: EntityInformation.Deserializer) {
   }
 
   override fun createDetachedEntity(parents: List<WorkspaceEntity.Builder<*>>): WorkspaceEntity.Builder<*> {

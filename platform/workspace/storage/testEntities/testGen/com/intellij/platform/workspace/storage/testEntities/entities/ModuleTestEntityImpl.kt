@@ -2,13 +2,11 @@
 package com.intellij.platform.workspace.storage.testEntities.entities
 
 import com.intellij.platform.workspace.storage.*
-import com.intellij.platform.workspace.storage.EntityInformation
 import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
 import com.intellij.platform.workspace.storage.GeneratedCodeImplVersion
 import com.intellij.platform.workspace.storage.MutableEntityStorage
-import com.intellij.platform.workspace.storage.SymbolicEntityId
 import com.intellij.platform.workspace.storage.WorkspaceEntity
 import com.intellij.platform.workspace.storage.annotations.Child
 import com.intellij.platform.workspace.storage.impl.ConnectionId
@@ -251,7 +249,7 @@ open class ModuleTestEntityImpl(private val dataSource: ModuleTestEntityData) : 
   }
 }
 
-class ModuleTestEntityData : WorkspaceEntityData.WithCalculableSymbolicId<ModuleTestEntity>() {
+class ModuleTestEntityData : WorkspaceEntityData<ModuleTestEntity>() {
   lateinit var name: String
 
   internal fun isNameInitialized(): Boolean = ::name.isInitialized
@@ -279,18 +277,8 @@ class ModuleTestEntityData : WorkspaceEntityData.WithCalculableSymbolicId<Module
       "com.intellij.platform.workspace.storage.testEntities.entities.ModuleTestEntity") as EntityMetadata
   }
 
-  override fun symbolicId(): SymbolicEntityId<*> {
-    return ModuleTestEntitySymbolicId(name)
-  }
-
   override fun getEntityInterface(): Class<out WorkspaceEntity> {
     return ModuleTestEntity::class.java
-  }
-
-  override fun serialize(ser: EntityInformation.Serializer) {
-  }
-
-  override fun deserialize(de: EntityInformation.Deserializer) {
   }
 
   override fun createDetachedEntity(parents: List<WorkspaceEntity.Builder<*>>): WorkspaceEntity.Builder<*> {
