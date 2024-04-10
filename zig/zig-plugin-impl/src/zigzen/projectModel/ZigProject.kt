@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicReference
 data class ZigProject(
   override val buildZig: Path,
   private val projectService: ZigProjectsService,
+  override val workspaceStatus: IZigProject.ProjectUpdateStatus = IZigProject.ProjectUpdateStatus.NeedsUpdate,
   override var stdlibStatus: IZigProject.ProjectUpdateStatus = IZigProject.ProjectUpdateStatus.NeedsUpdate,
   var standardLibrary: ZigStandardLibrary? = null,
   private val rawWorkspace: IZigWorkspace? = null,
@@ -45,4 +46,9 @@ data class ZigProject(
     stdlibStatus = IZigProject.ProjectUpdateStatus.UpToDate
     standardLibrary = library
   }
+
+  fun withWorkspace(workspace: IZigWorkspace) = copy(
+    rawWorkspace = workspace,
+    workspaceStatus = IZigProject.ProjectUpdateStatus.UpToDate
+  )
 }
