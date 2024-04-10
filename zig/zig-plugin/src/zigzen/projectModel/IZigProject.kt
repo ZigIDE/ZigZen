@@ -15,6 +15,7 @@ interface IZigProject : UserDataHolderEx {
 
   val presentableName: String
 
+  val workspaceStatus: ProjectUpdateStatus
   val stdlibStatus: ProjectUpdateStatus
 
   sealed class ProjectUpdateStatus(private val priority: Int) {
