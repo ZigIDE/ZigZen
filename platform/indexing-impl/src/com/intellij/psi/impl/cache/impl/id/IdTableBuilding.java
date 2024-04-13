@@ -86,7 +86,6 @@ public final class IdTableBuilding {
                                    TokenSet.create(CustomHighlighterTokenType.LINE_COMMENT,
                                                    CustomHighlighterTokenType.MULTI_LINE_COMMENT),
                                    TokenSet.create(CustomHighlighterTokenType.STRING, CustomHighlighterTokenType.SINGLE_QUOTED_STRING));
-
   }
 
   public static void scanWords(final ScanWordProcessor processor, final CharSequence chars, final int startOffset, final int endOffset) {
@@ -124,21 +123,11 @@ public final class IdTableBuilding {
       int startIndex = index;
       while (true) {
         if (index >= endOffset) break ScanWordsLoop;
-        // nextCodePoint - inlined for performance
-        int codePoint;
-        char c1 = hasArray ? charArray[index++] : chars.charAt(index++);
-        if (Character.isHighSurrogate(c1) && index < endOffset) {
-          char c2 = hasArray ? charArray[index] : chars.charAt(index);
-          if (Character.isLowSurrogate(c2)) {
-            index++;
-            // UTF-16 character
-            codePoint = Character.toCodePoint(c1, c2);
-          } else {
-            codePoint = c1;
-          }
-        } else {
-          codePoint = c1;
-        }
+        int codePoint = hasArray
+                        ? Character.codePointAt(charArray, index, endOffset)
+                        // no overload with endOffset, but it is highly unlikely that we go beyond it
+                        : Character.codePointAt(chars, index);
+        index += Character.charCount(codePoint);
         if (isWordCodePoint.test(codePoint)) {
           break;
         }
@@ -148,21 +137,9 @@ public final class IdTableBuilding {
       int endIndex = index;
       while (true) {
         if (index >= endOffset) break;
-        // nextCodePoint - inlined for performance
-        int codePoint;
-        char c1 = hasArray ? charArray[index++] : chars.charAt(index++);
-        if (Character.isHighSurrogate(c1) && index < endOffset) {
-          char c2 = hasArray ? charArray[index] : chars.charAt(index);
-          if (Character.isLowSurrogate(c2)) {
-            index++;
-            // UTF-16 character
-            codePoint = Character.toCodePoint(c1, c2);
-          } else {
-            codePoint = c1;
-          }
-        } else {
-          codePoint = c1;
-        }
+        int codePoint = hasArray ? Character.codePointAt(charArray, index, endOffset)
+                                 : Character.codePointAt(chars, index);
+        index += Character.charCount(codePoint);
         if (!isWordCodePoint.test(codePoint)) {
           break;
         }
@@ -173,5 +150,4 @@ public final class IdTableBuilding {
       processor.run(chars, charArray, startIndex, endIndex);
     }
   }
-
 }

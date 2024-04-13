@@ -64,10 +64,9 @@ public abstract class AnAction implements PossiblyDumbAware, ActionUpdateThreadA
   private boolean myEnabledInModalContext;
 
   private boolean myIsDefaultIcon = true;
-  private boolean myWorksInInjected;
   private SmartFMap<String, Supplier<String>> myActionTextOverrides = SmartFMap.emptyMap();
   private List<Supplier<@Nls String>> mySynonyms = Collections.emptyList();
-  private String myCopySourceActionId;
+  private @Nullable String myCopySourceActionId;
 
   @ApiStatus.Internal
   int myMetaFlags;
@@ -416,11 +415,11 @@ public abstract class AnAction implements PossiblyDumbAware, ActionUpdateThreadA
    * will refer to an injected fragment if the caret is currently positioned on it.
    */
   public void setInjectedContext(boolean worksInInjected) {
-    myWorksInInjected = worksInInjected;
+    getTemplatePresentation().setPreferInjectedPsi(worksInInjected);
   }
 
   public boolean isInInjectedContext() {
-    return myWorksInInjected;
+    return getTemplatePresentation().isPreferInjectedPsi();
   }
 
   public void addTextOverride(@NotNull String place, @NotNull String text) {
@@ -483,9 +482,8 @@ public abstract class AnAction implements PossiblyDumbAware, ActionUpdateThreadA
     return myCopySourceActionId;
   }
 
-  @Nullable
   @ApiStatus.Internal
-  public void setCopySourceActionId(String copySourceActionId) {
+  public void setCopySourceActionId(@Nullable String copySourceActionId) {
     myCopySourceActionId = copySourceActionId;
   }
 

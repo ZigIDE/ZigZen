@@ -13,10 +13,7 @@ import org.jetbrains.kotlin.nj2k.tree.JKClass.ClassKind.*
 import org.jetbrains.kotlin.nj2k.tree.Modality.FINAL
 import org.jetbrains.kotlin.nj2k.tree.Visibility.PUBLIC
 import org.jetbrains.kotlin.nj2k.tree.visitors.JKVisitorWithCommentsPrinting
-import org.jetbrains.kotlin.nj2k.types.JKContextType
-import org.jetbrains.kotlin.nj2k.types.isAnnotationMethod
-import org.jetbrains.kotlin.nj2k.types.isInterface
-import org.jetbrains.kotlin.nj2k.types.isUnit
+import org.jetbrains.kotlin.nj2k.types.*
 import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
 class JKCodeBuilder(context: NewJ2kConverterContext) {
@@ -167,6 +164,9 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
         }
 
         override fun visitImportStatementRaw(importStatement: JKImportStatement) {
+            if (JKImportStorage.PLATFORM_CLASSES_MAPPED_TO_KOTLIN.any { it.matches(importStatement.name.value) }) {
+                return
+            }
             printer.print("import ")
             val importNameEscaped =
                 importStatement.name.value.escapedAsQualifiedName()
@@ -194,7 +194,7 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
             val primaryConstructor = klass.primaryConstructor()
             primaryConstructor?.accept(this)
 
-            if (klass.inheritance.present()) {
+            if (klass.inheritance.isPresent()) {
                 printer.printWithSurroundingSpaces(":")
                 klass.inheritance.accept(this)
             }
@@ -215,7 +215,7 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
                 val primaryConstructor = thisClass.primaryConstructor()
                 val delegationCall = primaryConstructor?.delegationCall.safeAs<JKDelegationConstructorCall>()
                 if (delegationCall != null) {
-                    printer.par { delegationCall.arguments.accept(this) }
+                    delegationCall.arguments.accept(this)
                 } else if (!superTypeElement.type.isInterface() && (primaryConstructor != null || thisClass.isObjectOrCompanionObject)) {
                     printer.print("()")
                 }
@@ -238,7 +238,7 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
             }
             renderModifiersList(field)
             field.name.accept(this)
-            if (field.type.present()) {
+            if (field.type.isPresent()) {
                 printer.print(": ")
                 field.type.accept(this)
             }
@@ -252,9 +252,7 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
             enumConstant.annotationList.accept(this)
             enumConstant.name.accept(this)
             if (enumConstant.arguments.arguments.isNotEmpty()) {
-                printer.par {
-                    renderArgumentList(enumConstant.arguments)
-                }
+                enumConstant.arguments.accept(this)
             }
             if (enumConstant.body.declarations.isNotEmpty()) {
                 enumConstant.body.accept(this)
@@ -306,7 +304,7 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
 
         private fun renderVariableDeclarationNameAndType(variable: JKVariable) {
             variable.name.accept(this)
-            if (variable.type.present() && variable.type.type !is JKContextType) {
+            if (variable.type.isPresent() && variable.type.type !is JKContextType) {
                 printer.print(": ")
                 variable.type.accept(this)
             }
@@ -325,7 +323,7 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
         override fun visitForLoopVariableRaw(forLoopVariable: JKForLoopVariable) {
             forLoopVariable.annotationList.accept(this)
             forLoopVariable.name.accept(this)
-            if (!forLoopVariable.type.present() || forLoopVariable.type.type is JKContextType) return
+            if (!forLoopVariable.type.isPresent() || forLoopVariable.type.type is JKContextType) return
 
             val needExplicitType = isK1Mode() || // for K1 nullability inference
                     settings.specifyLocalVariableTypeByDefault ||
@@ -487,23 +485,40 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
         }
 
         override fun visitArgumentListRaw(argumentList: JKArgumentList) {
-            renderArgumentList(argumentList)
+            val arguments = argumentList.arguments
+            if (!canMoveLambdaOutsideParentheses(argumentList)) {
+                renderArguments(arguments, argumentList.hasTrailingComma)
+                return
+            }
+
+            if (arguments.size > 1) {
+                renderArguments(arguments.subList(0, arguments.lastIndex), hasTrailingComma = false)
+            }
+            printer.print(" ")
+
+            val lambdaExpression = arguments.last().value as JKLambdaExpression
+            printLeftNonCodeElements(lambdaExpression)
+            renderLambdaExpressionWithoutFunctionalType(lambdaExpression)
+            printRightNonCodeElements(lambdaExpression)
+            printer.print(" ")
         }
 
-        private fun renderArgumentList(argumentList: JKArgumentList) {
-            for ((i, argument) in argumentList.arguments.withIndex()) {
-                printLeftNonCodeElements(argument)
+        private fun renderArguments(arguments: List<JKArgument>, hasTrailingComma: Boolean) {
+            printer.par {
+                for ((i, argument) in arguments.withIndex()) {
+                    printLeftNonCodeElements(argument)
 
-                if (argument is JKNamedArgument) {
-                    visitNamedArgumentRaw(argument)
-                } else {
-                    visitArgumentRaw(argument)
-                }
+                    if (argument is JKNamedArgument) {
+                        visitNamedArgumentRaw(argument)
+                    } else {
+                        visitArgumentRaw(argument)
+                    }
 
-                if (i < argumentList.arguments.lastIndex || argumentList.hasTrailingComma) {
-                    printer.print(", ")
+                    if (i < arguments.lastIndex || hasTrailingComma) {
+                        printer.print(", ")
+                    }
+                    printRightNonCodeElements(argument)
                 }
-                printRightNonCodeElements(argument)
             }
         }
 
@@ -521,9 +536,7 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
             printer.renderSymbol(callExpression.identifier, callExpression)
             if (callExpression.identifier.isAnnotationMethod()) return
             callExpression.typeArgumentList.accept(this)
-            printer.par {
-                callExpression.arguments.accept(this)
-            }
+            callExpression.arguments.accept(this)
         }
 
         override fun visitTypeArgumentListRaw(typeArgumentList: JKTypeArgumentList) {
@@ -600,9 +613,7 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
             printer.renderSymbol(newExpression.classSymbol, newExpression)
             newExpression.typeArgumentList.accept(this)
             if (!newExpression.classSymbol.isInterface() || newExpression.arguments.arguments.isNotEmpty()) {
-                printer.par(ParenthesisKind.ROUND) {
-                    newExpression.arguments.accept(this)
-                }
+                newExpression.arguments.accept(this)
             }
             if (newExpression.isAnonymousClass) {
                 newExpression.classBody.accept(this)
@@ -741,9 +752,7 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
 
         override fun visitDelegationConstructorCallRaw(delegationConstructorCall: JKDelegationConstructorCall) {
             delegationConstructorCall.expression.accept(this)
-            printer.par {
-                delegationConstructorCall.arguments.accept(this)
-            }
+            delegationConstructorCall.arguments.accept(this)
         }
 
         private fun renderParameterList(method: JKMethod) {
@@ -794,12 +803,16 @@ class JKCodeBuilder(context: NewJ2kConverterContext) {
         }
 
         override fun visitLambdaExpressionRaw(lambdaExpression: JKLambdaExpression) {
-            if (lambdaExpression.functionalType.present()) {
+            if (lambdaExpression.functionalType.isPresent()) {
                 // print SAM constructor
                 printer.renderType(lambdaExpression.functionalType.type, lambdaExpression)
                 printer.print(" ")
             }
 
+            renderLambdaExpressionWithoutFunctionalType(lambdaExpression)
+        }
+
+        private fun renderLambdaExpressionWithoutFunctionalType(lambdaExpression: JKLambdaExpression) {
             printer.par(ParenthesisKind.CURVED) {
                 val isMultiStatement = lambdaExpression.statement.statements.size > 1
                 if (isMultiStatement) printer.println()

@@ -244,6 +244,44 @@ public abstract class K2IdeK2CodeKotlinEvaluateExpressionTestGenerated extends A
         @TestMetadata("../testData/evaluation/singleBreakpoint/coroutines")
         public abstract static class Coroutines extends AbstractK2IdeK2CodeKotlinEvaluateExpressionTest {
             @RunWith(JUnit3RunnerWithInners.class)
+            @TestMetadata("../testData/evaluation/singleBreakpoint/coroutines/runToCursor")
+            public static class RunToCursor extends AbstractK2IdeK2CodeKotlinEvaluateExpressionTest {
+                private void runTest(String testDataFilePath) throws Exception {
+                    KotlinTestUtils.runTest(this::doSingleBreakpointTest, this, TargetBackend.JVM_IR_WITH_IR_EVALUATOR, testDataFilePath);
+                }
+
+                @TestMetadata("runToCursorSeveralUndispatchedCoroutines.kt")
+                public void testRunToCursorSeveralUndispatchedCoroutines() throws Exception {
+                    runTest("../testData/evaluation/singleBreakpoint/coroutines/runToCursor/runToCursorSeveralUndispatchedCoroutines.kt");
+                }
+
+                @TestMetadata("runToCursorSuspendSameJobCompletionOnly.kt")
+                public void testRunToCursorSuspendSameJobCompletionOnly() throws Exception {
+                    runTest("../testData/evaluation/singleBreakpoint/coroutines/runToCursor/runToCursorSuspendSameJobCompletionOnly.kt");
+                }
+
+                @TestMetadata("runToCursorSuspendSameJobContinuation.kt")
+                public void testRunToCursorSuspendSameJobContinuation() throws Exception {
+                    runTest("../testData/evaluation/singleBreakpoint/coroutines/runToCursor/runToCursorSuspendSameJobContinuation.kt");
+                }
+
+                @TestMetadata("runToCursorSuspendSameLambda.kt")
+                public void testRunToCursorSuspendSameLambda() throws Exception {
+                    runTest("../testData/evaluation/singleBreakpoint/coroutines/runToCursor/runToCursorSuspendSameLambda.kt");
+                }
+
+                @TestMetadata("runToCursorWithinUndispatchedCoroutine.kt")
+                public void testRunToCursorWithinUndispatchedCoroutine() throws Exception {
+                    runTest("../testData/evaluation/singleBreakpoint/coroutines/runToCursor/runToCursorWithinUndispatchedCoroutine.kt");
+                }
+
+                @TestMetadata("runToCursorWithinUndispatchedCoroutine2.kt")
+                public void testRunToCursorWithinUndispatchedCoroutine2() throws Exception {
+                    runTest("../testData/evaluation/singleBreakpoint/coroutines/runToCursor/runToCursorWithinUndispatchedCoroutine2.kt");
+                }
+            }
+
+            @RunWith(JUnit3RunnerWithInners.class)
             @TestMetadata("../testData/evaluation/singleBreakpoint/coroutines/stepOut")
             public abstract static class StepOut extends AbstractK2IdeK2CodeKotlinEvaluateExpressionTest {
                 @RunWith(JUnit3RunnerWithInners.class)
@@ -758,21 +796,6 @@ public abstract class K2IdeK2CodeKotlinEvaluateExpressionTestGenerated extends A
             @TestMetadata("runToCursorSimple.kt")
             public void testRunToCursorSimple() throws Exception {
                 runTest("../testData/evaluation/singleBreakpoint/frame/runToCursorSimple.kt");
-            }
-
-            @TestMetadata("runToCursorSuspendSameJobCompletionOnly.kt")
-            public void testRunToCursorSuspendSameJobCompletionOnly() throws Exception {
-                runTest("../testData/evaluation/singleBreakpoint/frame/runToCursorSuspendSameJobCompletionOnly.kt");
-            }
-
-            @TestMetadata("runToCursorSuspendSameJobContinuation.kt")
-            public void testRunToCursorSuspendSameJobContinuation() throws Exception {
-                runTest("../testData/evaluation/singleBreakpoint/frame/runToCursorSuspendSameJobContinuation.kt");
-            }
-
-            @TestMetadata("runToCursorSuspendSameLambda.kt")
-            public void testRunToCursorSuspendSameLambda() throws Exception {
-                runTest("../testData/evaluation/singleBreakpoint/frame/runToCursorSuspendSameLambda.kt");
             }
 
             @TestMetadata("showPropertiesFromMethods.kt")
@@ -1705,6 +1728,11 @@ public abstract class K2IdeK2CodeKotlinEvaluateExpressionTestGenerated extends A
                 runTest("../testData/evaluation/singleBreakpoint/privateFieldInSuperclass.kt");
             }
 
+            @TestMetadata("privateLocalDelegatedProperty.kt")
+            public void testPrivateLocalDelegatedProperty() throws Exception {
+                runTest("../testData/evaluation/singleBreakpoint/privateLocalDelegatedProperty.kt");
+            }
+
             @TestMetadata("privateMember.kt")
             public void testPrivateMember() throws Exception {
                 runTest("../testData/evaluation/singleBreakpoint/privateMember.kt");
@@ -1813,6 +1841,11 @@ public abstract class K2IdeK2CodeKotlinEvaluateExpressionTestGenerated extends A
             @TestMetadata("thisFromStaticLambdaWithUnnamed.kt")
             public void testThisFromStaticLambdaWithUnnamed() throws Exception {
                 runTest("../testData/evaluation/singleBreakpoint/thisFromStaticLambdaWithUnnamed.kt");
+            }
+
+            @TestMetadata("typeParameterOutOfScope.kt")
+            public void testTypeParameterOutOfScope() throws Exception {
+                runTest("../testData/evaluation/singleBreakpoint/typeParameterOutOfScope.kt");
             }
 
             @TestMetadata("typeParameterRef.kt")

@@ -261,7 +261,7 @@ object CommunityLibraryLicenses {
                    url = "https://github.com/ben-manes/caffeine")
       .apache("https://github.com/ben-manes/caffeine/blob/master/LICENSE")
       .suppliedByPersons("Ben Manes"),
-    LibraryLicense(name = "CGLib", libraryName = "CGLIB", url = "https://github.com/cglib/cglib/")
+    LibraryLicense(name = "CGLib", libraryName = "cglib", url = "https://github.com/cglib/cglib/")
       .apache("https://github.com/cglib/cglib/blob/master/LICENSE")
       .suppliedByPersons("cglib project contributors"),
     LibraryLicense(name = "classgraph", libraryName = "classgraph", license = "codehaus",
@@ -1194,13 +1194,6 @@ object CommunityLibraryLicenses {
     LibraryLicense(name = "zstd-jni", libraryName = "zstd-jni",
                    url = "https://github.com/luben/zstd-jni")
       .simplifiedBsd("https://github.com/luben/zstd-jni/blob/master/LICENSE"),
-    LibraryLicense(name = "zstd-jni-windows-aarch64", libraryName = "zstd-jni-windows-aarch64",
-                   url = "https://github.com/VladRassokhin/zstd-jni")
-      .simplifiedBsd("https://github.com/luben/zstd-jni/blob/master/LICENSE")
-      .forkedFrom(sourceCodeUrl = "https://github.com/luben/zstd-jni",
-                  mavenRepositoryUrl = "https://repo1.maven.org/maven2",
-                  groupId = "com.github.luben", artifactId = "zstd-jni",
-                  version = "1.5.2-5"),
     jetbrainsLibrary("change-reminder-prediction-model"),
     jetbrainsLibrary("cloud-config-client"),
     jetbrainsLibrary("completion-log-events"),

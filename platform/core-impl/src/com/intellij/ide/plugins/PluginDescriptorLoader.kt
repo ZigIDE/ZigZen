@@ -24,6 +24,7 @@ import com.intellij.util.io.URLUtil
 import com.intellij.util.lang.UrlClassLoader
 import com.intellij.util.lang.ZipFilePool
 import com.intellij.util.xml.dom.createNonCoalescingXmlStreamReader
+import com.intellij.util.xml.dom.createXmlStreamReader
 import kotlinx.coroutines.*
 import org.codehaus.stax2.XMLStreamReader2
 import org.jetbrains.annotations.ApiStatus.Internal
@@ -608,9 +609,7 @@ private fun CoroutineScope.loadCoreModules(
   val useCoreClassLoader = pathResolver.isRunningFromSources ||
                            platformPrefix.startsWith("CodeServer") ||
                            java.lang.Boolean.getBoolean("idea.force.use.core.classloader")
-  // should be the only plugin in lib (only for Ultimate and WebStorm for now)
-  if ((platformPrefix == PlatformUtils.IDEA_PREFIX || platformPrefix == PlatformUtils.WEB_PREFIX) &&
-      (isInDevServerMode || (!isUnitTestMode && !isRunningFromSources))) {
+  if ((isProductWithTheOnlyDescriptor(platformPrefix)) && (isInDevServerMode || (!isUnitTestMode && !isRunningFromSources))) {
     return Java11Shim.INSTANCE.listOf(async(Dispatchers.IO) {
       loadCoreProductPlugin(
         path = PluginManagerCore.PLUGIN_XML_PATH,
@@ -657,6 +656,13 @@ private fun CoroutineScope.loadCoreModules(
     }
   }
   return result
+}
+
+// should be the only plugin in lib
+private fun isProductWithTheOnlyDescriptor(platformPrefix: String): Boolean {
+  return platformPrefix == PlatformUtils.IDEA_PREFIX ||
+         platformPrefix == PlatformUtils.WEB_PREFIX ||
+         platformPrefix == PlatformUtils.GATEWAY_PREFIX
 }
 
 private fun getResourceReader(path: String, classLoader: ClassLoader): XMLStreamReader2? {
@@ -734,61 +740,97 @@ private fun loadModuleDescriptors(
     }
 
     val moduleName = module.name
-    var moduleRaw: RawPluginDescriptor?
     val subDescriptorFile = "$moduleName.xml"
 
     if (moduleDirExists && !pathResolver.isRunningFromSources && moduleName.startsWith("intellij.")) {
-      val jarFile = loadingStrategy.findProductContentModuleClassesRoot(moduleName, moduleDir)
-      moduleRaw = if (jarFile != null) {
-        val resolver = pool.load(jarFile)
-        try {
-          resolver.loadZipEntry(subDescriptorFile)?.let {
-            readModuleDescriptor(
-              input = it,
-              readContext = context,
-              pathResolver = pathResolver,
-              dataLoader = dataLoader,
-              includeBase = null,
-              readInto = null,
-              locationSource = jarFile.toString(),
-            )
-          }
-        }
-        finally {
-          (resolver as? Closeable)?.close()
-        }
-      }
-      else {
-        LOG.debug("Skip loading product content module $moduleName because its classes root isn't present")
-        RawPluginDescriptor().apply { `package` = "unresolved.$moduleName" }
-      }
-
-      if (moduleRaw != null) {
-        val subDescriptor = descriptor.createSub(
-          raw = moduleRaw,
-          descriptorPath = subDescriptorFile,
-          context = context,
-          moduleName = moduleName,
-        )
-        subDescriptor.jarFiles = jarFile?.let { Java11Shim.INSTANCE.listOf(it) } ?: Java11Shim.INSTANCE.listOf()
-        module.descriptor = subDescriptor
+      if (loadProductModule(
+        loadingStrategy = loadingStrategy,
+        moduleDir = moduleDir,
+        pool = pool,
+        module = module,
+        subDescriptorFile = subDescriptorFile,
+        context = context,
+        pathResolver = pathResolver,
+        dataLoader = dataLoader,
+        containerDescriptor = descriptor,
+      )) {
         continue
       }
     }
 
-    moduleRaw = pathResolver.resolveModuleFile(
-      readContext = context,
-      dataLoader = dataLoader,
-      path = subDescriptorFile,
-      readInto = null,
-    )
     module.descriptor = descriptor.createSub(
-      raw = moduleRaw,
+      raw = pathResolver.resolveModuleFile(
+        readContext = context,
+        dataLoader = dataLoader,
+        path = subDescriptorFile,
+        readInto = null,
+      ),
       descriptorPath = subDescriptorFile,
       context = context,
       moduleName = moduleName,
     )
   }
+}
+
+private fun loadProductModule(
+  loadingStrategy: ProductLoadingStrategy,
+  moduleDir: Path,
+  pool: ZipFilePool,
+  module: PluginContentDescriptor.ModuleItem,
+  subDescriptorFile: String,
+  context: DescriptorListLoadingContext,
+  pathResolver: ClassPathXmlPathResolver,
+  dataLoader: DataLoader,
+  containerDescriptor: IdeaPluginDescriptorImpl,
+): Boolean {
+  val moduleName = module.name
+  val jarFile = loadingStrategy.findProductContentModuleClassesRoot(moduleName, moduleDir)
+  val moduleRaw: RawPluginDescriptor
+  if (module.descriptorContent == null) {
+    if (jarFile == null) {
+      // do not log - the severity of the error is determined by the loadingStrategy, the default strategy does not return null at all
+      moduleRaw = RawPluginDescriptor().apply { `package` = "unresolved.$moduleName" }
+    }
+    else {
+      val resolver = pool.load(jarFile)
+      try {
+        val entry = resolver.loadZipEntry(subDescriptorFile)
+                    ?: throw IllegalStateException("Module descriptor $subDescriptorFile not found in $jarFile")
+        moduleRaw = readModuleDescriptor(
+          input = entry,
+          readContext = context,
+          pathResolver = pathResolver,
+          dataLoader = dataLoader,
+          includeBase = null,
+          readInto = null,
+          locationSource = jarFile.toString(),
+        )
+      }
+      finally {
+        (resolver as? Closeable)?.close()
+      }
+    }
+  }
+  else {
+    moduleRaw = readModuleDescriptor(
+      reader = createXmlStreamReader(module.descriptorContent.reader()),
+      readContext = context,
+      pathResolver = pathResolver,
+      dataLoader = dataLoader,
+      includeBase = null,
+      readInto = null,
+    )
+  }
+
+  val subDescriptor = containerDescriptor.createSub(
+    raw = moduleRaw,
+    descriptorPath = subDescriptorFile,
+    context = context,
+    moduleName = moduleName,
+  )
+  subDescriptor.jarFiles = jarFile?.let { Java11Shim.INSTANCE.listOf(it) } ?: Java11Shim.INSTANCE.listOf()
+  module.descriptor = subDescriptor
+  return true
 }
 
 private fun collectPluginFilesInClassPath(loader: ClassLoader): Map<URL, String> {
@@ -957,29 +999,6 @@ internal fun CoroutineScope.loadDescriptorsFromDir(
       async(Dispatchers.IO) {
         loadDescriptorFromFileOrDir(file = file, context = context, isBundled = isBundled, pool = pool)
       }
-    }
-  }
-}
-
-// urls here expected to be a file urls to plugin.xml
-private fun CoroutineScope.loadDescriptorsFromClassPath(
-  urlToFilename: Map<URL, String>,
-  context: DescriptorListLoadingContext,
-  pathResolver: ClassPathXmlPathResolver,
-  useCoreClassLoader: Boolean,
-  pool: ZipFilePool,
-): List<Deferred<IdeaPluginDescriptorImpl?>> {
-  return urlToFilename.map { (url, filename) ->
-    async(Dispatchers.IO) {
-      loadDescriptorFromResource(
-        resource = url,
-        filename = filename,
-        context = context,
-        pathResolver = pathResolver,
-        useCoreClassLoader = useCoreClassLoader,
-        pool = pool,
-        libDir = null,
-      )
     }
   }
 }

@@ -4634,6 +4634,34 @@ public abstract class HighLevelQuickFixTestGenerated extends AbstractHighLevelQu
         }
     }
 
+    @RunWith(JUnit3RunnerWithInners.class)
+    @TestMetadata("../../../idea/tests/testData/quickfix/dataClassPrivateConstructor")
+    public static class DataClassPrivateConstructor extends AbstractHighLevelQuickFixTest {
+        private void runTest(String testDataFilePath) throws Exception {
+            KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+        }
+
+        @TestMetadata("AddConsistentCopyVisibilityAnnotation.kt")
+        public void testAddConsistentCopyVisibilityAnnotation() throws Exception {
+            runTest("../../../idea/tests/testData/quickfix/dataClassPrivateConstructor/AddConsistentCopyVisibilityAnnotation.kt");
+        }
+
+        @TestMetadata("DataClassConsistentCopyAndExposedCopyAreIncompatibleAnnotations.kt")
+        public void testDataClassConsistentCopyAndExposedCopyAreIncompatibleAnnotations() throws Exception {
+            runTest("../../../idea/tests/testData/quickfix/dataClassPrivateConstructor/DataClassConsistentCopyAndExposedCopyAreIncompatibleAnnotations.kt");
+        }
+
+        @TestMetadata("DataClassConsistentCopyWrongAnnotationTarget.kt")
+        public void testDataClassConsistentCopyWrongAnnotationTarget() throws Exception {
+            runTest("../../../idea/tests/testData/quickfix/dataClassPrivateConstructor/DataClassConsistentCopyWrongAnnotationTarget.kt");
+        }
+
+        @TestMetadata("RemoveRedundantConsistentCopyVisibilityAnnotation.kt")
+        public void testRemoveRedundantConsistentCopyVisibilityAnnotation() throws Exception {
+            runTest("../../../idea/tests/testData/quickfix/dataClassPrivateConstructor/RemoveRedundantConsistentCopyVisibilityAnnotation.kt");
+        }
+    }
+
 
 
 
@@ -4823,9 +4851,36 @@ public abstract class HighLevelQuickFixTestGenerated extends AbstractHighLevelQu
 
 
 
+    @RunWith(JUnit3RunnerWithInners.class)
+    @TestMetadata("../../../idea/tests/testData/quickfix/addInline")
+    public static class AddInline extends AbstractHighLevelQuickFixTest {
+        private void runTest(String testDataFilePath) throws Exception {
+            KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+        }
 
+        @TestMetadata("basic.kt")
+        public void testBasic() throws Exception {
+            runTest("../../../idea/tests/testData/quickfix/addInline/basic.kt");
+        }
 
+        @TestMetadata("local.kt")
+        public void testLocal() throws Exception {
+            runTest("../../../idea/tests/testData/quickfix/addInline/local.kt");
+        }
+    }
 
+    @RunWith(JUnit3RunnerWithInners.class)
+    @TestMetadata("../../../idea/tests/testData/quickfix/addInlineToReifiedFunctionFix")
+    public static class AddInlineToReifiedFunctionFix extends AbstractHighLevelQuickFixTest {
+        private void runTest(String testDataFilePath) throws Exception {
+            KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+        }
+
+        @TestMetadata("basic.kt")
+        public void testBasic() throws Exception {
+            runTest("../../../idea/tests/testData/quickfix/addInlineToReifiedFunctionFix/basic.kt");
+        }
+    }
 
 
 
@@ -4977,7 +5032,28 @@ public abstract class HighLevelQuickFixTestGenerated extends AbstractHighLevelQu
 
 
 
+    @RunWith(JUnit3RunnerWithInners.class)
+    @TestMetadata("../../../idea/tests/testData/quickfix/makeTypeParameterReified")
+    public static class MakeTypeParameterReified extends AbstractHighLevelQuickFixTest {
+        private void runTest(String testDataFilePath) throws Exception {
+            KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+        }
 
+        @TestMetadata("noTypeParameter.kt")
+        public void testNoTypeParameter() throws Exception {
+            runTest("../../../idea/tests/testData/quickfix/makeTypeParameterReified/noTypeParameter.kt");
+        }
+
+        @TestMetadata("noTypeParameter2.kt")
+        public void testNoTypeParameter2() throws Exception {
+            runTest("../../../idea/tests/testData/quickfix/makeTypeParameterReified/noTypeParameter2.kt");
+        }
+
+        @TestMetadata("typeParameter.kt")
+        public void testTypeParameter() throws Exception {
+            runTest("../../../idea/tests/testData/quickfix/makeTypeParameterReified/typeParameter.kt");
+        }
+    }
 
 
 

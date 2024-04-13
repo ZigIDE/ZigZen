@@ -5257,6 +5257,11 @@ public abstract class K1QuickFixTestGenerated extends AbstractK1QuickFixTest {
                         runTest("testData/quickfix/createFromUsage/createFunction/call/simple/memberVarDelegateRuntime.kt");
                     }
 
+                    @TestMetadata("noInferCheck.kt")
+                    public void testNoInferCheck() throws Exception {
+                        runTest("testData/quickfix/createFromUsage/createFunction/call/simple/noInferCheck.kt");
+                    }
+
                     @TestMetadata("notExactArgument.kt")
                     public void testNotExactArgument() throws Exception {
                         runTest("testData/quickfix/createFromUsage/createFunction/call/simple/notExactArgument.kt");
@@ -6790,6 +6795,34 @@ public abstract class K1QuickFixTestGenerated extends AbstractK1QuickFixTest {
         @TestMetadata("returnNoLambda.kt")
         public void testReturnNoLambda() throws Exception {
             runTest("testData/quickfix/createLabel/returnNoLambda.kt");
+        }
+    }
+
+    @RunWith(JUnit3RunnerWithInners.class)
+    @TestMetadata("testData/quickfix/dataClassPrivateConstructor")
+    public static class DataClassPrivateConstructor extends AbstractK1QuickFixTest {
+        private void runTest(String testDataFilePath) throws Exception {
+            KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+        }
+
+        @TestMetadata("AddConsistentCopyVisibilityAnnotation.kt")
+        public void testAddConsistentCopyVisibilityAnnotation() throws Exception {
+            runTest("testData/quickfix/dataClassPrivateConstructor/AddConsistentCopyVisibilityAnnotation.kt");
+        }
+
+        @TestMetadata("DataClassConsistentCopyAndExposedCopyAreIncompatibleAnnotations.kt")
+        public void testDataClassConsistentCopyAndExposedCopyAreIncompatibleAnnotations() throws Exception {
+            runTest("testData/quickfix/dataClassPrivateConstructor/DataClassConsistentCopyAndExposedCopyAreIncompatibleAnnotations.kt");
+        }
+
+        @TestMetadata("DataClassConsistentCopyWrongAnnotationTarget.kt")
+        public void testDataClassConsistentCopyWrongAnnotationTarget() throws Exception {
+            runTest("testData/quickfix/dataClassPrivateConstructor/DataClassConsistentCopyWrongAnnotationTarget.kt");
+        }
+
+        @TestMetadata("RemoveRedundantConsistentCopyVisibilityAnnotation.kt")
+        public void testRemoveRedundantConsistentCopyVisibilityAnnotation() throws Exception {
+            runTest("testData/quickfix/dataClassPrivateConstructor/RemoveRedundantConsistentCopyVisibilityAnnotation.kt");
         }
     }
 

@@ -462,10 +462,6 @@ com.intellij.lang.ASTNode
 - a:replaceAllChildrenToChildrenOf(com.intellij.lang.ASTNode):V
 - a:replaceChild(com.intellij.lang.ASTNode,com.intellij.lang.ASTNode):V
 - a:textContains(C):Z
-f:com.intellij.lang.AstUtilKt
-- sf:children(com.intellij.lang.ASTNode):kotlin.sequences.Sequence
-- sf:parents(com.intellij.lang.ASTNode,Z):kotlin.sequences.Sequence
-- sf:siblings(com.intellij.lang.ASTNode,Z,Z):kotlin.sequences.Sequence
 com.intellij.lang.CodeDocumentationAwareCommenter
 - com.intellij.lang.Commenter
 - a:getBlockCommentTokenType():com.intellij.psi.tree.IElementType
@@ -881,6 +877,10 @@ c:com.intellij.lang.injection.general.SimpleInjection
 - getPrefix():java.lang.String
 - getSuffix():java.lang.String
 - getSupportId():java.lang.String
+f:com.intellij.lang.tree.util.AstUtilKt
+- sf:children(com.intellij.lang.ASTNode):kotlin.sequences.Sequence
+- sf:parents(com.intellij.lang.ASTNode,Z):kotlin.sequences.Sequence
+- sf:siblings(com.intellij.lang.ASTNode,Z,Z):kotlin.sequences.Sequence
 c:com.intellij.lexer.DelegateLexer
 - com.intellij.lexer.LexerBase
 - pf:myDelegate:com.intellij.lexer.Lexer
@@ -1281,11 +1281,6 @@ com.intellij.navigation.PsiElementNavigationItem
 - a:getNavigationTargets(com.intellij.openapi.project.Project,com.intellij.model.Symbol):java.util.Collection
 - a:psiElementNavigationTarget(com.intellij.psi.PsiElement):com.intellij.platform.backend.navigation.NavigationTarget
 - a:psiFileNavigationTarget(com.intellij.psi.PsiFile):com.intellij.platform.backend.navigation.NavigationTarget
-*:com.intellij.notebook.editor.BackFileViewProvider
-- sf:FRONT_FILE_KEY:com.intellij.openapi.util.Key
-- sf:FRONT_FILE_SIZE_RATIO_KEY:com.intellij.openapi.util.Key
-- a:getFrontPsiFile():com.intellij.psi.PsiFile
-- a:getFrontVirtualFile():com.intellij.openapi.vfs.VirtualFile
 *:com.intellij.notebook.editor.BackedVirtualFile
 - a:getOriginFile():com.intellij.openapi.vfs.VirtualFile
 - s:getOriginFileIfBacked(com.intellij.openapi.vfs.VirtualFile):com.intellij.openapi.vfs.VirtualFile
