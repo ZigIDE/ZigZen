@@ -15,6 +15,9 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.toolchain
+import com.intellij.openapi.util.NlsContexts
+import zigzen.lang.toolchain.AbstractZigToolchain
+import zigzen.projectModel.IZigWorkspace
 import zigzen.projectModel.ZigStandardLibrary
 import java.util.concurrent.CompletableFuture
 import javax.swing.JComponent
@@ -80,6 +83,20 @@ class ZigSynchronizationTask(
     }
   }
 
+  private fun fetchWorkspace(
+    context: ZigSynchronizationContext
+  ): TaskResult<IZigWorkspace> {
+    return context.runWithChildProgress("Updating workspace information") { childContext ->
+
+      val toolchain = childContext.toolchain
+      if (!toolchain.seeminglyValid()) {
+        return@runWithChildProgress TaskResult.Failure("Invalid Zig toolchain")
+      }
+
+      TODO()
+    }
+  }
+
   private fun performSynchronization(
     indicator: ProgressIndicator,
     progress: BuildProgress<BuildProgressDescriptor>
@@ -107,7 +124,7 @@ class ZigSynchronizationTask(
             ZigProjectWithStandardLibrary(zigProject.copy(stdlibStatus = stdlibStatus), null)
           } else {
             ZigProjectWithStandardLibrary(
-              zigProject,
+              zigProject.withWorkspace(fetchWorkspace(ZigSynchronizationContext(toolchain, indicator, progress))),
               ZigStandardLibrary()
             )
           }
@@ -123,6 +140,31 @@ class ZigSynchronizationTask(
 
       it.zigProject.withStandardLibrary(it.stdlib)
       it.zigProject
+    }
+  }
+
+  data class ZigSynchronizationContext(
+    val toolchain: AbstractZigToolchain,
+    val progress: ProgressIndicator,
+    val syncProgress: BuildProgress<BuildProgressDescriptor>
+  ) {
+    fun <T> runWithChildProgress(
+      @NlsContexts.ProgressText title: String,
+      action: (ZigSynchronizationContext) -> TaskResult<T>,
+    ): TaskResult<T> {
+      progress.checkCanceled()
+      progress.text = title
+
+      @Suppress("DialogTitleCapitalization")
+      return syncProgress.runWithChildProgress(title, { copy(syncProgress = it) }, action) { childProgress, result ->
+        when (result) {
+          is TaskResult.Success -> childProgress.finish()
+          is TaskResult.Failure -> {
+            childProgress.message(result.reason, result.message.orEmpty(), MessageEvent.Kind.ERROR, null)
+            childProgress.fail()
+          }
+        }
+      }
     }
   }
 
