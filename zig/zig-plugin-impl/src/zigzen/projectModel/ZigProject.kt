@@ -5,6 +5,7 @@ import zigzen.openapi.components.ZigProjectsService
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import zigzen.openapi.progress.TaskResult
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicReference
 
@@ -47,8 +48,11 @@ data class ZigProject(
     standardLibrary = library
   }
 
-  fun withWorkspace(workspace: IZigWorkspace) = copy(
-    rawWorkspace = workspace,
-    workspaceStatus = IZigProject.ProjectUpdateStatus.UpToDate
-  )
+  fun withWorkspace(result: TaskResult<IZigWorkspace>) = when (result) {
+    is TaskResult.Success -> copy(
+      rawWorkspace = result.value,
+      workspaceStatus = IZigProject.ProjectUpdateStatus.UpToDate,
+    )
+    is TaskResult.Failure -> copy(workspaceStatus = IZigProject.ProjectUpdateStatus.UpdateFailed(result.reason))
+  }
 }
