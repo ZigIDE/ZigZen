@@ -39,7 +39,7 @@ internal enum class FirstScanningState {
 internal fun scanAndIndexProjectAfterOpen(project: Project,
                                           startSuspended: Boolean,
                                           coroutineScope: CoroutineScope,
-                                          indexingReason: String?) {
+                                          indexingReason: String) {
   FileBasedIndex.getInstance().loadIndexes()
   (project as UserDataHolderEx).putUserDataIfAbsent(FIRST_SCANNING_REQUESTED, FirstScanningState.REQUESTED)
 
@@ -58,7 +58,7 @@ private fun scheduleFullScanning(project: Project,
                                  startSuspended: Boolean,
                                  isFilterUpToDate: Boolean,
                                  coroutineScope: CoroutineScope,
-                                 indexingReason: String?) {
+                                 indexingReason: String) {
   val someDirtyFilesScheduledForIndexingFuture = coroutineScope.async(Dispatchers.IO) {
     clearIndexesForDirtyFiles(project, false)
   }.asCompletableFuture()
@@ -74,7 +74,7 @@ private fun isShutdownPerformedForFileBasedIndex(fileBasedIndex: FileBasedIndexI
 private fun scheduleDirtyFilesScanning(project: Project,
                                        startSuspended: Boolean,
                                        coroutineScope: CoroutineScope,
-                                       indexingReason: String?) {
+                                       indexingReason: String) {
   LOG.info("Skipping full scanning on startup because indexable files filter is up-to-date and 'full.scanning.on.startup.can.be.skipped' is set to true")
   val projectDirtyFiles = coroutineScope.async(Dispatchers.IO) {
     clearIndexesForDirtyFiles(project, true)
@@ -104,11 +104,6 @@ private suspend fun clearIndexesForDirtyFiles(project: Project, findAllVirtualFi
     
     val projectDirtyFilesFromProjectQueue = findProjectFiles(project, projectDirtyFilesQueue.fileIds, vfToFindLimit)
     val projectDirtyFiles = projectDirtyFilesFromProjectQueue + projectDirtyFilesFromOrphanQueue
-    if (!findAllVirtualFiles) {
-      assert(projectDirtyFiles.size < dumbModeThreshold) {
-        "Only ${dumbModeThreshold - 1} of virtual files are needed to put them in FilesToUpdateCollector during scanning in smart mode."
-      }
-    }
     scheduleForIndexing(projectDirtyFiles, fileBasedIndex, dumbModeThreshold - 1)
     ResultOfClearIndexesForDirtyFiles(projectDirtyFilesFromProjectQueue, projectDirtyFilesFromOrphanQueue)
   }
@@ -125,7 +120,10 @@ private fun OrphanDirtyFilesQueue.getNotSeenIds(project: Project, projectQueue: 
   val untrimmedIndexOfFirstElementInOrphanQueue = untrimmedSize - fileIds.size
   val trimmedIndexOfFirstUnseenElement = (projectQueue.lastSeenIndexInOrphanQueue - untrimmedIndexOfFirstElementInOrphanQueue).toInt()
   if (trimmedIndexOfFirstUnseenElement < 0) {
-    LOG.error("Full scanning has to be requested")
+    LOG.error("Full scanning has to be requested. " +
+              "orphanQueue.untrimmedSize=$untrimmedSize, " +
+              "orphanQueue.fileIds.size=${fileIds.size}, " +
+              "projectQueue.lastSeenIndexInOrphanQueue=${projectQueue.lastSeenIndexInOrphanQueue}")
     return fileIds
   }
   return fileIds.subList(trimmedIndexOfFirstUnseenElement, fileIds.size)
