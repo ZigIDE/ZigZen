@@ -4,6 +4,7 @@ package com.intellij.util.indexing
 import com.google.common.util.concurrent.SettableFuture
 import com.intellij.diagnostic.PerformanceWatcher
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.diagnostic.ControlFlowException
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.*
@@ -27,6 +28,7 @@ import com.intellij.util.indexing.FilesFilterScanningHandler.UpdatingFilesFilter
 import com.intellij.util.indexing.IndexingProgressReporter.CheckPauseOnlyProgressIndicator
 import com.intellij.util.indexing.dependencies.FutureScanningRequestToken
 import com.intellij.util.indexing.dependencies.ProjectIndexingDependenciesService
+import com.intellij.util.indexing.dependencies.ScanningRequestToken
 import com.intellij.util.indexing.dependenciesCache.DependenciesIndexedStatusService
 import com.intellij.util.indexing.dependenciesCache.DependenciesIndexedStatusService.StatusMark
 import com.intellij.util.indexing.diagnostic.*
@@ -40,12 +42,12 @@ import com.intellij.util.indexing.roots.kind.SdkOrigin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
 import java.time.Instant
-import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Future
 import java.util.concurrent.locks.LockSupport
@@ -97,8 +99,8 @@ class UnindexedFilesScanner private constructor(private val myProject: Project,
               predefinedIndexableFilesIterators: List<IndexableFilesIterator>?,
               mark: StatusMark?,
               indexingReason: String) : this(project, false, false, false, predefinedIndexableFilesIterators, mark, indexingReason,
-                                              if (predefinedIndexableFilesIterators == null) ScanningType.FULL else ScanningType.PARTIAL,
-                                              null)
+                                             if (predefinedIndexableFilesIterators == null) ScanningType.FULL else ScanningType.PARTIAL,
+                                             null)
 
   @JvmOverloads
   constructor(project: Project,
@@ -244,13 +246,19 @@ class UnindexedFilesScanner private constructor(private val myProject: Project,
     }
 
     markStage(ProjectScanningHistoryImpl.Stage.CollectingIndexableFiles, true)
+    val projectIndexingDependenciesService = myProject.getService(ProjectIndexingDependenciesService::class.java)
+    val scanningRequest = if (myOnProjectOpen) projectIndexingDependenciesService.newScanningTokenOnProjectOpen() else projectIndexingDependenciesService.newScanningToken()
     try {
-      collectIndexableFilesConcurrently(indicator, progressReporter, orderedProviders)
+      myFutureScanningRequestToken.markSuccessful()
+      projectIndexingDependenciesService.completeToken(myFutureScanningRequestToken)
+
+      collectIndexableFilesConcurrently(indicator, progressReporter, orderedProviders, scanningRequest)
       if (isFullIndexUpdate() || myOnProjectOpen) {
         myProject.putUserData(CONTENT_SCANNED, true)
       }
     }
     finally {
+      projectIndexingDependenciesService.completeToken(scanningRequest, isFullIndexUpdate())
       markStage(ProjectScanningHistoryImpl.Stage.CollectingIndexableFiles, false)
     }
     val scanningCompletedMessage = getLogScanningCompletedStageMessage()
@@ -347,139 +355,143 @@ class UnindexedFilesScanner private constructor(private val myProject: Project,
 
   private fun collectIndexableFilesConcurrently(indicator: CheckPauseOnlyProgressIndicator,
                                                 progressReporter: IndexingProgressReporter,
-                                                providers: List<IndexableFilesIterator>) {
+                                                providers: List<IndexableFilesIterator>,
+                                                scanningRequest: ScanningRequestToken) {
     if (providers.isEmpty()) {
-      myFutureScanningRequestToken.markSuccessful()
       return
     }
-    val projectIndexingDependenciesService = myProject.getService(
-      ProjectIndexingDependenciesService::class.java)
-    val scanningRequest = if (myOnProjectOpen) projectIndexingDependenciesService.newScanningTokenOnProjectOpen() else projectIndexingDependenciesService.newScanningToken()
-    myFutureScanningRequestToken.markSuccessful()
-    projectIndexingDependenciesService.completeToken(myFutureScanningRequestToken)
 
     val sessions =
       IndexableFileScanner.EP_NAME.extensionList.map { scanner: IndexableFileScanner -> scanner.startSession(myProject) }
 
     val indexableFilesDeduplicateFilter = IndexableFilesDeduplicateFilter.create()
 
+    LOG.info("Scanning of " + myProject.name + " uses " + UnindexedFilesUpdater.getNumberOfScanningThreads() + " scanning threads")
     progressReporter.setText(IndexingBundle.message("progress.indexing.scanning"))
     progressReporter.setSubTasksCount(providers.size)
 
     val sharedExplanationLogger = IndexingReasonExplanationLogger()
-    val tasks = providers.map { provider: IndexableFilesIterator ->
-      ProgressManager.checkCanceled() // give a chance to suspend indexing
+    val providersToCheck = Channel<IndexableFilesIterator>(capacity = SCANNING_THREADS_COUNT)
 
-      Runnable {
-        val scanningStatistics = ScanningStatistics(provider.debugName)
-        scanningStatistics.setProviderRoots(provider, myProject)
-        val origin = provider.origin
-        val fileScannerVisitors = sessions.mapNotNull { s: ScanSession -> s.createVisitor(origin) }
-
-        val thisProviderDeduplicateFilter =
-          IndexableFilesDeduplicateFilter.createDelegatingTo(indexableFilesDeduplicateFilter)
-
-        val providerScanningStartTime = System.nanoTime()
-        try {
-          myProject.getService(PerProjectIndexingQueue::class.java)
-            .getSink(provider, scanningHistory.scanningSessionId).use { perProviderSink ->
-              progressReporter.getSubTaskReporter().use { subTaskReporter ->
-                subTaskReporter.setText(provider.rootsScanningProgressText)
-                val rootsAndFiles: MutableList<Pair<VirtualFile?, List<VirtualFile>>> = ArrayList()
-                val singleProviderIteratorFactory = Function<VirtualFile?, ContentIterator> { root: VirtualFile? ->
-                  val files: MutableList<VirtualFile> = ArrayList(1024)
-                  rootsAndFiles.add(Pair<VirtualFile?, List<VirtualFile>>(root, files))
-                  ContentIterator { fileOrDir: VirtualFile ->
-                    // we apply scanners here, because scanners may mark directory as excluded, and we should skip excluded subtrees
-                    // (e.g., JSDetectingProjectFileScanner.startSession will exclude "node_modules" directories during scanning)
-                    PushedFilePropertiesUpdaterImpl.applyScannersToFile(fileOrDir, fileScannerVisitors)
-                    files.add(fileOrDir)
-                  }
-                }
-
-                scanningStatistics.startVfsIterationAndScanningApplication()
-                provider.iterateFilesInRoots(myProject, singleProviderIteratorFactory, thisProviderDeduplicateFilter)
-                scanningStatistics.tryFinishVfsIterationAndScanningApplication()
-
-                scanningStatistics.startFileChecking()
-                for ((first, second) in rootsAndFiles) {
-                  val finder = UnindexedFilesFinder(myProject, sharedExplanationLogger, myIndex, forceReindexingTrigger,
-                                                    first, scanningRequest, myFilterHandler)
-                  val rootIterator = SingleProviderIterator(myProject, indicator, provider, finder,
-                                                            scanningStatistics, perProviderSink)
-                  if (!rootIterator.mayBeUsed()) {
-                    LOG.warn("Iterator based on $provider can't be used.")
-                    continue
-                  }
-                  second.forEach(
-                    Consumer { it: VirtualFile? ->
-                      rootIterator.processFile(
-                        it!!)
-                    })
-                }
-                scanningStatistics.tryFinishFilesChecking()
-                perProviderSink.commit()
-              }
-            }
+    runBlockingCancellable {
+      async {
+        for (provider in providers) {
+          providersToCheck.send(provider)
         }
-        catch (pce: ProcessCanceledException) {
-          scanningRequest.markUnsuccessful()
-          throw pce
-        }
-        catch (e: Exception) {
-          scanningRequest.markUnsuccessful()
-          // CollectingIterator should skip failing files by itself. But if provider.iterateFiles cannot iterate files and throws exception,
-          // we want to ignore the whole origin and let other origins complete normally.
-          LOG.error("""
-  Error while scanning files of ${provider.debugName}
-  To reindex files under this origin IDEA has to be restarted
-  """.trimIndent(), e)
-        }
-        finally {
-          scanningStatistics.tryFinishVfsIterationAndScanningApplication()
-          scanningStatistics.tryFinishFilesChecking()
-          scanningStatistics.totalOneThreadTimeWithPauses = System.nanoTime() - providerScanningStartTime
-          scanningStatistics.numberOfSkippedFiles = thisProviderDeduplicateFilter.numberOfSkippedFiles
-          scanningHistory.addScanningStatistics(scanningStatistics)
-        }
+        providersToCheck.close()
       }
-    }
-    LOG.info("Scanning of " + myProject.name + " uses " + UnindexedFilesUpdater.getNumberOfScanningThreads() + " scanning threads")
-    try {
-      runTasksConcurrently(tasks)
-    }
-    finally {
-      projectIndexingDependenciesService.completeToken(scanningRequest, isFullIndexUpdate())
+
+      repeatTaskConcurrently(continueOnException = true) {
+        val provider = providersToCheck.receiveCatching().getOrNull() ?: return@repeatTaskConcurrently false
+        blockingContext {
+          val scanningStatistics = ScanningStatistics(provider.debugName)
+          scanningStatistics.setProviderRoots(provider, myProject)
+          val origin = provider.origin
+          val fileScannerVisitors = sessions.mapNotNull { s: ScanSession -> s.createVisitor(origin) }
+
+          val thisProviderDeduplicateFilter =
+            IndexableFilesDeduplicateFilter.createDelegatingTo(indexableFilesDeduplicateFilter)
+
+          val providerScanningStartTime = System.nanoTime()
+          try {
+            progressReporter.getSubTaskReporter().use { subTaskReporter ->
+              subTaskReporter.setText(provider.rootsScanningProgressText)
+              val rootsAndFiles: MutableList<Pair<VirtualFile?, List<VirtualFile>>> = ArrayList()
+              val singleProviderIteratorFactory = Function<VirtualFile?, ContentIterator> { root: VirtualFile? ->
+                val files: MutableList<VirtualFile> = ArrayList(1024)
+                rootsAndFiles.add(Pair<VirtualFile?, List<VirtualFile>>(root, files))
+                ContentIterator { fileOrDir: VirtualFile ->
+                  // we apply scanners here, because scanners may mark directory as excluded, and we should skip excluded subtrees
+                  // (e.g., JSDetectingProjectFileScanner.startSession will exclude "node_modules" directories during scanning)
+                  PushedFilePropertiesUpdaterImpl.applyScannersToFile(fileOrDir, fileScannerVisitors)
+                  files.add(fileOrDir)
+                }
+              }
+
+              scanningStatistics.startVfsIterationAndScanningApplication()
+              provider.iterateFilesInRoots(myProject, singleProviderIteratorFactory, thisProviderDeduplicateFilter)
+              scanningStatistics.tryFinishVfsIterationAndScanningApplication()
+
+              myProject.getService(PerProjectIndexingQueue::class.java)
+                .getSink(provider, scanningHistory.scanningSessionId).use { perProviderSink ->
+                  scanningStatistics.startFileChecking()
+                  ReadAction.nonBlocking {
+                    while (!rootsAndFiles.isEmpty()) {
+                      val (first, second) = rootsAndFiles.removeLast()
+                      try {
+                        if (first?.isValid == false) continue
+                        val finder = UnindexedFilesFinder(myProject, sharedExplanationLogger, myIndex, forceReindexingTrigger,
+                                                          first, scanningRequest, myFilterHandler)
+                        val rootIterator = SingleProviderIterator(myProject, indicator, provider, finder,
+                                                                  scanningStatistics, perProviderSink)
+                        if (!rootIterator.mayBeUsed()) {
+                          LOG.warn("Iterator based on $provider can't be used.")
+                          continue
+                        }
+                        second.forEach {
+                          if (it.isValid)
+                            rootIterator.processFile(it)
+                        }
+                      }
+                      catch (e: ProcessCanceledException) {
+                        rootsAndFiles.add(first to second)
+                        throw e
+                      }
+                    }
+                  }.executeSynchronously()
+                  scanningStatistics.tryFinishFilesChecking()
+                  perProviderSink.commit()
+                }
+              }
+          }
+          catch (pce: ProcessCanceledException) {
+            scanningRequest.markUnsuccessful()
+            throw pce
+          }
+          catch (e: Exception) {
+            scanningRequest.markUnsuccessful()
+            // CollectingIterator should skip failing files by itself. But if provider.iterateFiles cannot iterate files and throws exception,
+            // we want to ignore the whole origin and let other origins complete normally.
+            LOG.error("Error while scanning files of ${provider.debugName}. To reindex files under this origin IDEA has to be restarted", e)
+          }
+          finally {
+            scanningStatistics.tryFinishVfsIterationAndScanningApplication()
+            scanningStatistics.tryFinishFilesChecking()
+            scanningStatistics.totalOneThreadTimeWithPauses = System.nanoTime() - providerScanningStartTime
+            scanningStatistics.numberOfSkippedFiles = thisProviderDeduplicateFilter.numberOfSkippedFiles
+            scanningHistory.addScanningStatistics(scanningStatistics)
+          }
+        }
+
+        return@repeatTaskConcurrently true
+      }
     }
   }
 
-  private fun runTasksConcurrently(tasks: List<Runnable>) {
-    val tasksQueue = ConcurrentLinkedQueue(tasks)
-    runBlockingCancellable {
-      withContext(SCANNING_DISPATCHER) {
-        repeat(SCANNING_THREADS_COUNT) {
-          async {
-            var task: Runnable? = tasksQueue.poll()
-            while (task != null) {
+  private suspend fun repeatTaskConcurrently(continueOnException: Boolean, block: suspend () -> Boolean) {
+    withContext(SCANNING_DISPATCHER) {
+      repeat(SCANNING_THREADS_COUNT) {
+        async {
+          var shouldContinue: Boolean
+          do {
+            checkCanceled()
+            try {
+              shouldContinue = block.invoke()
+            }
+            catch (t: Throwable) {
+              // Exception from the task should not finish coroutine execution. Coroutine should proceed with the following task.
+              // We ignore all the exceptions. If the task is indeed canceled, checkCanceled will throw.
+              shouldContinue = continueOnException
               checkCanceled()
-              blockingContext {
-                try {
-                  task?.run()
-                }
-                catch (t: Throwable) {
-                  // Exception from the task should not finish coroutine execution. Coroutine should proceed with the following task.
-                  // We ignore all the exceptions. If the task is indeed canceled, checkCanceled will throw.
-                  if (t is ControlFlowException) {
-                    LOG.warn("Unexpected exception during scanning: ${t.message}")
-                  }
-                  else {
-                    LOG.error("Unexpected exception during scanning (ignored)", t)
-                  }
-                }
+              if (t is ControlFlowException) {
+                LOG.warn("Unexpected exception during scanning: ${t.message}")
               }
-              task = tasksQueue.poll()
+              else {
+                LOG.error("Unexpected exception during scanning (ignored)", t)
+              }
             }
           }
+          while (shouldContinue)
         }
       }
     }
@@ -495,10 +507,10 @@ class UnindexedFilesScanner private constructor(private val myProject: Project,
 
   fun perform(indicator: CheckPauseOnlyProgressIndicator, progressReporter: IndexingProgressReporter) {
     LOG.assertTrue(myProject.getUserData(INDEX_UPDATE_IN_PROGRESS) != true, "Scanning is already in progress")
-    myProject.putUserData(INDEX_UPDATE_IN_PROGRESS, true)
-    myFilterHandler.scanningStarted(myProject, isFullIndexUpdate())
-    val diagnosticDumper = IndexDiagnosticDumper.getInstance()
     try {
+      myProject.putUserData(INDEX_UPDATE_IN_PROGRESS, true)
+      myFilterHandler.scanningStarted(myProject, isFullIndexUpdate())
+      val diagnosticDumper = IndexDiagnosticDumper.getInstance()
       diagnosticDumper.onScanningStarted(scanningHistory)
       try {
         performScanningAndIndexing(indicator, progressReporter)

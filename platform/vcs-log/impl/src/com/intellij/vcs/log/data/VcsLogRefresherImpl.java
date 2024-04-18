@@ -1,7 +1,8 @@
-// Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.vcs.log.data;
 
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -109,8 +110,8 @@ public class VcsLogRefresherImpl implements VcsLogRefresher, Disposable {
   @Override
   public void readFirstBlock() {
     try {
-      myDataPack =
-        buildMultiRepoDataPack(new CommitCountRequirements(myRecentCommitCount).asMap(myProviders.keySet()), myRecentCommitCount, false);
+      myDataPack = loadRecentData(new CommitCountRequirements(myRecentCommitCount).asMap(myProviders.keySet()), myRecentCommitCount,
+                                  false);
       mySingleTaskController.request(RefreshRequest.RELOAD_ALL); // build/rebuild the full log in background
     }
     catch (ProcessCanceledException e) {
@@ -123,8 +124,8 @@ public class VcsLogRefresherImpl implements VcsLogRefresher, Disposable {
   }
 
   @NotNull
-  private DataPack buildMultiRepoDataPack(@NotNull Map<VirtualFile, VcsLogProvider.Requirements> requirements,
-                                          int commitCount, boolean isSmallPack) throws VcsException {
+  private DataPack loadRecentData(@NotNull Map<VirtualFile, VcsLogProvider.Requirements> requirements,
+                                  int commitCount, boolean isSmallPack) throws VcsException {
     LogInfo data = loadRecentData(requirements);
     Collection<List<GraphCommit<Integer>>> commits = data.getCommits();
     Map<VirtualFile, CompressedRefs> refs = data.getRefs();
@@ -254,7 +255,7 @@ public class VcsLogRefresherImpl implements VcsLogRefresher, Disposable {
             return VcsLogProperties.SUPPORTS_INCREMENTAL_REFRESH.getOrDefault(provider);
           });
 
-          smallDataPack = optimize && supportsIncrementalRefresh && SMALL_DATA_PACK_COMMITS_COUNT > 0
+          smallDataPack = optimize && supportsIncrementalRefresh && isSmallDataPackEnabled()
                           ? buildSmallDataPack() : DataPack.EMPTY;
 
           if (smallDataPack != DataPack.EMPTY) {
@@ -268,6 +269,10 @@ public class VcsLogRefresherImpl implements VcsLogRefresher, Disposable {
           throw e;
         }
       }
+    }
+
+    private static boolean isSmallDataPackEnabled() {
+      return SMALL_DATA_PACK_COMMITS_COUNT > 0 && !ApplicationManager.getApplication().isUnitTestMode();
     }
 
     private @NotNull Collection<VirtualFile> getRootsToRefresh(@NotNull List<? extends RefreshRequest> requests) {
@@ -419,7 +424,7 @@ public class VcsLogRefresherImpl implements VcsLogRefresher, Disposable {
         try {
           int commitCount = SMALL_DATA_PACK_COMMITS_COUNT;
           Map<VirtualFile, VcsLogProvider.Requirements> requirements = prepareRequirements(myProviders.keySet(), commitCount, null);
-          return buildMultiRepoDataPack(requirements, commitCount, true);
+          return loadRecentData(requirements, commitCount, true);
         }
         catch (ProcessCanceledException e) {
           throw e;

@@ -13857,7 +13857,7 @@ c:com.intellij.ide.actions.runAnything.RunAnythingChooseContextAction$ChooseCont
 - p:getListElementRenderer():com.intellij.ui.popup.list.PopupListElementRenderer
 f:com.intellij.ide.actions.runAnything.RunAnythingChooseContextAction$ChooseContextPopupStep
 - com.intellij.ui.popup.ActionPopupStep
-- <init>(java.util.List,com.intellij.openapi.actionSystem.DataContext,kotlin.jvm.functions.Function0):V
+- <init>(java.util.List,com.intellij.openapi.actionSystem.DataContext,com.intellij.openapi.actionSystem.impl.PresentationFactory,kotlin.jvm.functions.Function0):V
 - f:getActions():java.util.List
 - getFinalRunnable():java.lang.Runnable
 - getSeparatorAbove(com.intellij.ui.popup.PopupFactoryImpl$ActionItem):com.intellij.openapi.ui.popup.ListSeparator
@@ -22969,6 +22969,7 @@ com.intellij.openapi.roots.ui.configuration.SdkLookupParameters
 - a:getSdk():com.intellij.openapi.projectRoots.Sdk
 - a:getSdkInfo():com.intellij.openapi.roots.ui.configuration.SdkLookupProvider$SdkInfo
 - a:newLookupBuilder():com.intellij.openapi.roots.ui.configuration.SdkLookupBuilder
+- a:waitForLookup():V
 *f:com.intellij.openapi.roots.ui.configuration.SdkLookupProvider$Companion
 - f:getInstance(com.intellij.openapi.project.Project,com.intellij.openapi.roots.ui.configuration.SdkLookupProvider$Id):com.intellij.openapi.roots.ui.configuration.SdkLookupProvider
 *:com.intellij.openapi.roots.ui.configuration.SdkLookupProvider$Id
@@ -23009,7 +23010,9 @@ com.intellij.openapi.roots.ui.configuration.SdkLookupParameters
 - sf:INSTANCE:com.intellij.openapi.roots.ui.configuration.SdkLookupProvider$SdkInfo$Unresolved
 f:com.intellij.openapi.roots.ui.configuration.SdkLookupUtil
 - sf:findAndSetupSdk(com.intellij.openapi.project.Project,com.intellij.openapi.progress.ProgressIndicator,com.intellij.openapi.projectRoots.SdkType,kotlin.jvm.functions.Function1):V
+- sf:lookupAndSetupSdkBlocking(com.intellij.openapi.project.Project,com.intellij.openapi.progress.ProgressIndicator,com.intellij.openapi.projectRoots.SdkType,java.util.function.Consumer):V
 - sf:lookupSdk(kotlin.jvm.functions.Function1):com.intellij.openapi.projectRoots.Sdk
+- sf:lookupSdkBlocking(kotlin.jvm.functions.Function1):com.intellij.openapi.projectRoots.Sdk
 com.intellij.openapi.roots.ui.configuration.SdkPopup
 - com.intellij.openapi.ui.popup.JBPopup
 - a:showPopup(com.intellij.openapi.actionSystem.AnActionEvent):V
@@ -27094,6 +27097,7 @@ c:com.intellij.refactoring.rename.inplace.MemberInplaceRenamer
 - p:collectRefs(com.intellij.psi.search.SearchScope):java.util.Collection
 - p:createInplaceRenamerToRestart(com.intellij.psi.PsiNamedElement,com.intellij.openapi.editor.Editor,java.lang.String):com.intellij.refactoring.rename.inplace.VariableInplaceRenamer
 - p:createRenameProcessor(com.intellij.psi.PsiElement,java.lang.String):com.intellij.refactoring.rename.RenameProcessor
+- p:findCollision():com.intellij.refactoring.rename.UnresolvableCollisionUsageInfo
 - p:getNameIdentifier():com.intellij.psi.PsiElement
 - p:getRefactoringId():java.lang.String
 - p:getReferencesSearchScope(com.intellij.openapi.vfs.VirtualFile):com.intellij.psi.search.SearchScope
@@ -27199,6 +27203,7 @@ c:com.intellij.refactoring.rename.inplace.VariableInplaceRenamer
 - p:collectAdditionalElementsToRename(java.util.List):V
 - p:createInplaceRenamerToRestart(com.intellij.psi.PsiNamedElement,com.intellij.openapi.editor.Editor,java.lang.String):com.intellij.refactoring.rename.inplace.VariableInplaceRenamer
 - p:createLookupExpression(com.intellij.psi.PsiElement):com.intellij.refactoring.rename.inplace.MyLookupExpression
+- p:findCollision():com.intellij.refactoring.rename.UnresolvableCollisionUsageInfo
 - finish(Z):V
 - p:getCommandName():java.lang.String
 - p:getRefactoringId():java.lang.String
@@ -29228,7 +29233,6 @@ f:com.intellij.util.indexing.PerProjectIndexingQueue
 - f:clear():V
 - f:estimatedFilesCount():kotlinx.coroutines.flow.StateFlow
 - f:flushNow(java.lang.String):V
-- f:flushNowSync(java.lang.String,com.intellij.openapi.progress.ProgressIndicator):V
 - f:getFilesAndClear():java.util.Map
 - f:getSink(com.intellij.util.indexing.roots.IndexableFilesIterator,J):com.intellij.util.indexing.PerProjectIndexingQueue$PerProviderSink
 - f:resumeQueue():V
@@ -29647,7 +29651,7 @@ f:com.intellij.util.indexing.diagnostic.presentation.IndexingHtmlKt
 f:com.intellij.util.indexing.events.DirtyFiles
 - <init>():V
 - f:addFile(java.util.Collection,I):V
-- f:addProject(com.intellij.openapi.project.Project):V
+- f:addProject(com.intellij.openapi.project.Project):com.intellij.util.indexing.events.ProjectDirtyFiles
 - f:clear():V
 - f:getProjectDirtyFiles(com.intellij.openapi.project.Project):com.intellij.util.indexing.events.ProjectDirtyFiles
 - f:getProjects():java.util.List
@@ -29682,9 +29686,11 @@ f:com.intellij.util.indexing.events.ProjectDirtyFiles
 - <init>():V
 - f:addAllTo(it.unimi.dsi.fastutil.ints.IntSet):V
 - f:addFile(I):Z
+- f:addFiles(java.util.Collection):V
 - f:clear():V
 - f:containsFile(I):Z
 - f:removeFile(I):Z
+- f:removeFiles(java.util.Collection):V
 f:com.intellij.util.indexing.impl.perFileVersion.AutoRefreshingOnVfsCloseRef
 - java.io.Closeable
 - <init>(kotlin.jvm.functions.Function1):V
