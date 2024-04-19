@@ -87,7 +87,6 @@ class ZigSynchronizationTask(
     context: ZigSynchronizationContext
   ): TaskResult<IZigWorkspace> {
     return context.runWithChildProgress("Updating workspace information") { childContext ->
-
       val toolchain = childContext.toolchain
       if (!toolchain.seeminglyValid()) {
         return@runWithChildProgress TaskResult.Failure("Invalid Zig toolchain")
@@ -124,7 +123,7 @@ class ZigSynchronizationTask(
             ZigProjectWithStandardLibrary(zigProject.copy(stdlibStatus = stdlibStatus), null)
           } else {
             ZigProjectWithStandardLibrary(
-              zigProject.withWorkspace(fetchWorkspace(ZigSynchronizationContext(toolchain, indicator, progress))),
+              zigProject.withWorkspace(fetchWorkspace(ZigSynchronizationContext(toolchain, indicator, progress, zigProject))),
               ZigStandardLibrary()
             )
           }
@@ -146,7 +145,8 @@ class ZigSynchronizationTask(
   data class ZigSynchronizationContext(
     val toolchain: AbstractZigToolchain,
     val progress: ProgressIndicator,
-    val syncProgress: BuildProgress<BuildProgressDescriptor>
+    val syncProgress: BuildProgress<BuildProgressDescriptor>,
+    val oldZigProject: ZigProject
   ) {
     fun <T> runWithChildProgress(
       @NlsContexts.ProgressText title: String,
