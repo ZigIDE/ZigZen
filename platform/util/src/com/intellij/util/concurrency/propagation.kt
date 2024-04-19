@@ -7,6 +7,10 @@ package com.intellij.util.concurrency
 
 import com.intellij.concurrency.ContextAwareCallable
 import com.intellij.concurrency.ContextAwareRunnable
+import com.intellij.concurrency.client.captureClientIdInBiConsumer
+import com.intellij.concurrency.client.captureClientIdInCallable
+import com.intellij.concurrency.client.captureClientIdInFunction
+import com.intellij.concurrency.client.captureClientIdInRunnable
 import com.intellij.concurrency.currentThreadContext
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.util.Condition
@@ -152,7 +156,7 @@ internal fun captureRunnableThreadContext(command: Runnable): Runnable {
 
 internal fun <V> captureCallableThreadContext(callable: Callable<V>): Callable<V> {
   val (childContext, childContinuation) = createChildContext()
-  var callable = callable
+  var callable = captureClientIdInCallable(callable)
   if (childContext != EmptyCoroutineContext) {
     callable = ContextCallable(true, childContext, callable)
   }
@@ -215,12 +219,12 @@ fun <T> runAsCoroutine(continuation: Continuation<Unit>, completeOnFinish: Boole
   return deferred.getCompleted()
 }
 
-internal fun capturePropagationAndCancellationContext(command: Runnable): Runnable {
-  if (isContextAwareComputation(command)) {
+internal fun capturePropagationAndCancellationContext(r: Runnable): Runnable {
+  var command = captureClientIdInRunnable(r)
+  if (isContextAwareComputation(r)) {
     return command
   }
   val (childContext, childContinuation) = createChildContext()
-  var command = command
   if (childContext != EmptyCoroutineContext) {
     command = ContextRunnable(true, childContext, command)
   }
@@ -230,15 +234,12 @@ internal fun capturePropagationAndCancellationContext(command: Runnable): Runnab
   return command
 }
 
-fun capturePropagationAndCancellationContext(
-  command: Runnable,
-  expired: Condition<*>,
-): JBPair<Runnable, Condition<*>> {
-  if (isContextAwareComputation(command)) {
+fun capturePropagationAndCancellationContext(r: Runnable, expired: Condition<*>): JBPair<Runnable, Condition<*>> {
+  var command = captureClientIdInRunnable(r)
+  if (isContextAwareComputation(r)) {
     return JBPair.create(command, expired)
   }
   val (childContext, childContinuation) = createChildContext()
-  var command = command
   var expired = expired
   if (childContext != EmptyCoroutineContext) {
     command = ContextRunnable(true, childContext, command)
@@ -253,7 +254,7 @@ fun capturePropagationAndCancellationContext(
 
 fun <T, U> captureBiConsumerThreadContext(f: BiConsumer<T, U>): BiConsumer<T, U> {
   val (childContext, childContinuation) = createChildContext()
-  var f = f
+  var f = captureClientIdInBiConsumer(f)
   if (childContext != EmptyCoroutineContext) {
     f = ContextBiConsumer(false, childContext, f)
   }
@@ -278,12 +279,12 @@ private fun <T> cancelIfExpired(expiredCondition: Condition<in T>, childJob: Job
   }
 }
 
-internal fun <V> capturePropagationAndCancellationContext(callable: Callable<V>): FutureTask<V> {
-  if (isContextAwareComputation(callable)) {
+internal fun <V> capturePropagationAndCancellationContext(c: Callable<V>): FutureTask<V> {
+  var callable = captureClientIdInCallable(c)
+  if (isContextAwareComputation(c)) {
     return FutureTask(callable)
   }
   val (childContext, childContinuation) = createChildContext()
-  var callable = callable
   if (childContext != EmptyCoroutineContext) {
     callable = ContextCallable(false, childContext, callable)
   }
@@ -299,7 +300,7 @@ internal fun <V> capturePropagationAndCancellationContext(callable: Callable<V>)
 
 internal fun <T, R> capturePropagationAndCancellationContext(function: Function<T, R>): Function<T, R> {
   val (childContext, childContinuation) = createChildContext()
-  var f = function
+  var f = captureClientIdInFunction(function)
   if (childContext != EmptyCoroutineContext) {
     f = ContextFunction(childContext, f)
   }
@@ -309,16 +310,12 @@ internal fun <T, R> capturePropagationAndCancellationContext(function: Function<
   return f
 }
 
-internal fun <V> capturePropagationAndCancellationContext(
-  wrapper: SchedulingWrapper,
-  callable: Callable<V>,
-  ns: Long,
-): MyScheduledFutureTask<V> {
-  if (isContextAwareComputation(callable)) {
+internal fun <V> capturePropagationAndCancellationContext(wrapper: SchedulingWrapper, c: Callable<V>, ns: Long): MyScheduledFutureTask<V> {
+  var callable = captureClientIdInCallable(c)
+  if (isContextAwareComputation(c)) {
     return wrapper.MyScheduledFutureTask(callable, ns)
   }
   val (childContext, childContinuation) = createChildContext()
-  var callable = callable
   if (childContext != EmptyCoroutineContext) {
     callable = ContextCallable(false, childContext, callable)
   }
@@ -339,7 +336,7 @@ internal fun capturePropagationAndCancellationContext(
   period: Long,
 ): MyScheduledFutureTask<*> {
   val (childContext, childContinuation) = createChildContext()
-  var runnable = runnable
+  var runnable = captureClientIdInRunnable(runnable)
   if (childContext != EmptyCoroutineContext) {
     runnable = ContextRunnable(false, childContext, runnable)
   }
