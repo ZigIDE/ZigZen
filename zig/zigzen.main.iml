@@ -12,6 +12,8 @@
     <orderEntry type="module" module-name="zigzen.zon.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="zigzen.resources" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.bootstrap" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.platform.collaborationTools" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.platform.ide.newUiOnboarding" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.lvcs" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.lvcs.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.main" />
