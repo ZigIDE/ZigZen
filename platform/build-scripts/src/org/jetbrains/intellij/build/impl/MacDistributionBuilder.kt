@@ -18,7 +18,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.jetbrains.intellij.build.*
 import org.jetbrains.intellij.build.TraceManager.spanBuilder
 import org.jetbrains.intellij.build.impl.OsSpecificDistributionBuilder.Companion.suffix
-import org.jetbrains.intellij.build.impl.client.ADDITIONAL_EMBEDDED_CLIENT_VM_OPTIONS
 import org.jetbrains.intellij.build.impl.client.createJetBrainsClientContextForLaunchers
 import org.jetbrains.intellij.build.impl.productInfo.*
 import org.jetbrains.intellij.build.impl.support.RepairUtilityBuilder
@@ -197,7 +196,7 @@ class MacDistributionBuilder(
     copyDir(context.paths.communityHomeDir.resolve("platform/build-scripts/resources/mac/Contents"), macDistDir)
 
     val executable = context.productProperties.baseFileName
-    val (execPath, licensePath) = NativeLauncherDownloader.downloadLauncher(context, OsFamily.MACOS, arch)
+    val (execPath, licensePath) = NativeLauncherDownloader.findLocalOrDownload(context, OsFamily.MACOS, arch)
     copyFile(execPath, macDistDir.resolve("MacOS/${executable}"))
     copyFile(licensePath, macDistDir.resolve("license/launcher-third-party-libraries.html"))
 
@@ -327,15 +326,8 @@ class MacDistributionBuilder(
     generateProductInfoJson("../bin", context.builtinModule, launch = listOf(createProductInfoLaunchData(context, arch, withRuntime)), context)
 
   private fun createProductInfoLaunchData(context: BuildContext, arch: JvmArchitecture, withRuntime: Boolean): ProductInfoLaunchData {
-    val jetbrainsClientCustomLaunchData = createJetBrainsClientContextForLaunchers(context)?.let { clientContext ->
-      CustomCommandLaunchData(
-        commands = listOf("thinClient", "thinClient-headless"),
-        vmOptionsFilePath = "../bin/${clientContext.productProperties.baseFileName}.vmoptions",
-        bootClassPathJarNames = clientContext.bootClassPathJarNames,
-        additionalJvmArguments = clientContext.getAdditionalJvmArguments(OsFamily.MACOS, arch) + ADDITIONAL_EMBEDDED_CLIENT_VM_OPTIONS,
-        mainClass = clientContext.ideMainClassName,
-        dataDirectoryName = clientContext.systemSelector,
-      )
+    val jetbrainsClientCustomLaunchData = generateJetBrainsClientLaunchData(context, arch, OsFamily.MACOS) {
+      "../bin/${it.productProperties.baseFileName}.vmoptions"
     }
 
     return ProductInfoLaunchData(

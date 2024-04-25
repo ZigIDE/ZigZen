@@ -61,7 +61,11 @@ internal class SoftwareBillOfMaterialsImpl(
   private val context: BuildContext,
   private val distributions: List<DistributionForOsTaskResult>,
   private val distributionFiles: List<DistributionFileEntry>
-): SoftwareBillOfMaterials {
+) : SoftwareBillOfMaterials {
+  private companion object {
+    val JETBRAINS_GITHUB_ORGANIZATIONS = setOf("JetBrains", "Kotlin")
+  }
+
   private val specVersion: String = Version.TWO_POINT_THREE_VERSION
 
   private val creator: String
@@ -228,9 +232,9 @@ internal class SoftwareBillOfMaterialsImpl(
      */
     val extractedRuntimePackage = spdxPackage(this, name = "./jbr/**") {
       setVersionInfo(version)
-      setSupplier(runtimeArchivePackage.supplier.get())
       setDownloadLocation(SpdxConstants.NOASSERTION_VALUE)
     }
+    claimOwnership(spdxPackage = extractedRuntimePackage, document = this, license = license)
     extractedRuntimePackage.relatesTo(runtimeArchivePackage, RelationshipType.EXPANDED_FROM_ARCHIVE)
     addRuntimeUpstreams(runtimeArchivePackage, os, arch)
     validate(runtimeArchivePackage)
@@ -345,7 +349,9 @@ internal class SoftwareBillOfMaterialsImpl(
       }
       claimContainedFiles(
         spdxPackage = rootPackage,
-        files = containedPackages.flatMap { it.files },
+        files = rootPackage.files.asSequence()
+          .plus(containedPackages.asSequence().flatMap { it.files })
+          .toList(),
         document = document,
         license = license,
       )
@@ -593,17 +599,24 @@ internal class SoftwareBillOfMaterialsImpl(
     val supplier: String? = license.supplier ?: organizations ?: developers
 
     val copyrightText: String?
-      get() = if (license.copyrightText == null && license.license == LibraryLicense.JETBRAINS_OWN) {
+      get() = if (license.copyrightText == null && isSupplierJetBrains) {
         jetBrainsOwnLicense.copyrightText
       }
       else {
         license.copyrightText
       }
 
+    val isSupplierJetBrains: Boolean by lazy {
+      license.license == LibraryLicense.JETBRAINS_OWN || JETBRAINS_GITHUB_ORGANIZATIONS.any {
+        license.url?.startsWith("https://github.com/$it/") == true ||
+        license.licenseUrl?.startsWith("https://github.com/$it/") == true
+      }
+    }
+
     fun license(document: SpdxDocument): AnyLicenseInfo {
       return when {
-        license.licenseUrl == null || license.spdxIdentifier == null -> SpdxNoAssertionLicense()
         license.license == LibraryLicense.JETBRAINS_OWN -> document.jetBrainsOwnLicense
+        license.licenseUrl == null || license.spdxIdentifier == null -> SpdxNoAssertionLicense()
         else -> parseLicense(document, checkNotNull(license.spdxIdentifier))
       }
     }
@@ -679,13 +692,7 @@ internal class SoftwareBillOfMaterialsImpl(
   private fun SpdxPackageBuilder.setOrigin(library: MavenLibrary, upstreamPackage: SpdxPackage?) {
     when {
       library.supplier != null -> setSupplier(library.supplier)
-      library.license.license == LibraryLicense.JETBRAINS_OWN ||
-      library.license.url?.startsWith("https://github.com/JetBrains/") == true ||
-      library.license.licenseUrl?.startsWith("https://github.com/JetBrains/") == true ||
-      library.license.url?.startsWith("https://github.com/Kotlin/") == true ||
-      library.license.licenseUrl?.startsWith("https://github.com/Kotlin/") == true -> {
-        setSupplier("Organization: ${Suppliers.JETBRAINS}")
-      }
+      library.isSupplierJetBrains -> setSupplier("Organization: ${Suppliers.JETBRAINS}")
       library.license.url?.startsWith("https://github.com/apache/") == true ||
       library.license.licenseUrl?.startsWith("https://github.com/apache/") == true -> {
         setSupplier("Organization: ${Suppliers.APACHE}")
@@ -747,24 +754,34 @@ internal class SoftwareBillOfMaterialsImpl(
     return licenseInfo
   }
 
+  private fun claimOwnership(
+    spdxPackage: SpdxPackage,
+    document: SpdxDocument,
+    license: Options.DistributionLicense,
+  ) {
+    spdxPackage.setSupplier(creator)
+    spdxPackage.copyrightText = license.copyrightText
+    val licenseInfo = extractedLicenseInfo(
+      spdxDocument = document,
+      name = license.name,
+      text = license.text,
+      url = license.url
+    )
+    spdxPackage.licenseDeclared = licenseInfo
+    spdxPackage.licenseConcluded = licenseInfo
+  }
+
   private fun claimContainedFiles(
     spdxPackage: SpdxPackage,
     files: Collection<SpdxFile> = spdxPackage.files,
     document: SpdxDocument,
     license: Options.DistributionLicense,
   ) {
-    spdxPackage.setSupplier(creator)
-    spdxPackage.copyrightText = license.copyrightText
-    spdxPackage.licenseDeclared = extractedLicenseInfo(
-      spdxDocument = document,
-      name = license.name,
-      text = license.text,
-      url = license.url
-    )
-    spdxPackage.licenseConcluded = spdxPackage.licenseDeclared
+    claimOwnership(spdxPackage, document, license)
+    val licenseInfo = spdxPackage.licenseConcluded
     files.forEach {
       it.copyrightText = license.copyrightText
-      it.licenseConcluded = spdxPackage.licenseConcluded
+      it.licenseConcluded = licenseInfo
     }
     spdxPackage.setPackageVerificationCode(
       document.createPackageVerificationCode(

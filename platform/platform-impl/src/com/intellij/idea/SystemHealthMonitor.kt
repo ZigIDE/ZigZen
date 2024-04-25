@@ -41,10 +41,10 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asDeferred
 import org.jetbrains.annotations.PropertyKey
 import org.jetbrains.jps.model.java.JdkVersionDetector
+import java.io.File
 import java.io.IOException
 import java.nio.file.FileStore
 import java.nio.file.Files
-import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
@@ -107,10 +107,10 @@ private fun checkInstallationIntegrity() {
 private fun checkIdeDirectories() {
   if (System.getProperty(PathManager.PROPERTY_PATHS_SELECTOR) != null) {
     if (System.getProperty(PathManager.PROPERTY_CONFIG_PATH) != null && System.getProperty(PathManager.PROPERTY_PLUGINS_PATH) == null) {
-      showNotification(key = "implicit.plugin.directory.path", suppressable = true, action = null, shorten(PathManager.getPluginsPath()))
+      showNotification("implicit.plugin.directory.path", suppressable = true, action = null, shorten(PathManager.getPluginsPath()))
     }
     if (System.getProperty(PathManager.PROPERTY_SYSTEM_PATH) != null && System.getProperty(PathManager.PROPERTY_LOG_PATH) == null) {
-      showNotification(key = "implicit.log.directory.path", suppressable = true, action = null, shorten(PathManager.getLogPath()))
+      showNotification("implicit.log.directory.path", suppressable = true, action = null, shorten(PathManager.getLogPath()))
     }
   }
 }
@@ -211,7 +211,7 @@ private suspend fun isJbrOperational(): Boolean {
 
 private fun checkReservedCodeCacheSize() {
   val reservedCodeCacheSize = VMOptions.readOption(VMOptions.MemoryKind.CODE_CACHE, true)
-  val minReservedCodeCacheSize = if (Runtime.version().feature() == 21 || PluginManagerCore.isRunningFromSources()) 240 else 512
+  val minReservedCodeCacheSize = if (Runtime.version().feature() >= 21 || PluginManagerCore.isRunningFromSources()) 240 else 512
   if (reservedCodeCacheSize in 1 until minReservedCodeCacheSize) {
     val vmEditAction = EditCustomVmOptionsAction()
     val action = if (vmEditAction.isEnabled()) {
@@ -234,9 +234,7 @@ private suspend fun checkEnvironment() {
 
   try {
     if (shellEnvDeferred!!.await() == false) {
-      val action = NotificationAction.createSimpleExpiring(IdeBundle.message("shell.env.loading.learn.more")) {
-        BrowserUtil.browse("https://intellij.com/shell-env")
-      }
+      val action = NotificationAction.createSimpleExpiring(IdeBundle.message("shell.env.loading.learn.more")) { BrowserUtil.browse("https://intellij.com/shell-env") }
       val appName = ApplicationNamesInfo.getInstance().fullProductName
       val shell = System.getenv("SHELL")
       showNotification("shell.env.loading.failed", suppressable = true, action, appName, shell)
@@ -253,7 +251,9 @@ private fun checkLauncher() {
     val binName = baseName + if (SystemInfo.isWindows) "64.exe" else ""
     val scriptName = baseName + if (SystemInfo.isWindows) ".bat" else ".sh"
     if (Files.isRegularFile(Path.of(PathManager.getBinPath(), binName))) {
-      showNotification("ide.script.launcher.used", suppressable = true, action = null, scriptName, binName)
+      val prefix = "bin" + File.separatorChar
+      val action = NotificationAction.createSimpleExpiring(IdeBundle.message("shell.env.loading.learn.more")) { BrowserUtil.browse("https://intellij.com/launcher") }
+      showNotification("ide.script.launcher.used", suppressable = true, action, prefix + scriptName, prefix + binName)
     }
   }
 }
@@ -339,26 +339,26 @@ private fun checkAncientOs() {
 }
 
 private fun showNotification(
-  key: @PropertyKey(resourceBundle = "messages.IdeBundle") String?,
+  key: @PropertyKey(resourceBundle = "messages.IdeBundle") String,
   suppressable: Boolean,
   action: NotificationAction?,
   vararg params: Any
 ) {
   if (suppressable) {
-    val ignored = PropertiesComponent.getInstance().isValueSet("ignore.$key")
+    val ignored = PropertiesComponent.getInstance().isValueSet("ignore.${key}")
     LOG.warn("issue detected: ${key}${if (ignored) " (ignored)" else ""}")
     if (ignored) {
       return
     }
   }
 
-  val notification = MyNotification(IdeBundle.message(key!!, *params), NotificationType.WARNING, key)
+  val notification = MyNotification(IdeBundle.message(key, *params), NotificationType.WARNING, key)
   if (action != null) {
     notification.addAction(action)
   }
   if (suppressable) {
     notification.addAction(NotificationAction.createSimpleExpiring(IdeBundle.message("sys.health.acknowledge.action")) {
-      PropertiesComponent.getInstance().setValue("ignore.$key", "true")
+      PropertiesComponent.getInstance().setValue("ignore.${key}", "true")
     })
   }
   notification.isImportant = true
@@ -372,26 +372,20 @@ private const val LOW_DISK_SPACE_THRESHOLD = (50 shl 20).toLong()
 private const val MAX_WRITE_SPEED_IN_BPS = (500 shl 20).toLong()  // 500 MB/s is (somewhat outdated) peak SSD write speed
 
 private fun startDiskSpaceMonitoring() {
-  if (SystemProperties.getBooleanProperty("idea.no.system.path.space.monitoring", false)) {
+  if (System.getProperty("idea.no.system.path.space.monitoring").toBoolean()) {
     return
   }
 
-  val dir: Path
-  val store: FileStore
-  try {
-    dir = Path.of(PathManager.getSystemPath())
-    store = Files.getFileStore(dir)
-  }
-  catch (e: IOException) {
-    LOG.error(e)
-    return
-  }
-  catch (e: InvalidPathException) {
-    LOG.error(e)
+  val (dir, store) = runCatching {
+    val dir = Path.of(PathManager.getSystemPath())
+    val store = Files.getFileStore(dir)
+    dir to store
+  }.getOrElse {
+    LOG.error(it)
     return
   }
 
-  monitorDiskSpace(scope = service<CoreUiCoroutineScopeHolder>().coroutineScope, dir = dir, store = store, initialDelay = 1.seconds)
+  monitorDiskSpace(service<CoreUiCoroutineScopeHolder>().coroutineScope, dir, store, initialDelay = 1.seconds)
 }
 
 private fun monitorDiskSpace(scope: CoroutineScope, dir: Path, store: FileStore, initialDelay: Duration) {
@@ -408,13 +402,13 @@ private fun monitorDiskSpace(scope: CoroutineScope, dir: Path, store: FileStore,
       else if (usableSpace < NO_DISK_SPACE_THRESHOLD) {
         LOG.warn("Extremely low disk space: ${usableSpace}")
         withContext(Dispatchers.EDT) {
-          Messages.showErrorDialog(IdeBundle.message("no.disk.space.message", store.name()), IdeBundle.message("no.disk.space.title"))
+          Messages.showErrorDialog(IdeBundle.message("no.disk.space.message", storeName(store)), IdeBundle.message("no.disk.space.title"))
         }
         delay(5.seconds)
       }
       else if (usableSpace < LOW_DISK_SPACE_THRESHOLD) {
         LOG.warn("Low disk space: ${usableSpace}")
-        MyNotification(IdeBundle.message("low.disk.space.message", store.name()), NotificationType.WARNING, "low.disk")
+        MyNotification(IdeBundle.message("low.disk.space.message", storeName(store)), NotificationType.WARNING, "low.disk")
           .setTitle(IdeBundle.message("low.disk.space.title"))
           .whenExpired { monitorDiskSpace(scope, dir, store, initialDelay = 5.seconds) }
           .notify(null)
@@ -426,3 +420,7 @@ private fun monitorDiskSpace(scope: CoroutineScope, dir: Path, store: FileStore,
     }
   }
 }
+
+private fun storeName(store: FileStore): String =
+  if (store.name().isBlank()) store.toString().trim().trimStart('(').trimEnd(')')
+  else store.toString()

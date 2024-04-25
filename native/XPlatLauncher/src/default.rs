@@ -67,6 +67,8 @@ impl LaunchConfiguration for DefaultLaunchConfiguration {
             *vm_option = self.expand_path_macro(vm_option)?;
         }
 
+        vm_options.push(jvm_property!("ide.native.launcher", "true"));
+
         Ok(vm_options)
     }
 
@@ -366,9 +368,13 @@ fn read_vm_options(path: &Path) -> Result<Vec<String>> {
     let mut vm_options = Vec::with_capacity(50);
     for line in BufReader::new(file).lines() {
         let line = line.with_context(|| format!("Cannot read: {:?}", path))?.trim().to_string();
-        if !(line.is_empty() || line.starts_with('#')) {
-            vm_options.push(line);
+        if line.is_empty() || line.starts_with('#') {
+            continue;
         }
+        if line.contains('\0') {
+            bail!("Invalid character ('\\0') found in VM options file: {:?}", path);
+        }
+        vm_options.push(line);
     }
     debug!("{} line(s)", vm_options.len());
 

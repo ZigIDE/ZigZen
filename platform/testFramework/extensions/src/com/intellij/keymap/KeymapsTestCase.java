@@ -1,4 +1,4 @@
-// Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package com.intellij.keymap;
 
 import org.jetbrains.annotations.NotNull;
@@ -369,6 +369,7 @@ public abstract class KeymapsTestCase extends KeymapsTestCaseBase {
                                    "org.intellij.plugins.markdown.ui.actions.styling.ToggleCodeSpanAction"},
       {"shift ctrl V",             "PasteMultiple", "Terminal.Paste", "JupyterNotebookPasteCellAboveCommandModeAction"},
       {"shift ctrl alt button1",   "EditorAddRectangularSelectionOnMouseDrag", "QuickEvaluateExpression"},
+      {"shift ctrl alt B",         "DatabaseView.OpenDdlInConsole", "SurroundWith"},
     }),
     Map.entry("Default for GNOME", new String[][]{
       {"shift alt 7",              "IDEtalk.SearchUserHistory", "FindUsages"},
@@ -612,7 +613,9 @@ public abstract class KeymapsTestCase extends KeymapsTestCaseBase {
     "Tree-selectLastExtendSelection",
     "Tree-selectLast",
     "Tree-selectFirstExtendSelection",
-    "Tree-selectFirst"
+    "Tree-selectFirst",
+    "Vcs.CombinedDiff.CaretToPrevBlock",
+    "Vcs.CombinedDiff.CaretToNextBlock"
   );
 
   private static final Set<String> DEFAULT_CONFLICT_SAFE_GROUPS = Set.of(

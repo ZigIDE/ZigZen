@@ -212,8 +212,27 @@ public class JsonOriginalPsiWalker implements JsonLikePsiWalker {
     private static final JsonOriginalSyntaxAdapter INSTANCE = new JsonOriginalSyntaxAdapter();
 
     @Override
-    public @NotNull PsiElement createProperty(@NotNull String name, @NotNull String value, PsiElement element) {
-      return new JsonElementGenerator(element.getProject()).createProperty(name, value);
+    public @NotNull PsiElement createProperty(@NotNull String name, @NotNull String value, @NotNull Project project) {
+      return new JsonElementGenerator(project).createProperty(name, value);
+    }
+
+    @Override
+    public @NotNull PsiElement createEmptyArray(@NotNull Project project, boolean preferInline) {
+      return new JsonElementGenerator(project).createEmptyArray();
+    }
+
+    @Override
+    public @NotNull PsiElement addArrayItem(@NotNull PsiElement array, @NotNull String itemValue) {
+      if (!(array instanceof JsonArray)) throw new IllegalArgumentException("Cannot add item to a non-array element");
+
+      JsonElementGenerator generator = new JsonElementGenerator(array.getProject());
+      JsonValue arrayItem = generator.createArrayItemValue(itemValue);
+      
+      PsiElement addedItem = array.addBefore(arrayItem, array.getLastChild()); // we insert before closing bracket ']'
+      if (((JsonArray)array).getValueList().size() > 1) {
+        array.addBefore(generator.createComma(), addedItem);
+      }
+      return addedItem;
     }
 
     @Override
@@ -238,12 +257,12 @@ public class JsonOriginalPsiWalker implements JsonLikePsiWalker {
     }
 
     @Override
-    public PsiElement adjustNewProperty(PsiElement element) {
+    public @NotNull PsiElement adjustNewProperty(@NotNull PsiElement element) {
       return element;
     }
 
     @Override
-    public PsiElement adjustPropertyAnchor(LeafPsiElement element) {
+    public @NotNull PsiElement adjustPropertyAnchor(@NotNull LeafPsiElement element) {
       throw new IncorrectOperationException("Shouldn't use leafs for insertion in pure JSON!");
     }
   }

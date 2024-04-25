@@ -2,6 +2,7 @@
 package com.intellij.compiler.backwardRefs
 
 import com.intellij.compiler.impl.CompileDriver
+import com.intellij.configurationStore.saveSettings
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.compiler.CompilerManager
 import com.intellij.openapi.diagnostic.thisLogger
@@ -35,7 +36,9 @@ internal class IsUpToDateCheckStartupActivity : ProjectActivity {
       return
     }
     // Triggering project save activity to ensure that we don't violate the contract of JPS execution (.idea folder has to be available)
-    project.save()
+    if (!project.isDefault && project.projectFile?.exists() != true) {
+      saveSettings(project)
+    }
 
     coroutineContext.ensureActive()
     logger.info("activity started")

@@ -262,7 +262,7 @@ com.intellij.vcs.log.data.VcsLogProgress$ProgressListener
 - a:progressStopped():V
 com.intellij.vcs.log.data.VcsLogRefresher
 - a:getCurrentDataPack():com.intellij.vcs.log.data.DataPack
-- a:readFirstBlock():V
+- a:initialize():V
 - a:refresh(java.util.Collection,Z):V
 c:com.intellij.vcs.log.data.VcsLogRefresherImpl
 - com.intellij.openapi.Disposable
@@ -271,7 +271,7 @@ c:com.intellij.vcs.log.data.VcsLogRefresherImpl
 - dispose():V
 - getCurrentDataPack():com.intellij.vcs.log.data.DataPack
 - getProgress():com.intellij.vcs.log.data.VcsLogProgress
-- readFirstBlock():V
+- initialize():V
 - refresh(java.util.Collection,Z):V
 - p:startNewBackgroundTask(com.intellij.openapi.progress.Task$Backgroundable):com.intellij.vcs.log.data.SingleTaskController$SingleTask
 f:com.intellij.vcs.log.data.VcsLogSorter
@@ -1319,6 +1319,7 @@ f:com.intellij.vcs.log.ui.VcsLogActionIds
 - sf:VCS_LOG_FOCUS_TEXT_FILTER:java.lang.String
 - sf:VCS_LOG_SHOW_DIFF_ACTION:java.lang.String
 - <init>():V
+f:com.intellij.vcs.log.ui.VcsLogBookmarkProviderKt
 com.intellij.vcs.log.ui.VcsLogColorManager
 - sf:DEFAULT_COLOR_MODE:java.lang.String
 - getLongName(com.intellij.openapi.vcs.FilePath):java.lang.String
@@ -2677,9 +2678,10 @@ f:com.intellij.vcs.log.util.PersistentUtil
 - sf:getCorruptionMarkerFile():java.nio.file.Path
 - sf:getProjectLogDataDirectoryName(java.lang.String,java.lang.String):java.lang.String
 a:com.intellij.vcs.log.util.RevisionCollectorTask
-- <init>(com.intellij.openapi.project.Project,com.intellij.openapi.progress.ProgressIndicator):V
+- <init>(com.intellij.openapi.project.Project,com.intellij.openapi.progress.ProgressIndicator,com.intellij.openapi.progress.ProgressIndicator):V
 - f:cancel(Z):V
 - a:collectRevisions(kotlin.jvm.functions.Function1):V
+- a:collectRevisionsFast(kotlin.jvm.functions.Function1):V
 - pf:getProject():com.intellij.openapi.project.Project
 - pf:getRevisionsCount():I
 - f:isCancelled():Z
