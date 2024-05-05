@@ -9,6 +9,7 @@ import com.intellij.build.events.MessageEvent
 import com.intellij.build.progress.BuildProgress
 import com.intellij.build.progress.BuildProgressDescriptor
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
@@ -92,7 +93,7 @@ class ZigSynchronizationTask(
         return@runWithChildProgress TaskResult.Failure("Invalid Zig toolchain")
       }
 
-      TODO()
+      TODO(PathManager.getSystemPath())
     }
   }
 
