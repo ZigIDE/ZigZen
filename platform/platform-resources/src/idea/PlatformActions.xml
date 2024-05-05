@@ -399,6 +399,8 @@
       <action id="Diff.MagicResolveConflicts" class="com.intellij.openapi.actionSystem.EmptyAction"
               icon="AllIcons.Diff.MagicResolveToolbar"/>
 
+      <group id="Diff.Conflicts.Additional.Actions"/>
+
       <group id="compare.contents" icon="AllIcons.Actions.Diff" popup="true" class="com.intellij.openapi.actionSystem.EmptyActionGroup">
         <action id="Diff.ComparePartial.Base.Left" class="com.intellij.openapi.actionSystem.EmptyAction"
                 icon="AllIcons.Diff.Compare4LeftMiddle"/>
@@ -1234,6 +1236,9 @@
         <synonym text="Exit Dumb Mode"/>
         <synonym text="Enter Dumb Mode"/>
       </action>
+      <action id="ToggleIncompleteMode" internal="true" class="com.intellij.internal.ToggleIncompleteDependenciesModeAction">
+        <synonym text="Exit Incomplete Dependencies Mode"/>
+      </action>
       <action id="DumbModeTremble" class="com.intellij.internal.DumbModeTrembleAction">
         <synonym text="Exit Tremble Dumb Mode"/>
         <synonym text="Enter Tremble Dumb Mode"/>
@@ -1599,6 +1604,7 @@
     </group>
 
     <group id="EditorStickyLinesSettings" popup="true" searchable="false">
+      <action id="EditorStickyConfigure" class="com.intellij.openapi.editor.impl.stickyLines.StickyLinesConfigureAction"/>
       <action id="EditorStickyLinesDisable" class="com.intellij.openapi.editor.impl.stickyLines.StickyLinesSettingsDisableAction"/>
     </group>
 

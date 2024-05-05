@@ -12,6 +12,7 @@ import com.intellij.serviceContainer.NonInjectable
 import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.indexing.dependencies.ProjectIndexingDependenciesStorage.Companion.DEFAULT_APP_INDEXING_REQUEST_ID_OF_LAST_COMPLETED_SCANNING
+import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
 import java.io.IOException
@@ -45,6 +46,7 @@ import kotlin.io.path.deleteIfExists
  * but persistence should not be dropped in other cases, because IndexingStamp is actually stored in VFS.
  *
  */
+@ApiStatus.Internal
 @Service(Service.Level.PROJECT)
 class ProjectIndexingDependenciesService @NonInjectable @VisibleForTesting constructor(storagePath: Path,
                                                                                        private val appIndexingDependenciesService: AppIndexingDependenciesService) : Disposable {
@@ -138,7 +140,7 @@ class ProjectIndexingDependenciesService @NonInjectable @VisibleForTesting const
   @RequiresBackgroundThread
   fun newScanningTokenOnProjectOpen(): ScanningRequestToken {
     val appCurrent = appIndexingDependenciesService.getCurrent()
-    val token = if (heavyScanningOnProjectOpen || issuedScanningTokens.contains(RequestHeavyScanningOnThisOrNextStartToken)) {
+    val token = if (heavyScanningOnProjectOpen || issuedScanningTokens.contains(RequestFullHeavyScanningToken)) {
       thisLogger().info("Heavy scanning on startup because of incomplete scanning from previous IDE session")
       heavyScanningOnProjectOpen = false
       WriteOnlyScanningRequestTokenImpl(appCurrent)
@@ -147,12 +149,12 @@ class ProjectIndexingDependenciesService @NonInjectable @VisibleForTesting const
       ReadWriteScanningRequestTokenImpl(appCurrent)
     }
     registerIssuedToken(token)
-    completeTokenOrFutureToken(RequestHeavyScanningOnThisOrNextStartToken, null, true)
+    completeTokenOrFutureToken(RequestFullHeavyScanningToken, null, true)
     return token
   }
 
-  fun newFutureScanningToken(): FutureScanningRequestToken {
-    return FutureScanningRequestToken().also { registerIssuedToken(it) }
+  fun newIncompleteTaskToken(): IncompleteTaskToken {
+    return IncompleteTaskToken().also { registerIssuedToken(it) }
   }
 
   private fun registerIssuedToken(token: Any) {
@@ -164,36 +166,39 @@ class ProjectIndexingDependenciesService @NonInjectable @VisibleForTesting const
     }
   }
 
-  fun completeToken(token: FutureScanningRequestToken) {
-    completeTokenOrFutureToken(token, null, token.isSuccessful())
+  fun completeToken(token: IncompleteTaskToken) {
+    completeTokenOrFutureToken(token, null, true)
   }
 
   fun completeToken(token: ScanningRequestToken, isFullScanning: Boolean) {
     if (token.isSuccessful() && isFullScanning) {
-      completeTokenOrFutureToken(RequestHeavyScanningOnNextStartToken, null, true)
+      completeTokenOrFutureToken(RequestFullHeavyScanningToken, null, true)
     }
     completeTokenOrFutureToken(token, token.appIndexingRequestId, token.isSuccessful())
   }
 
   private fun completeTokenOrFutureToken(token: Any, lastAppIndexingRequestId: AppIndexingDependenciesToken?, successful: Boolean) {
     if (!successful) {
-      registerIssuedToken(RequestHeavyScanningOnNextStartToken)
+      registerIssuedToken(RequestFullHeavyScanningToken)
     }
     synchronized(issuedScanningTokens) {
       // ignore repeated "complete" calls
       val removed = issuedScanningTokens.remove(token)
       if (removed && issuedScanningTokens.isEmpty() && storage.isOpen) {
         storage.writeIncompleteScanningMark(false)
-        if (lastAppIndexingRequestId != null) {
-          storage.writeAppIndexingRequestIdOfLastScanning(lastAppIndexingRequestId.toInt())
-        }
       }
+    }
+
+    if (lastAppIndexingRequestId != null) {
+      // Write each time, not only after the last token has completed, because the last completed token
+      // might be an IncompleteTaskToken. Then lastAppIndexingRequestId will be null.
+      storage.writeAppIndexingRequestIdOfLastScanning(lastAppIndexingRequestId.toInt())
     }
   }
 
   fun requestHeavyScanningOnProjectOpen(debugReason: String) {
     thisLogger().info("Requesting heavy scanning on project open. Reason: $debugReason")
-    registerIssuedToken(RequestHeavyScanningOnThisOrNextStartToken)
+    registerIssuedToken(RequestFullHeavyScanningToken)
   }
 
   override fun dispose() {

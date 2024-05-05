@@ -1093,6 +1093,11 @@ public abstract class K2IntroduceFunctionTestGenerated extends AbstractK2Introdu
         public void testSingleExpression() throws Exception {
             runTest("../../idea/tests/testData/refactoring/extractFunction/duplicates/singleExpression.kt");
         }
+
+        @TestMetadata("syntheticJavaReference.kt")
+        public void testSyntheticJavaReference() throws Exception {
+            runTest("../../idea/tests/testData/refactoring/extractFunction/duplicates/syntheticJavaReference.kt");
+        }
     }
 
     @RunWith(JUnit3RunnerWithInners.class)
@@ -1324,6 +1329,11 @@ public abstract class K2IntroduceFunctionTestGenerated extends AbstractK2Introdu
         @TestMetadata("filterPropagatingMarkers.kt")
         public void testFilterPropagatingMarkers() throws Exception {
             runTest("../../idea/tests/testData/refactoring/extractFunction/optIn/filterPropagatingMarkers.kt");
+        }
+
+        @TestMetadata("filterPropagatingMarkersImplicitUsage.kt")
+        public void testFilterPropagatingMarkersImplicitUsage() throws Exception {
+            runTest("../../idea/tests/testData/refactoring/extractFunction/optIn/filterPropagatingMarkersImplicitUsage.kt");
         }
 
         @TestMetadata("filterPropagatingMarkersWitArgs.kt")
@@ -1772,6 +1782,11 @@ public abstract class K2IntroduceFunctionTestGenerated extends AbstractK2Introdu
                 runTest("../../idea/tests/testData/refactoring/extractFunction/parameters/misc/qualifiedTypeRef.kt");
             }
 
+            @TestMetadata("receiverWithFunctionalLiteral.kt")
+            public void testReceiverWithFunctionalLiteral() throws Exception {
+                runTest("../../idea/tests/testData/refactoring/extractFunction/parameters/misc/receiverWithFunctionalLiteral.kt");
+            }
+
             @TestMetadata("reducedParameterList.kt")
             public void testReducedParameterList() throws Exception {
                 runTest("../../idea/tests/testData/refactoring/extractFunction/parameters/misc/reducedParameterList.kt");
@@ -2003,6 +2018,11 @@ public abstract class K2IntroduceFunctionTestGenerated extends AbstractK2Introdu
     public static class TypeParameters extends AbstractK2IntroduceFunctionTest {
         private void runTest(String testDataFilePath) throws Exception {
             KotlinTestUtils.runTest(this::doExtractFunctionTest, this, testDataFilePath);
+        }
+
+        @TestMetadata("definitelyNotNullType.kt")
+        public void testDefinitelyNotNullType() throws Exception {
+            runTest("../../idea/tests/testData/refactoring/extractFunction/typeParameters/definitelyNotNullType.kt");
         }
 
         @TestMetadata("localClassInBound.kt")

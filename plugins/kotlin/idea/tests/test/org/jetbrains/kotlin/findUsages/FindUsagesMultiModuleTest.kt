@@ -57,6 +57,18 @@ open class FindUsagesMultiModuleTest : AbstractFindUsagesMultiModuleTest() {
         doTest()
     }
 
+    fun testFindParameterInOverride() {
+        doTest()
+    }
+
+    fun testFindImportAlias() {
+        doTest()
+    }
+
+    fun testFindJvmFromActualJs() {
+        doTest()
+    }
+
     private fun doTest() {
         setupMppProjectFromDirStructure(getTestdataFile())
         doFindUsagesTest()

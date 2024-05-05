@@ -1,4 +1,3 @@
-*f:com.intellij.webSymbols.AliasesKt
 *:com.intellij.webSymbols.CompositeWebSymbol
 - com.intellij.webSymbols.WebSymbol
 - a:getNameSegments():java.util.List
@@ -25,6 +24,7 @@
 *:com.intellij.webSymbols.WebSymbol
 - com.intellij.model.Symbol
 - com.intellij.navigation.NavigatableSymbol
+- com.intellij.webSymbols.WebSymbolsPrioritizedScope
 - com.intellij.webSymbols.WebSymbolsScope
 - *sf:Companion:com.intellij.webSymbols.WebSymbol$Companion
 - sf:KIND_CSS_CLASSES:java.lang.String
@@ -297,6 +297,8 @@
 - sf:BUNDLE:java.lang.String
 - s:message(java.lang.String,java.lang.Object[]):java.lang.String
 - s:messagePointer(java.lang.String,java.lang.Object[]):java.util.function.Supplier
+*:com.intellij.webSymbols.WebSymbolsPrioritizedScope
+- a:getPriority():com.intellij.webSymbols.WebSymbol$Priority
 *:com.intellij.webSymbols.WebSymbolsScope
 - com.intellij.openapi.util.ModificationTracker
 - a:createPointer():com.intellij.model.Pointer
@@ -410,6 +412,8 @@
 *:com.intellij.webSymbols.context.WebSymbolsContext
 - *sf:Companion:com.intellij.webSymbols.context.WebSymbolsContext$Companion
 - sf:KIND_FRAMEWORK:java.lang.String
+- sf:PKG_MANAGER_NODE_PACKAGES:java.lang.String
+- sf:PKG_MANAGER_RUBY_GEMS:java.lang.String
 - sf:VALUE_NONE:java.lang.String
 - sf:WEB_SYMBOLS_CONTEXT_EP:com.intellij.webSymbols.context.impl.WebSymbolsContextProviderExtensionCollector
 - sf:WEB_SYMBOLS_CONTEXT_FILE:java.lang.String
@@ -443,20 +447,20 @@
 - hashCode():I
 - toString():java.lang.String
 *f:com.intellij.webSymbols.context.WebSymbolsContextKindRules$EnablementRules
-- <init>(java.util.List,java.util.List,java.util.List,java.util.List,java.util.List,java.util.List):V
-- f:component1():java.util.List
+- <init>(java.util.Map,java.util.List,java.util.List,java.util.List,java.util.List,java.util.List):V
+- f:component1():java.util.Map
 - f:component2():java.util.List
 - f:component3():java.util.List
 - f:component4():java.util.List
 - f:component5():java.util.List
 - f:component6():java.util.List
-- f:copy(java.util.List,java.util.List,java.util.List,java.util.List,java.util.List,java.util.List):com.intellij.webSymbols.context.WebSymbolsContextKindRules$EnablementRules
-- bs:copy$default(com.intellij.webSymbols.context.WebSymbolsContextKindRules$EnablementRules,java.util.List,java.util.List,java.util.List,java.util.List,java.util.List,java.util.List,I,java.lang.Object):com.intellij.webSymbols.context.WebSymbolsContextKindRules$EnablementRules
+- f:copy(java.util.Map,java.util.List,java.util.List,java.util.List,java.util.List,java.util.List):com.intellij.webSymbols.context.WebSymbolsContextKindRules$EnablementRules
+- bs:copy$default(com.intellij.webSymbols.context.WebSymbolsContextKindRules$EnablementRules,java.util.Map,java.util.List,java.util.List,java.util.List,java.util.List,java.util.List,I,java.lang.Object):com.intellij.webSymbols.context.WebSymbolsContextKindRules$EnablementRules
 - equals(java.lang.Object):Z
 - f:getFileExtensions():java.util.List
 - f:getFileNamePatterns():java.util.List
 - f:getIdeLibraries():java.util.List
-- f:getPkgManagerDependencies():java.util.List
+- f:getPkgManagerDependencies():java.util.Map
 - f:getProjectToolExecutables():java.util.List
 - f:getScriptUrlPatterns():java.util.List
 - hashCode():I
@@ -489,14 +493,29 @@
 - f:getModificationTrackers():java.util.Collection
 - hashCode():I
 - toString():java.lang.String
-*e:com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind
-- java.lang.Enum
-- sf:IdeLibrary:com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind
-- sf:PackageManagerDependency:com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind
-- sf:ProjectToolExecutable:com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind
-- s:getEntries():kotlin.enums.EnumEntries
-- s:valueOf(java.lang.String):com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind
-- s:values():com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind[]
+*:com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind
+*f:com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind$IdeLibrary
+- com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind
+- sf:INSTANCE:com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind$IdeLibrary
+- equals(java.lang.Object):Z
+- hashCode():I
+- toString():java.lang.String
+*f:com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind$PackageManagerDependency
+- com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind
+- <init>(java.lang.String):V
+- f:component1():java.lang.String
+- f:copy(java.lang.String):com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind$PackageManagerDependency
+- bs:copy$default(com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind$PackageManagerDependency,java.lang.String,I,java.lang.Object):com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind$PackageManagerDependency
+- equals(java.lang.Object):Z
+- f:getName():java.lang.String
+- hashCode():I
+- toString():java.lang.String
+*f:com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind$ProjectToolExecutable
+- com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind
+- sf:INSTANCE:com.intellij.webSymbols.context.WebSymbolsContextSourceProximityProvider$SourceKind$ProjectToolExecutable
+- equals(java.lang.Object):Z
+- hashCode():I
+- toString():java.lang.String
 f:com.intellij.webSymbols.customElements.CustomElementsLoadUtilsKt
 - sf:readCustomElementsManifest(java.lang.String):com.intellij.webSymbols.customElements.json.CustomElementsManifest
 a:com.intellij.webSymbols.customElements.CustomElementsManifestScopeBase
@@ -1436,6 +1455,17 @@ e:com.intellij.webSymbols.js.WebSymbolJsKind
 - getVirtualSymbols():Z
 - hashCode():I
 - toString():java.lang.String
+*a:com.intellij.webSymbols.query.WebSymbolsCompoundScope
+- com.intellij.webSymbols.WebSymbolsScope
+- <init>():V
+- pa:build(com.intellij.webSymbols.query.WebSymbolsQueryExecutor,kotlin.jvm.functions.Function1):V
+- a:createPointer():com.intellij.model.Pointer
+- f:getCodeCompletions(com.intellij.webSymbols.WebSymbolQualifiedName,com.intellij.webSymbols.query.WebSymbolsCodeCompletionQueryParams,com.intellij.util.containers.Stack):java.util.List
+- f:getMatchingSymbols(com.intellij.webSymbols.WebSymbolQualifiedName,com.intellij.webSymbols.query.WebSymbolsNameMatchQueryParams,com.intellij.util.containers.Stack):java.util.List
+- f:getModificationCount():J
+- f:getScopes(com.intellij.webSymbols.query.WebSymbolsQueryExecutor):java.util.List
+- f:getSymbols(com.intellij.webSymbols.WebSymbolQualifiedKind,com.intellij.webSymbols.query.WebSymbolsListSymbolsQueryParams,com.intellij.util.containers.Stack):java.util.List
+- f:isExclusiveFor(com.intellij.webSymbols.WebSymbolQualifiedKind):Z
 *f:com.intellij.webSymbols.query.WebSymbolsListSymbolsQueryParams
 - com.intellij.webSymbols.query.WebSymbolsQueryParams
 - <init>(com.intellij.webSymbols.query.WebSymbolsQueryExecutor,Z,Z,Z,Z):V
@@ -1596,7 +1626,6 @@ e:com.intellij.webSymbols.js.WebSymbolJsKind
 - pf:unresolvedSymbol(com.intellij.webSymbols.WebSymbolQualifiedKind,java.lang.String):com.intellij.webSymbols.query.WebSymbolMatch
 *f:com.intellij.webSymbols.references.WebSymbolReferenceProvider$Companion
 - f:startOffsetIn(com.intellij.psi.PsiElement,com.intellij.psi.PsiElement):I
-*f:com.intellij.webSymbols.references.WebSymbolReferenceProviderKt
 *f:com.intellij.webSymbols.search.PsiSourcedWebSymbolReference
 - com.intellij.psi.PsiReference
 - <init>(com.intellij.webSymbols.WebSymbol,com.intellij.psi.PsiElement,com.intellij.model.psi.PsiExternalReferenceHost,com.intellij.openapi.util.TextRange):V
@@ -1697,7 +1726,6 @@ f:com.intellij.webSymbols.utils.WebSymbolDeclaredInPsi$PsiNavigatableWebSymbolNa
 - createPointer():com.intellij.model.Pointer
 - f:getNavigationItem():com.intellij.navigation.NavigationItem
 - navigationRequest():com.intellij.platform.backend.navigation.NavigationRequest
-f:com.intellij.webSymbols.utils.WebSymbolDeclaredInPsiKt
 f:com.intellij.webSymbols.utils.WebSymbolUtils
 - sf:applyIfNotNull(java.lang.Object,java.lang.Object,kotlin.jvm.functions.Function2):java.lang.Object
 - sf:asSingleSymbol(java.util.List,Z):com.intellij.webSymbols.WebSymbol
@@ -1739,7 +1767,6 @@ f:com.intellij.webSymbols.utils.WebSymbolUtils
 - f:getInstance(com.intellij.openapi.project.Project):com.intellij.webSymbols.webTypes.WebTypesEmbeddedDefinitionsLoader
 - f:getPackagesEnabledByDefault(com.intellij.openapi.project.Project):java.util.Map
 - f:getWebTypesEnabledPackages(com.intellij.openapi.project.Project):java.util.Set
-*f:com.intellij.webSymbols.webTypes.WebTypesLoadUtilKt
 *c:com.intellij.webSymbols.webTypes.WebTypesSymbolBase
 - com.intellij.webSymbols.PsiSourcedWebSymbol
 - p:queryExecutor:com.intellij.webSymbols.query.WebSymbolsQueryExecutor

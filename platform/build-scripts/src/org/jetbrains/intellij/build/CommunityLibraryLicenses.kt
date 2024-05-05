@@ -76,13 +76,13 @@ object CommunityLibraryLicenses {
     androidDependency(name = "Android Dynamic Layout Inspector", libraryName = "precompiled-dynamic-layout-inspector.common"),
     androidDependency(name = "Android Emulator gRPC API", libraryName = "emulator-proto"),
     androidDependency(name = "Android Flags", libraryName = "precompiled-flags"),
-    LibraryLicense(name = "Android Gradle model", attachedTo = "intellij.android.core", version = "0.4-SNAPSHOT",
-                   url = "https://android.googlesource.com/platform/tools/build/+/master/gradle-model/").apache(
-      "https://source.android.com/setup/start/licenses")
-      .suppliedByOrganizations(Suppliers.GOOGLE),
-    LibraryLicense(name = "Android Instant Apps SDK API", url = "https://source.android.com/", libraryName = "instantapps-api",
-                   version = LibraryLicense.CUSTOM_REVISION).apache("https://source.android.com/setup/start/licenses")
-      .suppliedByOrganizations(Suppliers.GOOGLE),
+    androidDependency(name = "Android Gradle model", version = "0.4-SNAPSHOT", libraryName = null)
+      .copy(
+        attachedTo = "intellij.android.core",
+        url = "https://android.googlesource.com/platform/tools/build/+/master/gradle-model/"
+      ),
+    androidDependency(name = "Android Instant Apps SDK API", version = LibraryLicense.CUSTOM_REVISION, libraryName = null)
+      .copy(url = "https://source.android.com/", libraryName = "instantapps-api"),
     androidDependency(name = "Android JdwpPacket", libraryName = "precompiled-jdwppacket"),
     androidDependency(name = "Android JdwpsCache", libraryName = "precompiled-jdwpscache"),
     androidDependency(name = "Android JdwpTracer", libraryName = "precompiled-jdwptracer"),
@@ -382,26 +382,12 @@ object CommunityLibraryLicenses {
       .apache("https://github.com/graphql-java/java-dataloader/blob/master/LICENSE"),
     LibraryLicense(name = "Grazie AI", libraryName = "ai.grazie.spell.gec.engine.local",
                    url = "https://packages.jetbrains.team/maven/p/grazi/grazie-platform-public/",
-                   additionalLibraryNames = listOf("ai.grazie.nlp.patterns",
-                                                   "ai.grazie.nlp.phonetics",
-                                                   "ai.grazie.nlp.common",
-                                                   "ai.grazie.nlp.langs",
-                                                   "ai.grazie.nlp.similarity",
+                   additionalLibraryNames = listOf("ai.grazie.nlp.langs",
                                                    "ai.grazie.nlp.detect",
-                                                   "ai.grazie.nlp.stemmer",
-                                                   "ai.grazie.nlp.tokenizer",
-                                                   "ai.grazie.utils.common",
-                                                   "ai.grazie.utils.json",
                                                    "ai.grazie.utils.lucene.lt.compatibility",
-                                                   "ai.grazie.model.bdg.jvm",
-                                                   "ai.grazie.model.common",
-                                                   "ai.grazie.model.gec",
-                                                   "ai.grazie.model.text",
                                                    "ai.grazie.spell.hunspell.en",
                                                    "ai.grazie.emb",
-                                                   "ai.grazie.model.nlp.encoder",
                                                    "ai.grazie.utils.ki",
-                                                   "ai.grazie.nlp.encoder",
                                                    "ai.grazie.nlp.encoder.bert.uncased")).apache()
       .suppliedByOrganizations(Suppliers.JETBRAINS),
     LibraryLicense(name = "Groovy", libraryName = "org.codehaus.groovy:groovy", url = "https://groovy-lang.org/")
@@ -1298,8 +1284,10 @@ object CommunityLibraryLicenses {
     ).suppliedByOrganizations(Suppliers.GOOGLE)
   }
 
-  private fun androidDependency(name: String, libraryName: String = name, version: String? = null) =
+  private fun androidDependency(name: String, libraryName: String? = name, version: String? = null) =
     LibraryLicense(name = name, libraryName = libraryName, version = version,
-                   url = "https://source.android.com/").apache("https://source.android.com/setup/start/licenses")
+                   url = "https://source.android.com/")
+      .apache("https://source.android.com/setup/start/licenses")
+      .copyrightText("Copyright (C) The Android Open Source Project")
       .suppliedByOrganizations(Suppliers.GOOGLE)
 }

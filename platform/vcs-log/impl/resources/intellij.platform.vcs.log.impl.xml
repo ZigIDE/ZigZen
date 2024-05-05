@@ -1,4 +1,8 @@
 <idea-plugin>
+  <dependencies>
+    <module name="intellij.platform.vcs.impl"/>
+  </dependencies>
+
   <extensionPoints>
     <extensionPoint name="logProvider" interface="com.intellij.vcs.log.VcsLogProvider" area="IDEA_PROJECT" dynamic="true"/>
     <extensionPoint name="logHighlighterFactory" interface="com.intellij.vcs.log.ui.highlighters.VcsLogHighlighterFactory" dynamic="true"/>
@@ -101,6 +105,8 @@
   <projectListeners>
     <listener topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener"
               class="com.intellij.vcs.log.impl.VcsLogToolwindowManagerListener"/>
+    <listener class="com.intellij.vcs.log.ui.VcsLogBookmarksListener"
+              topic="com.intellij.ide.bookmark.BookmarksListener"/>
   </projectListeners>
 
   <actions resource-bundle="messages.VcsLogBundle">
@@ -137,9 +143,7 @@
       <group class="com.intellij.vcs.log.ui.actions.ToggleLogColumnsActionGroup" id="Vcs.Log.ToggleColumns"/>
       <group class="com.intellij.vcs.log.ui.actions.HighlightersActionGroup" id="Vcs.Log.HighlightersActionGroup"/>
       <action class="com.intellij.vcs.log.ui.actions.OpenAnotherLogTabAction$InToolWindow" id="Vcs.Log.OpenAnotherTab"
-              icon="AllIcons.General.Add">
-        <add-to-group group-id="LocalChangesView.TabActions"/>
-      </action>
+              icon="AllIcons.General.Add"/>
       <action class="com.intellij.vcs.log.ui.actions.OpenAnotherLogTabAction$InEditor" id="Vcs.Log.OpenAnotherTabInEditor"
               icon="AllIcons.Actions.OpenNewTab"/>
       <action class="com.intellij.vcs.log.ui.actions.RefreshLogAction" id="Vcs.Log.Refresh" use-shortcut-of="Refresh"/>
@@ -165,6 +169,7 @@
       <action class="com.intellij.vcs.log.ui.actions.InvalidateVcsLogCaches" id="Vcs.Log.InvalidateCaches" internal="true"/>
       <action class="com.intellij.vcs.log.ui.actions.CheckSelectedCommits" id="Vcs.Log.CheckSelectedCommitsIndexData" internal="true"/>
       <action class="com.intellij.vcs.log.ui.actions.CheckOldCommits" id="Vcs.Log.CheckFirstCommitsIndexData" internal="true"/>
+      <action class="com.intellij.vcs.log.ui.actions.VcsLogShowBigRepositoriesList" id="Vcs.Log.ShowBigRepositories" internal="true"/>
       <action class="com.intellij.vcs.log.ui.actions.ShowCommitInLogAction" id="Vcs.Log.SelectInLog"
               icon="AllIcons.Toolwindows.ToolWindowChanges">
         <add-to-group group-id="VcsSelectionHistoryDialog.Popup" anchor="after" relative-to-action="Vcs.CopyRevisionNumberAction"/>
@@ -243,6 +248,16 @@
       <reference id="Vcs.RepositoryChangesBrowserMenu"/>
       <reference id="Vcs.Log.ShowChangesFromParents"/>
     </group>
+    <group id="Vcs.Log.ToolWindow.TabActions">
+      <reference id="Vcs.Log.OpenAnotherTab"/>
+      <group id="Vcs.Log.ToolWindow.TabActions.DropDown" icon="AllIcons.Toolbar.Expand" popup="true"
+             class="com.intellij.vcs.log.ui.actions.VcsLogToolWindowDropdownActionGroup">
+        <reference id="Vcs.Log.OpenAnotherTabInEditor"/>
+        <reference id="Vcs.ShowTabbedFileHistory"/>
+        <reference id="Vcs.ShowConsoleTab"/>
+      </group>
+      <add-to-group group-id="LocalChangesView.TabActions"/>
+    </group>
     <group id="Vcs.FileHistory.ContextMenu">
       <reference id="Vcs.CopyRevisionNumberAction"/>
       <reference id="ChangesView.CreatePatchFromChanges"/>
@@ -261,6 +276,7 @@
            class="com.intellij.vcs.log.ui.actions.VcsLogToolbarPopupActionGroup"
            icon="AllIcons.Actions.GroupBy"
            popup="true">
+      <separator key="action.vcs.log.show.separator"/>
       <reference id="Vcs.Log.PreferCommitDate"/>
       <reference id="Vcs.Log.ToggleColumns"/>
       <reference id="Vcs.Log.LayoutConfiguration"/>
@@ -283,6 +299,7 @@
       <reference id="Vcs.Log.InvalidateCaches"/>
       <reference id="Vcs.Log.CheckFirstCommitsIndexData"/>
       <reference id="Vcs.Log.CheckSelectedCommitsIndexData"/>
+      <reference id="Vcs.Log.ShowBigRepositories"/>
       <add-to-group group-id="Internal"/>
     </group>
 

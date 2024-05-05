@@ -25,6 +25,9 @@ object CommunityRepositoryModules {
    * Specifies non-trivial layout for all plugins that sources are located in 'community' and 'contrib' repositories
    */
   val COMMUNITY_REPOSITORY_PLUGINS: PersistentList<PluginLayout> = persistentListOf(
+    pluginAuto("intellij.yaml") { spec ->
+      spec.withModule("intellij.yaml.editing", "yaml-editing.jar")
+    },
     plugin("intellij.ant") { spec ->
       spec.mainJarName = "antIntegration.jar"
       spec.withModule("intellij.ant.jps", "ant-jps.jar")
@@ -218,15 +221,8 @@ object CommunityRepositoryModules {
       spec.withModuleLibrary("intellij.remoterobot.robot.server.core", spec.mainModule, "")
       spec.withProjectLibrary("okhttp")
     },
-    pluginAuto(
-      listOf(
-        "intellij.performanceTesting",
-        "intellij.performanceTesting.remoteDriver",
-        "intellij.driver.model",
-        "intellij.driver.impl",
-        "intellij.driver.client"
-      )
-    ))
+    pluginAuto(listOf("intellij.performanceTesting", "intellij.driver.model", "intellij.driver.impl", "intellij.driver.client"))
+  )
 
   val CONTRIB_REPOSITORY_PLUGINS: List<PluginLayout> = java.util.List.of(
     pluginAuto("intellij.errorProne") { spec ->
@@ -804,14 +800,7 @@ private suspend fun copyAnt(pluginDir: Path, context: BuildContext): List<Distri
     buildJar(targetFile = antTargetFile, sources = sources)
 
     sources.map { source ->
-      ProjectLibraryEntry(
-        path = antTargetFile,
-        data = libraryData,
-        libraryFile = source.file,
-        hash = source.hash,
-        size = source.size,
-        relativeOutputFile = "dist/ant.jar",
-      )
+      ProjectLibraryEntry(path = antTargetFile, data = libraryData, libraryFile = source.file, hash = source.hash, size = source.size, relativeOutputFile = "dist/ant.jar")
     }
   }
 }

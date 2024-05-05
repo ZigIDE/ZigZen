@@ -5,6 +5,8 @@ import com.intellij.driver.model.OnDispatcher
 import com.intellij.driver.sdk.Document
 import com.intellij.driver.sdk.Editor
 import com.intellij.driver.sdk.logicalPosition
+import com.intellij.driver.sdk.remoteDev.BeControlClass
+import com.intellij.driver.sdk.remoteDev.EditorComponentImplBeControlBuilder
 import com.intellij.driver.sdk.ui.Finder
 import com.intellij.driver.sdk.ui.remote.Component
 import org.intellij.lang.annotations.Language
@@ -13,6 +15,10 @@ import java.awt.Point
 fun Finder.editor(@Language("xpath") xpath: String? = null): JEditorUiComponent {
   return x(xpath ?: "//div[@class='EditorComponentImpl']",
            JEditorUiComponent::class.java)
+}
+
+fun Finder.editor(@Language("xpath") xpath: String? = null, action: JEditorUiComponent.() -> Unit) {
+  x(xpath ?: "//div[@class='EditorComponentImpl']", JEditorUiComponent::class.java).action()
 }
 
 class JEditorUiComponent(data: ComponentData) : UiComponent(data) {
@@ -56,6 +62,7 @@ class JEditorUiComponent(data: ComponentData) : UiComponent(data) {
 }
 
 @Remote("com.intellij.openapi.editor.impl.EditorComponentImpl")
+@BeControlClass(EditorComponentImplBeControlBuilder::class)
 interface EditorComponentImpl : Component {
   fun getEditor(): Editor
 }

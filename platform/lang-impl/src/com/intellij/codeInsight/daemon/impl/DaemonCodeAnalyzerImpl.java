@@ -36,6 +36,7 @@ import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.ex.MarkupModelEx;
 import com.intellij.openapi.editor.ex.RangeHighlighterEx;
 import com.intellij.openapi.editor.impl.DocumentMarkupModel;
+import com.intellij.openapi.editor.impl.EditorMarkupModelImpl;
 import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.MarkupModel;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
@@ -367,6 +368,32 @@ public final class DaemonCodeAnalyzerImpl extends DaemonCodeAnalyzerEx
   @Override
   boolean isEscapeJustPressed() {
     return myListeners.isEscapeJustPressed();
+  }
+
+  @Override
+  protected void progressIsAdvanced(@NotNull HighlightingSession session, Editor editor, double progress) {
+    repaintTrafficIcon(session.getPsiFile(), editor, progress);
+  }
+
+  private final Alarm repaintIconAlarm = new Alarm();
+  private void repaintTrafficIcon(@NotNull PsiFile file, @Nullable Editor editor, double progress) {
+    if (ApplicationManager.getApplication().isCommandLine()) return;
+    ApplicationManager.getApplication().assertIsNonDispatchThread();
+    if (editor != null && (repaintIconAlarm.isEmpty() || progress >= 1)) {
+      repaintIconAlarm.addRequest(() -> {
+        Project myProject = file.getProject();
+        if (!myProject.isDisposed() && !editor.isDisposed()) {
+          repaintErrorStripeAndIcon(editor, myProject, file);
+        }
+      }, 50, null);
+    }
+  }
+  static void repaintErrorStripeAndIcon(@NotNull Editor editor, @NotNull Project project, @Nullable PsiFile file) {
+    MarkupModel markup = editor.getMarkupModel();
+    if (markup instanceof EditorMarkupModelImpl editorMarkup) {
+      editorMarkup.repaintTrafficLightIcon();
+      ErrorStripeUpdateManager.getInstance(project).repaintErrorStripePanel(editor, file);
+    }
   }
 
   @Override
@@ -1211,7 +1238,7 @@ public final class DaemonCodeAnalyzerImpl extends DaemonCodeAnalyzerEx
       return;
     }
     // remove obsolete infos for invalid psi elements as soon as possible, before highlighting passes start
-    ReadAction.run(() -> HighlightInfoUpdater.getInstance(myProject).removeInvalidPsiElements(psiFile, this, session));
+    ReadAction.run(() -> HighlightInfoUpdaterImpl.removeInvalidPsiElements(psiFile, this, session));
     if (backgroundEditorHighlighter == null) {
       return;
     }
@@ -1272,7 +1299,6 @@ public final class DaemonCodeAnalyzerImpl extends DaemonCodeAnalyzerEx
     DaemonProgressIndicator progress = new MyDaemonProgressIndicator(myProject, fileEditor);
     progress.setModalityProgress(null);
     progress.start();
-    myDaemonListenerPublisher.daemonStarting(List.of(fileEditor));
     if (isRestartToCompleteEssentialHighlightingRequested()) {
       progress.putUserData(COMPLETE_ESSENTIAL_HIGHLIGHTING_KEY, true);
     }
@@ -1280,6 +1306,10 @@ public final class DaemonCodeAnalyzerImpl extends DaemonCodeAnalyzerEx
     if (old != null && !old.isCanceled()) {
       old.cancel();
     }
+    else if (PassExecutorService.LOG.isDebugEnabled()) {
+      PassExecutorService.LOG.debug("Old indicator is " + (old == null ? "null" : "already cancelled"));
+    }
+    myDaemonListenerPublisher.daemonStarting(List.of(fileEditor));
     return progress;
   }
 

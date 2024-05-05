@@ -42,6 +42,7 @@ import org.jetbrains.kotlin.idea.k2.copyright.AbstractFirUpdateKotlinCopyrightTe
 import org.jetbrains.kotlin.idea.k2.refactoring.rename.AbstractFirMultiModuleRenameTest
 import org.jetbrains.kotlin.idea.k2.refactoring.rename.AbstractFirRenameTest
 import org.jetbrains.kotlin.idea.k2.refactoring.rename.AbstractK2InplaceRenameTest
+import org.jetbrains.kotlin.idea.test.kmp.KMPTestPlatform
 import org.jetbrains.kotlin.j2k.k2.AbstractK2JavaToKotlinConverterMultiFileTest
 import org.jetbrains.kotlin.j2k.k2.AbstractK2JavaToKotlinConverterPartialTest
 import org.jetbrains.kotlin.j2k.k2.AbstractK2JavaToKotlinConverterSingleFileFullJDKTest
@@ -108,7 +109,7 @@ private fun assembleWorkspace(): TWorkspace = workspace {
         }
     }
 
-    testGroup("compiler-plugins/parcelize/tests/k2", testDataPath = "../testData") {
+    testGroup("compiler-plugins/parcelize/tests/k2", testDataPath = "../testData", category = QUICKFIXES) {
         testClass<AbstractParcelizeK2QuickFixTest> {
             model("quickfix", pattern = Patterns.forRegex("^([\\w\\-_]+)\\.kt$"))
         }
@@ -120,7 +121,7 @@ private fun assembleWorkspace(): TWorkspace = workspace {
         }
     }
 
-    testGroup("fir/tests", category = CODE_INSIGHT, testDataPath = "../../idea/tests/testData") {
+    testGroup("fir/tests", testDataPath = "../../idea/tests/testData", category = CODE_INSIGHT) {
         testClass<AbstractK2AddImportActionTest> {
             model("idea/actions/kotlinAddImportAction", pattern = KT_WITHOUT_DOTS)
         }
@@ -238,7 +239,7 @@ private fun assembleWorkspace(): TWorkspace = workspace {
         }
     }
 
-    testGroup("fir/tests", category = COMPLETION, testDataPath = "../../completion/testData") {
+    testGroup("fir/tests", testDataPath = "../../completion/testData", category = COMPLETION) {
         testClass<AbstractK2JvmBasicCompletionTest> {
             model("basic/common", pattern = KT_WITHOUT_FIR_PREFIX)
             model("basic/java", pattern = KT_WITHOUT_FIR_PREFIX)
@@ -321,7 +322,7 @@ private fun assembleWorkspace(): TWorkspace = workspace {
         }
     }
 
-    testGroup("fir/tests", testDataPath = "../../idea/tests/testData") {
+    testGroup("fir/tests", testDataPath = "../../idea/tests/testData", category = CODE_INSIGHT) {
         testClass<AbstractK2ProjectViewTest> {
             model("projectView", pattern = TEST)
         }
@@ -332,7 +333,7 @@ private fun assembleWorkspace(): TWorkspace = workspace {
         }
     }
 
-    testGroup("refactorings/rename.k2", category = RENAME_REFACTORING, testDataPath = "../../idea/tests/testData") {
+    testGroup("refactorings/rename.k2", testDataPath = "../../idea/tests/testData", category = RENAME_REFACTORING) {
         testClass<AbstractFirRenameTest> {
             model("refactoring/rename", pattern = TEST, flatten = true)
         }
@@ -344,11 +345,22 @@ private fun assembleWorkspace(): TWorkspace = workspace {
         }
     }
 
-    testGroup("fir/tests", category = FIND_USAGES, testDataPath = "../../idea/tests/testData/findUsages") {
+    testGroup("fir/tests", testDataPath = "../../idea/tests/testData/findUsages", category = FIND_USAGES) {
         testClass<AbstractFindUsagesFirTest> {
             model("kotlin", pattern = Patterns.forRegex("""^(.+)\.0\.(kt|kts)$"""))
             model("java", pattern = Patterns.forRegex("""^(.+)\.0\.java$"""))
             model("propertyFiles", pattern = Patterns.forRegex("""^(.+)\.0\.properties$"""))
+        }
+
+        testClass<AbstractFindUsagesFirTest>(
+            platforms = listOf(
+                KMPTestPlatform.Js,
+                KMPTestPlatform.NativeLinux,
+                //KMPTestPlatform.CommonNativeJvm, TODO should be enabled after KTIJ-29715 is fixed
+            ),
+            generatedPackagePostfix = "kmpFindUsages",
+        ) {
+            model("kotlin", pattern = Patterns.forRegex("""^(.+)\.0\.(kt|kts)$"""))
         }
 
         testClass<AbstractFindUsagesWithDisableComponentSearchFirTest> {
@@ -376,13 +388,16 @@ private fun assembleWorkspace(): TWorkspace = workspace {
         }
     }
 
-    testGroup("fir/tests") {
+    testGroup("fir/tests", category = CODE_INSIGHT) {
         testClass<AbstractFirQuickDocTest> {
             model("../../../idea/tests/testData/editor/quickDoc", pattern = Patterns.forRegex("""^([^_]+)\.(kt|java)$"""), isRecursive = false)
         }
         testClass<AbstractFirQuickDocMultiplatformTest> {
             model("../../../idea/tests/testData/editor/quickDoc/multiplatform", pattern = Patterns.forRegex("""^([^_]+)\.(kt|java)$"""))
         }
+    }
+
+    testGroup("fir/tests") {
         testClass<AbstractK2ReferenceResolveWithResolveExtensionTest> {
             model("extensions/references", pattern = KT_WITHOUT_DOTS)
         }

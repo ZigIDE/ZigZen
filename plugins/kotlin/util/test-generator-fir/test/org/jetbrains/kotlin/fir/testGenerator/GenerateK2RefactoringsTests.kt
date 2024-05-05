@@ -3,6 +3,8 @@ package org.jetbrains.kotlin.fir.testGenerator
 
 import org.jetbrains.kotlin.idea.k2.refactoring.bindToElement.AbstractK2BindToElementTest
 import org.jetbrains.kotlin.idea.k2.refactoring.bindToElement.AbstractK2BindToFqnTest
+import org.jetbrains.kotlin.idea.k2.refactoring.copy.AbstractK2CopyTest
+import org.jetbrains.kotlin.idea.k2.refactoring.copy.AbstractK2MultiModuleCopyTest
 import org.jetbrains.kotlin.idea.k2.refactoring.inline.AbstractKotlinFirInlineTest
 import org.jetbrains.kotlin.idea.k2.refactoring.introduce.AbstractK2PsiUnifierTest
 import org.jetbrains.kotlin.idea.k2.refactoring.introduce.introduceVariable.AbstractK2IntroduceVariableTest
@@ -91,6 +93,16 @@ internal fun MutableTWorkspace.generateK2RefactoringsTests() {
         }
     }
 
+    testGroup("refactorings/kotlin.refactorings.tests.k2", category = REFACTORING, testDataPath = "../../idea/tests/testData") {
+        testClass< AbstractK2CopyTest> {
+            model("refactoring/copy", pattern = TEST, flatten = true)
+        }
+
+        testClass<AbstractK2MultiModuleCopyTest> {
+            model("refactoring/copyMultiModule", pattern = TEST, flatten = true)
+        }
+    }
+
     testGroup("refactorings/kotlin.refactorings.move.k2", category = MOVE_REFACTORING, testDataPath = "../../idea/tests/testData") {
         testClass<AbstractK2ChangePackageTest> {
             model("refactoring/changePackage", pattern = TEST, flatten = true)
@@ -115,7 +127,7 @@ internal fun MutableTWorkspace.generateK2RefactoringsTests() {
         }
     }
 
-    testGroup("refactorings/kotlin.refactorings.introduce.k2", category = EXTRACT_REFACTORING, testDataPath = "../../idea/tests/testData") {
+    testGroup("refactorings/kotlin.refactorings.tests.k2", category = EXTRACT_REFACTORING, testDataPath = "../../idea/tests/testData") {
         testClass<AbstractK2IntroduceVariableTest> {
             model("refactoring/introduceVariable", pattern = Patterns.KT_OR_KTS_WITHOUT_DOTS, testMethodName = "doIntroduceVariableTest")
         }

@@ -97,9 +97,9 @@ internal class ClassPathXmlPathResolver(
                            dataLoader: DataLoader,
                            relativePath: String,
                            readInto: RawPluginDescriptor?): RawPluginDescriptor? {
-    val path = PluginXmlPathResolver.toLoadPath(relativePath, null)
+    val path = PluginXmlPathResolver.toLoadPath(relativePath)
     return readModuleDescriptor(
-      getXmlReader(classLoader = classLoader, path = path, dataLoader = dataLoader) ?: return null,
+      reader = getXmlReader(classLoader = classLoader, path = path, dataLoader = dataLoader) ?: return null,
       readContext = readContext,
       pathResolver = this,
       dataLoader = dataLoader,

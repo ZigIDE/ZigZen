@@ -3,11 +3,10 @@ package com.intellij.ide.util.treeView
 
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.TreeState.CachedPresentationDataImpl
-import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.treeStructure.CachingTreePath
+import com.intellij.util.containers.nullize
 import com.intellij.util.ui.tree.TreeUtil
 import org.jetbrains.annotations.ApiStatus.Internal
-import javax.swing.Icon
 import javax.swing.JTree
 import javax.swing.tree.TreeModel
 import javax.swing.tree.TreePath
@@ -19,9 +18,16 @@ interface CachedTreePresentationSupport {
 }
 
 @Internal
+interface TreeNodeWithCacheableAttributes {
+  @Internal
+  fun getCacheableAttributes(): Map<String, String>?
+}
+
+@Internal
 class CachedTreePresentationData(
   val pathElement: CachedTreePathElement,
   val presentation: CachedPresentationData,
+  val extraAttributes: Map<String, String>?,
   val children: List<CachedTreePresentationData>,
 ) {
   companion object {
@@ -43,9 +49,12 @@ class CachedTreePresentationData(
         val presentation = userObject.presentation
         val children = mutableListOf<CachedTreePresentationData>()
         val iconData = getIconData(presentation.getIcon(false))
+        val extraAttrs = (userObject as? TreeNodeWithCacheableAttributes)?.getCacheableAttributes()
+        val isLeaf = model.isLeaf(node)
         val result = CachedTreePresentationData(
           TreeState.PathElement(TreeState.calcId(userObject), TreeState.calcType(userObject), 0, null),
-          CachedPresentationDataImpl(presentation.presentableText ?: "", iconData),
+          CachedPresentationDataImpl(presentation.presentableText ?: "", iconData, isLeaf),
+          extraAttrs,
           children
         )
         val nodePath = if (parentPath == null) CachingTreePath(node) else parentPath.pathByAddingChild(node)
@@ -80,7 +89,7 @@ interface CachedTreePathElement {
 interface CachedPresentationData {
   val text: String
   val iconData: CachedIconPresentation?
-  val icon: Icon? get() = getLoadingIcon(iconData)
+  val isLeaf: Boolean
 }
 
 @Internal
@@ -90,9 +99,13 @@ data class CachedIconPresentation(
   val module: String?,
 )
 
-private class CachedTreePresentationNode(
+@Internal
+class CachedTreePresentationNode(
   val data: CachedTreePresentationData,
-) : PresentableNodeDescriptor<CachedTreePresentationData>(null, null), PathElementIdProvider {
+) : PresentableNodeDescriptor<CachedTreePresentationData>(null, null), PathElementIdProvider, TreeNodeWithCacheableAttributes {
+
+  val isLeaf: Boolean
+    get() = data.presentation.isLeaf
 
   var isExpanded = data.children.isNotEmpty()
 
@@ -108,9 +121,11 @@ private class CachedTreePresentationNode(
 
   override fun getElement(): CachedTreePresentationData = data
 
+  override fun getCacheableAttributes(): Map<String, String>? = data.extraAttributes
+
   override fun update(presentation: PresentationData) {
     presentation.presentableText = data.presentation.text
-    presentation.setIcon(data.presentation.icon ?: AnimatedIcon.Default.INSTANCE)
+    presentation.setIcon(data.presentation.icon)
   }
 
   override fun toString(): String = "(cached) ${super.toString()}"
@@ -144,7 +159,9 @@ class CachedTreePresentation(rootPresentation: CachedTreePresentationData) {
 
   fun getRoot(): Any = cachedRoot
 
-  fun getChildren(parent: Any): List<Any>? = getCachedChildren(parent)
+  fun isLeaf(node: Any): Boolean = getCachedNode(node)?.isLeaf == true
+
+  fun getChildren(parent: Any): List<Any>? = getCachedChildren(parent)?.nullize()
 
   private fun getCachedChildren(parent: Any): List<CachedTreePresentationNode>? {
     val cachedParent = getCachedNode(parent) ?: return null

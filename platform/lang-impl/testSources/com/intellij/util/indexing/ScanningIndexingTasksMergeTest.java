@@ -3,9 +3,8 @@ package com.intellij.util.indexing;
 
 import com.intellij.openapi.project.DumbModeTask;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.UnindexedFilesScannerExecutor;
 import com.intellij.openapi.roots.ContentIterator;
-import com.intellij.openapi.util.CheckedDisposable;
-import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileFilter;
 import com.intellij.openapi.vfs.newvfs.impl.FakeVirtualFile;
@@ -73,8 +72,15 @@ public class ScanningIndexingTasksMergeTest extends LightPlatformTestCase {
     UnindexedFilesScanner t1 = createScanningTask(iter1, "reason 1", ScanningType.PARTIAL);
     UnindexedFilesScanner full = createScanningTask(null, "full", ScanningType.FULL);
 
-    assertNull(t1.tryMergeWith(full).getPredefinedIndexableFilesIterators());
-    assertNull(full.tryMergeWith(t1).getPredefinedIndexableFilesIterators());
+    List<UnindexedFilesScanner> mergedVariants = Arrays.asList(
+      t1.tryMergeWith(full),
+      full.tryMergeWith(t1)
+    );
+
+    for (UnindexedFilesScanner merged : mergedVariants) {
+      assertNull(merged.getPredefinedIndexableFilesIterators());
+      assertEquals(ScanningType.FULL, merged.getScanningType());
+    }
   }
 
   public void testTryMergeDumbScanningTasks() {
@@ -83,21 +89,6 @@ public class ScanningIndexingTasksMergeTest extends LightPlatformTestCase {
 
     assertSameElements(mergeAsDumbTasks(t1, t2).getPredefinedIndexableFilesIterators(), Arrays.asList(iter1, iter2));
     assertSameElements(mergeAsDumbTasks(t2, t1).getPredefinedIndexableFilesIterators(), Arrays.asList(iter1, iter2));
-  }
-
-  public void testDumbWrapperInvokesOriginalDispose() {
-    UnindexedFilesScanner t1 = createScanningTask(iter1, "reason 1", ScanningType.PARTIAL);
-    UnindexedFilesScannerExecutorImpl executor = new UnindexedFilesScannerExecutorImpl(getProject());
-    DumbModeTask dumb1 = executor.wrapAsDumbTask(t1);
-
-    // Disposer.isDisposed() deprecated. Use checkedDisposable instead
-    CheckedDisposable checked = Disposer.newCheckedDisposable();
-    Disposer.register(t1, checked);
-
-    assertFalse(checked.isDisposed());
-
-    Disposer.dispose(dumb1);
-    assertTrue(checked.isDisposed());
   }
 
   // we don't care which exact reason will be after merge. We only care that we don't have hundreds of "On refresh of files" in it
@@ -131,7 +122,9 @@ public class ScanningIndexingTasksMergeTest extends LightPlatformTestCase {
   }
 
   private UnindexedFilesScanner mergeAsDumbTasks(UnindexedFilesScanner t1, UnindexedFilesScanner t2) {
-    UnindexedFilesScannerExecutorImpl executor = new UnindexedFilesScannerExecutorImpl(getProject());
+    UnindexedFilesScannerExecutorImpl executor =
+      (UnindexedFilesScannerExecutorImpl)getProject().getService(UnindexedFilesScannerExecutor.class);
+
     DumbModeTask dumb1 = executor.wrapAsDumbTask(t1);
     DumbModeTask dumb2 = executor.wrapAsDumbTask(t2);
     DumbModeTask mergedDumb = dumb1.tryMergeWith(dumb2);
@@ -142,7 +135,7 @@ public class ScanningIndexingTasksMergeTest extends LightPlatformTestCase {
       mergedDumb.getClass(), dumb1.getClass()
     );
 
-    return (UnindexedFilesScanner)((FilesScanningTaskAsDumbModeTaskWrapper)mergedDumb).getTask();
+    return ((FilesScanningTaskAsDumbModeTaskWrapper)mergedDumb).getTask();
   }
 
   @NotNull

@@ -122,7 +122,6 @@ c:com.intellij.vcs.log.data.DataPackBase
 - isFull():Z
 com.intellij.vcs.log.data.DataPackChangeListener
 - a:onDataPackChange(com.intellij.vcs.log.data.DataPack):V
-f:com.intellij.vcs.log.data.DataPackKt
 c:com.intellij.vcs.log.data.EmptyIndex
 - com.intellij.vcs.log.data.index.VcsLogIndex
 - <init>():V
@@ -164,6 +163,7 @@ f:com.intellij.vcs.log.data.RefsModel
 - f:getAllRefsByRoot():java.util.Map
 - getBranches():java.util.Collection
 - f:refsToCommit(I):java.util.List
+- f:refsToCommit(com.intellij.openapi.vfs.VirtualFile,I):java.util.List
 - f:rootAtHead(I):com.intellij.openapi.vfs.VirtualFile
 - stream():java.util.stream.Stream
 f:com.intellij.vcs.log.data.RefsModel$Companion
@@ -346,6 +346,7 @@ f:com.intellij.vcs.log.data.index.VcsLogBigRepositoriesList
 - addRepository(com.intellij.openapi.vfs.VirtualFile):V
 - s:getInstance():com.intellij.vcs.log.data.index.VcsLogBigRepositoriesList
 - getRepositoryCount():I
+- getRepositoryPaths():java.util.SortedSet
 - getState():com.intellij.vcs.log.data.index.VcsLogBigRepositoriesList$State
 - isBig(com.intellij.openapi.vfs.VirtualFile):Z
 - isBig(java.lang.String):Z
@@ -851,7 +852,6 @@ f:com.intellij.vcs.log.impl.VcsLogApplicationSettings$State
 - f:setShowChangesFromParents(Z):V
 - f:setShowDiffPreview(Z):V
 - f:setShowTagNames(Z):V
-f:com.intellij.vcs.log.impl.VcsLogApplicationSettingsKt
 f:com.intellij.vcs.log.impl.VcsLogCachesInvalidator
 - com.intellij.ide.caches.CachesInvalidator
 - <init>():V
@@ -872,7 +872,6 @@ f:com.intellij.vcs.log.impl.VcsLogContentProvider
 - initTabContent(com.intellij.ui.content.Content):V
 - f:waitMainUiCreation():com.google.common.util.concurrent.ListenableFuture
 f:com.intellij.vcs.log.impl.VcsLogContentProvider$Companion
-f:com.intellij.vcs.log.impl.VcsLogContentProviderKt
 f:com.intellij.vcs.log.impl.VcsLogContentUtil
 - sf:INSTANCE:com.intellij.vcs.log.impl.VcsLogContentUtil
 - f:closeLogTab(com.intellij.ui.content.ContentManager,java.lang.String):Z
@@ -1134,13 +1133,10 @@ f:com.intellij.vcs.log.impl.VcsProjectLog$Companion
 com.intellij.vcs.log.impl.VcsProjectLog$ProjectLogListener
 - a:logCreated(com.intellij.vcs.log.impl.VcsLogManager):V
 - a:logDisposed(com.intellij.vcs.log.impl.VcsLogManager):V
-f:com.intellij.vcs.log.impl.VcsProjectLogErrorHandlerKt
-f:com.intellij.vcs.log.impl.VcsProjectLogKt
 f:com.intellij.vcs.log.impl.VcsProjectLogManager
 - com.intellij.vcs.log.impl.VcsLogManager
 - <init>(com.intellij.openapi.project.Project,com.intellij.vcs.log.impl.VcsLogProjectTabsProperties,java.util.Map,java.util.function.BiConsumer):V
 - f:getTabsManager():com.intellij.vcs.log.impl.VcsLogTabsManager
-f:com.intellij.vcs.log.impl.VcsProjectLogManagerKt
 f:com.intellij.vcs.log.impl.VcsRefImpl
 - com.intellij.vcs.log.VcsRef
 - <init>(com.intellij.vcs.log.Hash,java.lang.String,com.intellij.vcs.log.VcsRefType,com.intellij.openapi.vfs.VirtualFile):V
@@ -1252,7 +1248,6 @@ c:com.intellij.vcs.log.statistics.VcsLogRepoSizeCollector
 - getGroup():com.intellij.internal.statistic.eventLog.EventLogGroup
 - getMetrics(com.intellij.openapi.project.Project):java.util.Set
 - s:getVcsKeySafe(com.intellij.openapi.vcs.VcsKey):java.lang.String
-f:com.intellij.vcs.log.statistics.VcsLogTelemetryExporterKt
 f:com.intellij.vcs.log.statistics.VcsLogUsageTriggerCollector
 - sf:PARENT_COMMIT:com.intellij.internal.statistic.eventLog.events.BooleanEventField
 - <init>():V
@@ -1305,6 +1300,11 @@ c:com.intellij.vcs.log.ui.MainVcsLogUiDataRule
 - com.intellij.ide.impl.dataRules.GetDataRule
 - <init>():V
 - getData(com.intellij.openapi.actionSystem.DataProvider):java.lang.Object
+f:com.intellij.vcs.log.ui.VcsBookmarkRef
+- <init>(com.intellij.ide.bookmark.Bookmark,com.intellij.ide.bookmark.BookmarkType,java.lang.String):V
+- f:getBookmark():com.intellij.ide.bookmark.Bookmark
+- f:getText():java.lang.String
+- f:getType():com.intellij.ide.bookmark.BookmarkType
 f:com.intellij.vcs.log.ui.VcsLogActionIds
 - sf:BRANCH_ACTIONS_GROUP:java.lang.String
 - sf:CHANGES_BROWSER_POPUP_ACTION_GROUP:java.lang.String
@@ -1319,7 +1319,6 @@ f:com.intellij.vcs.log.ui.VcsLogActionIds
 - sf:VCS_LOG_FOCUS_TEXT_FILTER:java.lang.String
 - sf:VCS_LOG_SHOW_DIFF_ACTION:java.lang.String
 - <init>():V
-f:com.intellij.vcs.log.ui.VcsLogBookmarkProviderKt
 com.intellij.vcs.log.ui.VcsLogColorManager
 - sf:DEFAULT_COLOR_MODE:java.lang.String
 - getLongName(com.intellij.openapi.vcs.FilePath):java.lang.String
@@ -1370,10 +1369,6 @@ f:com.intellij.vcs.log.ui.VcsLogPanel
 - <init>(com.intellij.vcs.log.impl.VcsLogManager,com.intellij.vcs.log.ui.VcsLogUiEx):V
 - getData(java.lang.String):java.lang.Object
 - getVcsLogUi():com.intellij.vcs.log.ui.VcsLogUiEx
-f:com.intellij.vcs.log.ui.VcsLogSharedSettingsConfigurable
-- com.intellij.openapi.options.DslConfigurableBase
-- <init>(com.intellij.openapi.project.Project):V
-- createPanel():com.intellij.openapi.ui.DialogPanel
 a:com.intellij.vcs.log.ui.VcsLogUiBase
 - com.intellij.vcs.log.ui.VcsLogUiEx
 - pf:myDisposableFlag:com.intellij.openapi.util.CheckedDisposable
@@ -1549,7 +1544,6 @@ a:com.intellij.vcs.log.ui.actions.IndexDiagnosticActionBase
 - a:getCommitsToCheck(com.intellij.openapi.actionSystem.AnActionEvent,com.intellij.vcs.log.impl.VcsLogManager):java.util.List
 - update(com.intellij.openapi.actionSystem.AnActionEvent):V
 - a:update(com.intellij.openapi.actionSystem.AnActionEvent,com.intellij.vcs.log.impl.VcsLogManager):V
-f:com.intellij.vcs.log.ui.actions.InvalidateVcsLogCachesKt
 f:com.intellij.vcs.log.ui.actions.MoveDiffPreviewToBottomAction
 - com.intellij.vcs.log.ui.actions.ChangeDiffPreviewLocationAction
 - <init>():V
@@ -1693,6 +1687,10 @@ c:com.intellij.vcs.log.ui.actions.VcsLogCreatePatchActionProvider$Clipboard
 c:com.intellij.vcs.log.ui.actions.VcsLogCreatePatchActionProvider$Dialog
 - com.intellij.vcs.log.ui.actions.VcsLogCreatePatchActionProvider
 - <init>():V
+f:com.intellij.vcs.log.ui.actions.VcsLogShowBigRepositoriesList
+- com.intellij.openapi.project.DumbAwareAction
+- <init>():V
+- actionPerformed(com.intellij.openapi.actionSystem.AnActionEvent):V
 c:com.intellij.vcs.log.ui.actions.VcsLogToolbarPopupActionGroup
 - com.intellij.openapi.actionSystem.DefaultActionGroup
 - com.intellij.openapi.project.DumbAware
@@ -1750,7 +1748,6 @@ a:com.intellij.vcs.log.ui.actions.history.FileHistoryOneCommitAction
 - p:isEnabled(com.intellij.vcs.log.history.FileHistoryModel,com.intellij.vcs.log.VcsCommitMetadata,com.intellij.openapi.actionSystem.AnActionEvent):Z
 - pa:performAction(com.intellij.openapi.project.Project,com.intellij.vcs.log.history.FileHistoryModel,com.intellij.vcs.log.VcsCommitMetadata,com.intellij.openapi.actionSystem.AnActionEvent):V
 - update(com.intellij.openapi.actionSystem.AnActionEvent):V
-f:com.intellij.vcs.log.ui.actions.history.FileHistoryOneCommitActionKt
 a:com.intellij.vcs.log.ui.actions.history.FileHistorySingleCommitAction
 - com.intellij.openapi.actionSystem.AnAction
 - com.intellij.openapi.project.DumbAware
@@ -1867,6 +1864,7 @@ c:com.intellij.vcs.log.ui.details.commit.ReferencesPanel
 - javax.swing.JPanel
 - sf:H_GAP:I
 - psf:V_GAP:I
+- p:myBookmarks:java.util.List
 - p:myGroupedVisibleReferences:com.intellij.util.containers.MultiMap
 - <init>(I):V
 - <init>(java.awt.LayoutManager,I):V
@@ -1878,6 +1876,7 @@ c:com.intellij.vcs.log.ui.details.commit.ReferencesPanel
 - p:getLabelsFont():java.awt.Font
 - getMaximumSize():java.awt.Dimension
 - setReferences(java.util.List):V
+- setReferences(java.util.List,java.util.List):V
 - update():V
 f:com.intellij.vcs.log.ui.editor.DefaultVcsLogFileTabTitleProvider
 - com.intellij.openapi.fileEditor.impl.EditorTabTitleProvider
@@ -2238,6 +2237,7 @@ com.intellij.vcs.log.ui.frame.VcsCommitExternalStatusPresentation$Clickable
 - pa:getExternalStatusColumnService():com.intellij.vcs.log.ui.table.column.util.VcsLogExternalStatusColumnService
 - f:getLogColumn():com.intellij.vcs.log.ui.table.column.VcsLogColumn
 - pa:getStubStatus():com.intellij.vcs.log.data.VcsCommitExternalStatus
+- isColumnAvailable(com.intellij.openapi.project.Project):Z
 - pa:isColumnEnabledByDefault():Z
 f:com.intellij.vcs.log.ui.frame.VcsLogChangeProcessor
 - com.intellij.openapi.vcs.changes.ui.TreeHandlerDiffRequestProcessor
@@ -2338,8 +2338,16 @@ com.intellij.vcs.log.ui.highlighters.VcsLogHighlighterFactory
 - a:getId():java.lang.String
 - a:getTitle():java.lang.String
 - a:showMenuItem():Z
+c:com.intellij.vcs.log.ui.render.BookmarkIcon
+- javax.swing.Icon
+- sf:WIDTH:F
+- <init>(javax.swing.JComponent,I,java.awt.Color,com.intellij.vcs.log.ui.VcsBookmarkRef):V
+- getIconHeight():I
+- getIconWidth():I
+- paintIcon(java.awt.Component,java.awt.Graphics,I,I):V
 c:com.intellij.vcs.log.ui.render.GraphCommitCell
-- <init>(java.lang.String,java.util.Collection,java.util.Collection):V
+- <init>(java.lang.String,java.util.Collection,java.util.Collection,java.util.Collection):V
+- getBookmarksToThisCommit():java.util.Collection
 - getPrintElements():java.util.Collection
 - getRefsToThisCommit():java.util.Collection
 - getText():java.lang.String
@@ -2371,6 +2379,7 @@ c:com.intellij.vcs.log.ui.render.LabelPainter
 - <init>(javax.swing.JComponent,com.intellij.vcs.log.ui.render.LabelIconCache):V
 - clear():V
 - customizePainter(java.awt.Color,java.awt.Color,Z,I,java.util.List):V
+- customizePainter(java.awt.Color,java.awt.Color,Z,I,java.util.List,java.util.List):V
 - s:getReferenceFont():java.awt.Font
 - getSize():java.awt.Dimension
 - isCompact():Z
@@ -2394,7 +2403,7 @@ f:com.intellij.vcs.log.ui.render.VcsLogLabelPainter
 - com.intellij.vcs.log.ui.render.LabelPainter
 - sf:Companion:com.intellij.vcs.log.ui.render.VcsLogLabelPainter$Companion
 - <init>(com.intellij.vcs.log.data.VcsLogData,javax.swing.JComponent,com.intellij.vcs.log.ui.render.LabelIconCache):V
-- f:customizePainter(java.util.Collection,java.awt.Color,java.awt.Color,Z,I):V
+- f:customizePainter(java.util.Collection,java.util.Collection,java.awt.Color,java.awt.Color,Z,I):V
 - f:getShowTagNames():Z
 - f:setShowTagNames(Z):V
 f:com.intellij.vcs.log.ui.render.VcsLogLabelPainter$Companion
@@ -2555,7 +2564,6 @@ a:com.intellij.vcs.log.ui.table.VcsLogIconCellRenderer
 - pa:customize(com.intellij.vcs.log.ui.table.VcsLogGraphTable,java.lang.Object,Z,Z,I,I):V
 - pf:customizeCellRenderer(javax.swing.JTable,java.lang.Object,Z,Z,I,I):V
 - getPreferredWidth():com.intellij.vcs.log.ui.table.VcsLogCellRenderer$PreferredWidth
-f:com.intellij.vcs.log.ui.table.VcsLogIconCellRendererKt
 c:com.intellij.vcs.log.ui.table.VcsLogSpeedSearch
 - com.intellij.ui.SpeedSearchBase
 - <init>(com.intellij.vcs.log.ui.table.VcsLogGraphTable):V
@@ -2606,14 +2614,19 @@ f:com.intellij.vcs.log.ui.table.column.VcsLogColumnProperties
 - toString():java.lang.String
 f:com.intellij.vcs.log.ui.table.column.VcsLogColumnProperties$Companion
 - f:create(com.intellij.vcs.log.ui.table.column.VcsLogColumn):com.intellij.vcs.log.ui.table.column.VcsLogColumnProperties
-f:com.intellij.vcs.log.ui.table.column.VcsLogColumnUtilKt
 com.intellij.vcs.log.ui.table.column.VcsLogCustomColumn
 - com.intellij.vcs.log.ui.table.column.VcsLogColumn
 - sf:Companion:com.intellij.vcs.log.ui.table.column.VcsLogCustomColumn$Companion
 - sf:KEY:com.intellij.openapi.extensions.ExtensionPointName
+- isAvailable(com.intellij.openapi.project.Project):Z
 - isEnabledByDefault():Z
 f:com.intellij.vcs.log.ui.table.column.VcsLogCustomColumn$Companion
-f:com.intellij.vcs.log.ui.table.column.VcsLogDefaultColumnKt
+com.intellij.vcs.log.ui.table.column.VcsLogCustomColumnListener
+- java.util.EventListener
+- sf:Companion:com.intellij.vcs.log.ui.table.column.VcsLogCustomColumnListener$Companion
+- sf:TOPIC:com.intellij.util.messages.Topic
+- columnAvailabilityChanged():V
+f:com.intellij.vcs.log.ui.table.column.VcsLogCustomColumnListener$Companion
 a:com.intellij.vcs.log.ui.table.column.VcsLogExternalStatusColumn
 - com.intellij.vcs.log.ui.table.column.VcsLogCustomColumn
 - <init>():V
@@ -2681,7 +2694,7 @@ a:com.intellij.vcs.log.util.RevisionCollectorTask
 - <init>(com.intellij.openapi.project.Project,com.intellij.openapi.progress.ProgressIndicator,com.intellij.openapi.progress.ProgressIndicator):V
 - f:cancel(Z):V
 - a:collectRevisions(kotlin.jvm.functions.Function1):V
-- a:collectRevisionsFast(kotlin.jvm.functions.Function1):V
+- collectRevisionsFast(kotlin.jvm.functions.Function1):V
 - pf:getProject():com.intellij.openapi.project.Project
 - pf:getRevisionsCount():I
 - f:isCancelled():Z
@@ -2756,15 +2769,15 @@ f:com.intellij.vcs.log.util.VcsLogUtil
 - s:isRegexp(java.lang.String):Z
 - s:requestToLoadMore(com.intellij.vcs.log.ui.VcsLogUiEx,java.lang.Runnable):V
 - s:runWhenVcsAndLogIsReady(com.intellij.openapi.project.Project,com.intellij.util.Consumer):V
-c:com.intellij.vcs.log.visible.CommitCountStage
+f:com.intellij.vcs.log.visible.CommitCountStage
 - sf:ALL:com.intellij.vcs.log.visible.CommitCountStage
 - sf:Companion:com.intellij.vcs.log.visible.CommitCountStage$Companion
-- sf:FIRST_STEP:com.intellij.vcs.log.visible.CommitCountStage
 - sf:INITIAL:com.intellij.vcs.log.visible.CommitCountStage
-- sf:SECOND_STEP:com.intellij.vcs.log.visible.CommitCountStage
-- <init>(I):V
+- <init>(I[]):V
 - f:getCount():I
-- next():com.intellij.vcs.log.visible.CommitCountStage
+- f:isInitial():Z
+- f:last():com.intellij.vcs.log.visible.CommitCountStage
+- f:next():com.intellij.vcs.log.visible.CommitCountStage
 - toString():java.lang.String
 f:com.intellij.vcs.log.visible.CommitCountStage$Companion
 f:com.intellij.vcs.log.visible.CommitCountStageKt
@@ -2785,6 +2798,7 @@ f:com.intellij.vcs.log.visible.VcsLogFilterUtilKt
 com.intellij.vcs.log.visible.VcsLogFilterer
 - canFilterEmptyPack(com.intellij.vcs.log.VcsLogFilterCollection):Z
 - a:filter(com.intellij.vcs.log.data.DataPack,com.intellij.vcs.log.visible.VisiblePack,com.intellij.vcs.log.graph.PermanentGraph$Options,com.intellij.vcs.log.VcsLogFilterCollection,com.intellij.vcs.log.visible.CommitCountStage):kotlin.Pair
+- getInitialCommitCount():com.intellij.vcs.log.visible.CommitCountStage
 f:com.intellij.vcs.log.visible.VcsLogFiltererImpl
 - com.intellij.vcs.log.visible.VcsLogFilterer
 - <init>(com.intellij.vcs.log.data.VcsLogData):V
@@ -2793,7 +2807,6 @@ f:com.intellij.vcs.log.visible.VcsLogFiltererImpl
 - f:getMatchingHeads(com.intellij.vcs.log.data.RefsModel,java.util.Collection,com.intellij.vcs.log.VcsLogFilterCollection):java.util.Set
 f:com.intellij.vcs.log.visible.VcsLogFiltererImplKt
 - sf:areFiltersAffectedByIndexing(com.intellij.vcs.log.VcsLogFilterCollection,java.util.List):Z
-f:com.intellij.vcs.log.visible.VcsLogRangeFilterUtilKt
 c:com.intellij.vcs.log.visible.VisiblePack
 - com.intellij.openapi.util.UserDataHolder
 - com.intellij.vcs.log.VcsLogDataPack
@@ -2906,7 +2919,6 @@ f:com.intellij.vcs.log.visible.filters.VcsLogParentFilterImplKt
 - com.intellij.vcs.log.VcsLogTextFilter
 - matches(java.lang.String):Z
 - a:matchingRanges(java.lang.String):java.lang.Iterable
-f:com.intellij.vcs.log.visible.filters.VcsLogTextFiltersKt
 f:icons.VcsLogIcons
 - <init>():V
 f:icons.VcsLogIcons$Process
