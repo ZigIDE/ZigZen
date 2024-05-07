@@ -18,7 +18,6 @@ import com.intellij.usageView.UsageInfo
 import com.intellij.util.IncorrectOperationException
 import com.intellij.util.containers.MultiMap
 import org.jetbrains.kotlin.analysis.api.KtAllowAnalysisOnEdt
-import org.jetbrains.kotlin.analysis.api.lifetime.allowAnalysisOnEdt
 import org.jetbrains.kotlin.idea.base.analysis.api.utils.analyzeInModalWindow
 import org.jetbrains.kotlin.idea.base.util.quoteIfNeeded
 import org.jetbrains.kotlin.idea.core.getFqNameWithImplicitPrefix
@@ -28,7 +27,8 @@ import org.jetbrains.kotlin.idea.k2.refactoring.move.descriptor.K2MoveTargetDesc
 import org.jetbrains.kotlin.idea.k2.refactoring.move.descriptor.K2MoveTargetDescriptor.SourceDirectory
 import org.jetbrains.kotlin.idea.k2.refactoring.move.processor.K2MoveRenameUsageInfo.Companion.markInternalUsages
 import org.jetbrains.kotlin.idea.k2.refactoring.move.processor.K2MoveRenameUsageInfo.Companion.retargetInternalUsages
-import org.jetbrains.kotlin.idea.k2.refactoring.move.processor.K2MoveRenameUsageInfo.Companion.unMarkNonUpdatableUsages
+import org.jetbrains.kotlin.idea.k2.refactoring.move.processor.K2MoveRenameUsageInfo.Companion.retargetInternalUsagesForCopyFile
+import org.jetbrains.kotlin.idea.k2.refactoring.move.processor.K2MoveRenameUsageInfo.Companion.unMarkAllUsages
 import org.jetbrains.kotlin.idea.k2.refactoring.move.processor.checkModuleDependencyConflictsForInternalUsages
 import org.jetbrains.kotlin.idea.k2.refactoring.move.processor.checkVisibilityConflictsForInternalUsages
 import org.jetbrains.kotlin.idea.k2.refactoring.move.processor.createCopyTarget
@@ -36,6 +36,9 @@ import org.jetbrains.kotlin.idea.k2.refactoring.move.processor.createKotlinFile
 import org.jetbrains.kotlin.idea.refactoring.checkConflictsInteractively
 import org.jetbrains.kotlin.idea.refactoring.copy.AbstractCopyKotlinDeclarationsHandler
 import org.jetbrains.kotlin.idea.refactoring.copy.CopyKotlinDeclarationDialog
+import org.jetbrains.kotlin.idea.refactoring.copy.copyCommandName
+import org.jetbrains.kotlin.idea.refactoring.copy.copyNewName
+import org.jetbrains.kotlin.idea.refactoring.copy.getCopyableElement
 import org.jetbrains.kotlin.idea.util.application.executeCommand
 import org.jetbrains.kotlin.idea.util.application.isUnitTestMode
 import org.jetbrains.kotlin.idea.util.sourceRoot
@@ -64,7 +67,7 @@ class CopyKotlinDeclarationsHandler : AbstractCopyKotlinDeclarationsHandler() {
     private fun getTargetData(sourceData: SourceData): TargetData? {
         if (isUnitTestMode()) {
             val targetSourceRoot: VirtualFile = sourceData.initialTargetDirectory.sourceRoot ?: return null
-            val newName: String = sourceData.project.newName ?: sourceData.singleElementToCopy?.name ?: sourceData.originalFile.name
+            val newName: String = sourceData.project.copyNewName ?: sourceData.singleElementToCopy?.name ?: sourceData.originalFile.name
             if (sourceData.singleElementToCopy != null && newName.isEmpty()) return null
             return TargetData(
                 openInEditor = false,
@@ -84,7 +87,7 @@ class CopyKotlinDeclarationsHandler : AbstractCopyKotlinDeclarationsHandler() {
 
         if (singleNamedSourceElement !== null) {
             val dialog = CopyKotlinDeclarationDialog(singleNamedSourceElement, sourceData.initialTargetDirectory, sourceData.project)
-            dialog.title = commandName
+            dialog.title = copyCommandName
             if (!dialog.showAndGet()) return null
 
             openInEditor = dialog.openInEditor
@@ -120,7 +123,7 @@ class CopyKotlinDeclarationsHandler : AbstractCopyKotlinDeclarationsHandler() {
 
     private fun doCopyFiles(filesToCopy: Array<out PsiFileSystemItem>, initialTargetDirectory: PsiDirectory?) {
         if (filesToCopy.isEmpty()) return
-        filesToCopy.first().project.executeCommand(commandName) {
+        filesToCopy.first().project.executeCommand(copyCommandName) {
             if (copyFilesHandler.canCopy(filesToCopy)) {
                 copyFilesHandler.doCopy(filesToCopy, initialTargetDirectory)
             }
@@ -168,13 +171,11 @@ class CopyKotlinDeclarationsHandler : AbstractCopyKotlinDeclarationsHandler() {
 
         project.checkConflictsInteractively(conflicts) {
             try {
-                project.executeCommand(commandName) {
+                project.executeCommand(copyCommandName) {
                     doRefactor(sourceData, targetData)
                 }
             } finally {
-                allowAnalysisOnEdt {
-                    unMarkNonUpdatableUsages(elements.asIterable())
-                }
+                elements.filterIsInstance<KtElement>().forEach(::unMarkAllUsages)
             }
         }
     }
@@ -237,10 +238,15 @@ class CopyKotlinDeclarationsHandler : AbstractCopyKotlinDeclarationsHandler() {
         val targetFile = runWriteAction { // implicit package prefix may change after copy
             val targetDirectoryFqName = targetDirectory.getFqNameWithImplicitPrefix()
             val copiedFile = targetDirectory.copyFileFrom(targetFileName, fileToCopy)
-            if (copiedFile is KtFile && fileToCopy.packageMatchesDirectoryOrImplicit()) {
-                targetDirectoryFqName?.quoteIfNeeded()?.let { copiedFile.packageFqName = it }
-            }
 
+            if (copiedFile is KtFile) {
+                //set the package statement first to ensure
+                // that the usages from the old package would be explicitly imported by shortenReferences of [retargetInternalUsagesForCopyFile]
+                if (fileToCopy.packageMatchesDirectoryOrImplicit()) {
+                    targetDirectoryFqName?.quoteIfNeeded()?.let { copiedFile.packageFqName = it }
+                }
+                retargetInternalUsagesForCopyFile(fileToCopy, copiedFile)
+            }
             copiedFile
         }
 

@@ -5,6 +5,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.psi.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.searches.ReferencesSearch
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.isAncestor
 import com.intellij.psi.util.parentOfType
 import com.intellij.refactoring.move.moveClassesOrPackages.MoveClassHandler
@@ -14,7 +15,6 @@ import com.intellij.refactoring.move.moveMembers.MoveMembersProcessor
 import com.intellij.refactoring.util.MoveRenameUsageInfo
 import com.intellij.usageView.UsageInfo
 import org.jetbrains.kotlin.analysis.api.KtAllowAnalysisFromWriteAction
-import org.jetbrains.kotlin.analysis.api.KtAnalysisSession
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.lifetime.allowAnalysisFromWriteAction
 import org.jetbrains.kotlin.analysis.api.symbols.KtCallableSymbol
@@ -165,7 +165,12 @@ sealed class K2MoveRenameUsageInfo(
                     refExpr.internalUsageInfo = usageInfo
                 }
 
-        fun unMarkNonUpdatableUsages(containing: Iterable<PsiElement>) = containing.forEach {
+        fun unMarkAllUsages(containing: KtElement) =
+                containing.forEachDescendantOfType<KtSimpleNameExpression> { refExpr ->
+                    refExpr.internalUsageInfo = null
+                }
+
+        fun unMarkNonUpdatableUsages(containing: Iterable<KtElement>) = containing.forEach {
             unMarkNonUpdatableUsages(it)
         }
 
@@ -175,7 +180,7 @@ sealed class K2MoveRenameUsageInfo(
          * Like, for example, instance methods.
          */
         @OptIn(KtAllowAnalysisFromWriteAction::class)
-        fun unMarkNonUpdatableUsages(containing: PsiElement) = allowAnalysisFromWriteAction {
+        fun unMarkNonUpdatableUsages(containing: KtElement) = allowAnalysisFromWriteAction {
             containing.forEachDescendantOfType<KtSimpleNameExpression> { refExpr ->
                 if (!refExpr.isImportable()) refExpr.internalUsageInfo = null
             }
@@ -263,6 +268,32 @@ sealed class K2MoveRenameUsageInfo(
                 if (!newReferencedElement.isValid || newReferencedElement !is PsiNamedElement) return@mapNotNull null
                 usageInfo.refresh(refExpr, newReferencedElement)
             }
+        }
+
+        /**
+         * If file copy was done through vfs, then copyable user data is not preserved.
+         * For this case, let's rely on the fact that in the same write action,
+         * copy and original files are identical and retrieve original resolve targets from initial user data.
+         */
+        fun retargetInternalUsagesForCopyFile(
+            originalFile: KtFile,
+            fileCopy: KtFile,
+        ) {
+            val inCopy = fileCopy.collectDescendantsOfType<KtSimpleNameExpression>()
+            val original = originalFile.collectDescendantsOfType<KtSimpleNameExpression>()
+            val internalUsages =  original.zip(inCopy).mapNotNull { (o, c) ->
+                if (PsiTreeUtil.getParentOfType(o, KtPackageDirective::class.java) != null) return@mapNotNull null
+                val usageInfo = o.internalUsageInfo
+                val referencedElement = (usageInfo as? Source)?.referencedElement ?: return@mapNotNull null
+                if (!referencedElement.isValid ||
+                    referencedElement !is PsiNamedElement ||
+                    PsiTreeUtil.isAncestor(originalFile, referencedElement, true)) {
+                    return@mapNotNull null
+                }
+                usageInfo.refresh(c, referencedElement)
+            }
+
+            shortenUsages(retargetMoveUsages(mapOf(fileCopy to internalUsages), emptyMap()))
         }
 
         fun retargetInternalUsages(oldToNewMap: Map<KtNamedDeclaration, KtNamedDeclaration>, fromCopy: Boolean = false) {

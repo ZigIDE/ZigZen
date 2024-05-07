@@ -66,9 +66,7 @@ object CommunityRepositoryModules {
     pluginAuto(listOf("intellij.xpath")) { spec ->
       spec.withModule("intellij.xpath.rt", "rt/xslt-rt.jar")
     },
-    pluginAuto(listOf("intellij.platform.langInjection")) { spec ->
-      spec.withModule("intellij.java.langInjection", "IntelliLang.jar")
-      spec.withModule("intellij.xml.langInjection", "IntelliLang.jar")
+    pluginAuto(listOf("intellij.platform.langInjection", "intellij.java.langInjection", "intellij.xml.langInjection")) { spec ->
       spec.withModule("intellij.java.langInjection.jps")
     },
     plugin("intellij.tasks.core") { spec ->
@@ -165,9 +163,6 @@ object CommunityRepositoryModules {
       spec.withModule("intellij.junit.rt", "junit-rt.jar")
       spec.withModule("intellij.junit.v5.rt", "junit5-rt.jar")
     },
-    plugin("intellij.java.byteCodeViewer") { spec ->
-      spec.mainJarName = "byteCodeViewer.jar"
-    },
     plugin("intellij.testng") { spec ->
       spec.mainJarName = "testng-plugin.jar"
       spec.withModule("intellij.testng.rt", "testng-rt.jar")
@@ -203,8 +198,7 @@ object CommunityRepositoryModules {
     pluginAuto("intellij.emojipicker") { spec ->
       spec.bundlingRestrictions.supportedOs = persistentListOf(OsFamily.LINUX)
     },
-    pluginAuto("intellij.textmate") { spec ->
-      spec.withModule("intellij.textmate.core")
+    pluginAuto(listOf("intellij.textmate")) { spec ->
       spec.withResource("lib/bundles", "lib/bundles")
     },
     PythonCommunityPluginModules.pythonCommunityPluginLayout(),
