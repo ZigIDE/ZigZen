@@ -858,6 +858,9 @@ public final class GenericsHighlightUtil {
     if (TypeConversionUtil.isAssignable(parameterType, itemType)) {
       return null;
     }
+    if (IncompleteModelUtil.isIncompleteModel(statement) && IncompleteModelUtil.isPotentiallyConvertible(parameterType, itemType, expression)) {
+      return null;
+    }
     HighlightInfo.Builder builder = HighlightUtil.createIncompatibleTypeHighlightInfo(itemType, parameterType, parameter.getTextRange(), 0);
     HighlightFixUtil.registerChangeVariableTypeFixes(parameter, itemType, expression, builder);
     return builder;
@@ -1114,7 +1117,9 @@ public final class GenericsHighlightUtil {
                                                @NotNull PsiAnnotation overrideAnnotation,
                                                @NotNull LanguageLevel languageLevel) {
     if (method.hasModifierProperty(PsiModifier.STATIC)) {
+      QuickFixFactory factory = QuickFixFactory.getInstance();
       return HighlightInfo.newHighlightInfo(HighlightInfoType.ERROR).range(overrideAnnotation)
+        .registerFix(factory.createDeleteFix(overrideAnnotation), null, null, null, null)
         .descriptionAndTooltip(
           JavaErrorBundle.message("static.method.cannot.be.annotated.with.override"));
     }
@@ -1131,10 +1136,16 @@ public final class GenericsHighlightUtil {
             superMethod = null;
           }
         } else if (superMethod == null) {
-          for (PsiClassType type : psiClass.getSuperTypes()) {
-            // There's an unresolvable superclass: likely the error on @Override is induced.
-            // Do not show an error on override, as it's reasonable to fix hierarchy first.
-            if (type.resolve() == null) return null;
+          if (IncompleteModelUtil.isIncompleteModel(psiClass)) {
+            if (!IncompleteModelUtil.isHierarchyResolved(psiClass)) {
+              return null;
+            }
+          } else {
+            for (PsiClassType type : psiClass.getSuperTypes()) {
+              // There's an unresolvable superclass: likely the error on @Override is induced.
+              // Do not show an error on override, as it's reasonable to fix hierarchy first.
+              if (type.resolve() == null) return null;
+            }
           }
         }
       }
@@ -1146,10 +1157,12 @@ public final class GenericsHighlightUtil {
         HighlightInfo.Builder builder =
           HighlightInfo.newHighlightInfo(HighlightInfoType.ERROR).range(overrideAnnotation).descriptionAndTooltip(description);
         List<IntentionAction> registrar = new ArrayList<>();
-        QuickFixFactory.getInstance().registerPullAsAbstractUpFixes(method, registrar);
+        QuickFixFactory factory = QuickFixFactory.getInstance();
+        factory.registerPullAsAbstractUpFixes(method, registrar);
         for (IntentionAction action : registrar) {
           builder.registerFix(action, null, null, null, null);
         }
+        builder.registerFix(factory.createDeleteFix(overrideAnnotation), null, null, null, null);
         return builder;
       }
       PsiClass superClass = superMethod.getMethod().getContainingClass();

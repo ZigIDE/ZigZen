@@ -6171,7 +6171,9 @@ c:com.intellij.ui.CheckBoxList
 - clear():V
 - p:findPointRelativeToCheckBox(I,I,javax.swing.JCheckBox,I):java.awt.Point
 - p:findPointRelativeToCheckBoxWithAdjustedRendering(I,I,javax.swing.JCheckBox,I):java.awt.Point
+- getAllItems():java.util.Set
 - p:getBackground(Z):java.awt.Color
+- getCheckedItems():java.util.List
 - p:getForeground(Z):java.awt.Color
 - getItemAt(I):java.lang.Object
 - p:getSecondaryText(I):java.lang.String
@@ -12530,6 +12532,7 @@ c:com.intellij.util.net.HttpConfigurable$ProxyInfo
 - setUsername(java.lang.String):V
 c:com.intellij.util.net.HttpProxyConfigurable
 - com.intellij.openapi.options.ConfigurableBase
+- com.intellij.openapi.options.Configurable$NoMargin
 - <init>():V
 - <init>(com.intellij.util.net.HttpConfigurable):V
 - p:createUi():com.intellij.util.net.HttpProxySettingsUi

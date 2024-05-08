@@ -16,7 +16,6 @@ import org.jetbrains.intellij.build.io.copyFileToDir
 import org.jetbrains.intellij.build.kotlin.KotlinPluginBuilder
 import org.jetbrains.intellij.build.python.PythonCommunityPluginModules
 import org.jetbrains.jps.model.library.JpsOrderRootType
-import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
 
@@ -215,8 +214,15 @@ object CommunityRepositoryModules {
       spec.withModuleLibrary("intellij.remoterobot.robot.server.core", spec.mainModule, "")
       spec.withProjectLibrary("okhttp")
     },
-    pluginAuto(listOf("intellij.performanceTesting", "intellij.driver.model", "intellij.driver.impl", "intellij.driver.client"))
-  )
+    pluginAuto(
+      listOf(
+        "intellij.performanceTesting",
+        "intellij.tools.ide.starter.bus",
+        "intellij.driver.model",
+        "intellij.driver.impl",
+        "intellij.driver.client"
+      )
+    ))
 
   val CONTRIB_REPOSITORY_PLUGINS: List<PluginLayout> = java.util.List.of(
     pluginAuto("intellij.errorProne") { spec ->
@@ -287,18 +293,16 @@ object CommunityRepositoryModules {
     plugin(mainModuleName, auto = true) { spec ->
       spec.directoryName = "android"
       spec.mainJarName = "android.jar"
-      spec.withCustomVersion(object : PluginLayout.VersionEvaluator {
-        override fun evaluate(pluginXml: Path, ideBuildVersion: String, context: BuildContext): String {
-          val text = Files.readString(pluginXml)
-          if (text.indexOf("<version>") != -1) {
-            val declaredVersion = text.substring(text.indexOf("<version>") + "<version>".length, text.indexOf("</version>"))
-            return "$declaredVersion.$ideBuildVersion"
-          }
-          else {
-            return ideBuildVersion
-          }
+      spec.withCustomVersion { pluginXmlSupplier, ideBuildVersion, _ ->
+        val pluginXml = pluginXmlSupplier()
+        if (pluginXml.indexOf("<version>") != -1) {
+          val declaredVersion = pluginXml.substring(pluginXml.indexOf("<version>") + "<version>".length, pluginXml.indexOf("</version>"))
+          PluginVersionEvaluatorResult(pluginVersion = "$declaredVersion.$ideBuildVersion")
         }
-      })
+        else {
+          PluginVersionEvaluatorResult(pluginVersion = ideBuildVersion)
+        }
+      }
 
       spec.excludeProjectLibrary("Gradle")
 
@@ -794,7 +798,14 @@ private suspend fun copyAnt(pluginDir: Path, context: BuildContext): List<Distri
     buildJar(targetFile = antTargetFile, sources = sources)
 
     sources.map { source ->
-      ProjectLibraryEntry(path = antTargetFile, data = libraryData, libraryFile = source.file, hash = source.hash, size = source.size, relativeOutputFile = "dist/ant.jar")
+      ProjectLibraryEntry(
+        path = antTargetFile,
+        data = libraryData,
+        libraryFile = source.file,
+        hash = source.hash,
+        size = source.size,
+        relativeOutputFile = "dist/ant.jar",
+      )
     }
   }
 }

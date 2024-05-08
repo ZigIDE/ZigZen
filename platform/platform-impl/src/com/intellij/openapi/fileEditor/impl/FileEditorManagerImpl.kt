@@ -1709,7 +1709,7 @@ open class FileEditorManagerImpl(
       for ((editor, provider) in composite.allEditorsWithProviders) {
         // wait only for our platform regular text editors
         if (provider.editorTypeId == TEXT_EDITOR_PROVIDER_TYPE_ID && editor is TextEditor) {
-          AsyncEditorLoader.waitForLoaded(editor.editor)
+          AsyncEditorLoader.waitForCompleted(editor.editor)
         }
       }
     }
@@ -2444,10 +2444,10 @@ private class SelectionHistory {
 private class SelectionState(@JvmField val composite: EditorComposite, @JvmField val fileEditorProvider: FileEditorWithProvider)
 
 @Internal
-suspend fun FileEditorComposite.waitForFullyLoaded() {
-  for (editor in allEditors) {
+suspend fun waitForFullyCompleted(fileEditorComposite: FileEditorComposite) {
+  for (editor in fileEditorComposite.allEditors) {
     if (editor is TextEditor) {
-      AsyncEditorLoader.waitForLoaded(editor.editor)
+      AsyncEditorLoader.waitForCompleted(editor.editor)
     }
   }
 }
@@ -2565,7 +2565,9 @@ private fun reopenVirtualFileInEditor(editorManager: FileEditorManagerEx, window
   val pinned = window.isFilePinned(oldFile)
   var newOptions = FileEditorOpenOptions(selectAsCurrent = active, requestFocus = active, pin = pinned)
 
-  val isSingletonEditor = window.allComposites.any { it.allEditors.any { it.file == oldFile && isSingletonFileEditor(it) } }
+  val isSingletonEditor = window.allComposites.any { composite ->
+    composite.allEditors.any { it.file == oldFile && isSingletonFileEditor(it) }
+  }
   val dockContainer = DockManager.getInstance(editorManager.project).getContainerFor(window.component) { it is DockableEditorTabbedContainer }
   if (isSingletonEditor && dockContainer != null) {
     window.closeFile(oldFile)

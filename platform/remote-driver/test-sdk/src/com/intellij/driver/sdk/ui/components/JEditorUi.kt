@@ -82,8 +82,13 @@ class GutterUiComponent(data: ComponentData) : UiComponent(data) {
   val iconAreaOffset
     get() = gutter.getIconAreaOffset()
 
-  fun getIcon(line: Int) =
+
+  fun getIconName(line: Int) =
     icons.firstOrNull { it.line == line - 1 }?.mark?.getIcon().toString().substringAfterLast("/")
+
+  fun hoverOverIcon(line: Int) {
+    moveMouse(icons.firstOrNull { it.line == line - 1 }!!.location)
+  }
 
   inner class GutterIcon(private val data: GutterIconWithLocation) {
     val line: Int
@@ -96,6 +101,11 @@ class GutterUiComponent(data: ComponentData) : UiComponent(data) {
     fun click() {
       click(location)
     }
+
+
+
+
+
   }
 }
 

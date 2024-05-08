@@ -1,6 +1,7 @@
 package com.intellij.tools.launch.ide.environments.docker
 
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.tools.launch.PathsProvider
 import com.intellij.tools.launch.docker.BindMount
 import com.intellij.tools.launch.environments.FsCorrespondence
@@ -16,6 +17,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 internal const val UNIX_FILE_SEPARATOR = '/'
+internal const val UNIX_PATH_SEPARATOR = ':'
 
 class DockerContainerEnvironment(
   private val uid: String,
@@ -56,8 +58,8 @@ class DockerContainerEnvironment(
 
     fun createDefaultDockerContainerEnvironment(dockerContainerOptions: DockerContainerOptions,
                                                 localPaths: PathsProvider): DockerContainerEnvironment {
-      val uid = UnixSystem().uid.toString()
-      val gid = UnixSystem().gid.toString()
+      val uid = if (SystemInfo.isUnix) UnixSystem().uid.toString() else "0"
+      val gid = if (SystemInfo.isUnix) UnixSystem().gid.toString() else "0"
       val userName: String = System.getProperty("user.name")!!
       val userHome: String = getCanonicalUserHome(userName)
       val ideBindMounts =

@@ -289,7 +289,7 @@ private suspend fun doBuildBundledPlugins(
         state = state,
         context = context,
         buildPlatformJob = buildPlatformJob,
-        searchableOptionSetDescriptor = searchableOptionSetDescriptor,
+        searchableOptionSet = searchableOptionSetDescriptor,
       )
 
       buildPlatformSpecificPluginResources(
@@ -342,7 +342,7 @@ private suspend fun buildOsSpecificBundledPlugins(
                 state = state,
                 context = context,
                 buildPlatformJob = buildPlatformJob,
-                searchableOptionSetDescriptor = searchableOptionSetDescriptor,
+                searchableOptionSet = searchableOptionSetDescriptor,
               )
             }
         }
@@ -405,25 +405,27 @@ suspend fun buildNonBundledPlugins(
     val autoPublishPluginChecker = loadPluginAutoPublishList(context)
     val prepareCustomPluginRepository = context.productProperties.productLayout.prepareCustomPluginRepositoryForPublishedPlugins &&
                                         !context.isStepSkipped(BuildOptions.ARCHIVE_PLUGINS)
-    // we don't simplify the layout for non-bundled plugins, because PluginInstaller not ready for this (see rootEntryName)
     val mappings = buildPlugins(
       moduleOutputPatcher = moduleOutputPatcher,
       plugins = pluginsToPublish.sortedWith(PLUGIN_LAYOUT_COMPARATOR_BY_MAIN_MODULE),
       targetDir = stageDir,
       state = state,
-      searchableOptionSetDescriptor = searchableOptionSetDescriptor,
+      searchableOptionSet = searchableOptionSetDescriptor,
       context = context,
       buildPlatformJob = buildPlatformLibJob,
     ) { plugin, pluginDirOrFile ->
-      val targetDirectory = if (autoPublishPluginChecker.test(plugin)) autoUploadingDir else nonBundledPluginsArtifacts
-      val moduleOutput = context.getModuleOutputDir(context.findRequiredModule(plugin.mainModule))
-      val pluginXmlPath = moduleOutput.resolve("META-INF/plugin.xml")
-      val pluginVersion = if (Files.exists(pluginXmlPath)) {
-        plugin.versionEvaluator.evaluate(pluginXmlPath, context.pluginBuildNumber, context)
-      }
-      else {
+      val pluginVersion = if (plugin.mainModule == BUILT_IN_HELP_MODULE_NAME) {
         context.buildNumber
       }
+      else {
+        plugin.versionEvaluator.evaluate(
+          pluginXmlSupplier = { (context as BuildContextImpl).jarPackagerDependencyHelper.getPluginXmlContent(context.findRequiredModule(plugin.mainModule)) },
+          ideBuildVersion = context.pluginBuildNumber,
+          context = context,
+        ).pluginVersion
+      }
+
+      val targetDirectory = if (autoPublishPluginChecker.test(plugin)) autoUploadingDir else nonBundledPluginsArtifacts
       val destFile = targetDirectory.resolve("${plugin.directoryName}-$pluginVersion.zip")
       val pluginXml = moduleOutputPatcher.getPatchedPluginXml(plugin.mainModule)
       pluginSpecs.add(PluginRepositorySpec(destFile, pluginXml))
@@ -510,7 +512,7 @@ private suspend fun buildHelpPlugin(
       targetDir = pluginsToPublishDir.resolve(directory),
       state = state,
       context = context,
-      searchableOptionSetDescriptor = searchableOptionSetDescriptor,
+      searchableOptionSet = searchableOptionSetDescriptor,
       buildPlatformJob = null,
     )
     zipWithCompression(targetFile = destFile, dirs = mapOf(pluginsToPublishDir.resolve(directory) to ""))
@@ -548,7 +550,7 @@ internal suspend fun generateProjectStructureMapping(platformLayout: PlatformLay
           copyFiles = false,
           moduleOutputPatcher = moduleOutputPatcher,
           includedModules = plugin.includedModules,
-          jarsWithSearchableOptions = null,
+          searchableOptionSet = null,
           context = context,
         ).first)
       }
@@ -564,7 +566,7 @@ private suspend fun buildPlugins(
   state: DistributionBuilderState,
   context: BuildContext,
   buildPlatformJob: Job?,
-  searchableOptionSetDescriptor: SearchableOptionSetDescriptor?,
+  searchableOptionSet: SearchableOptionSetDescriptor?,
   pluginBuilt: ((PluginLayout, pluginDirOrFile: Path) -> Unit)? = null,
 ): List<Pair<PluginBuildDescriptor, List<DistributionFileEntry>>> {
   val scrambleTool = context.proprietaryBuildTools.scrambleTool
@@ -577,12 +579,7 @@ private suspend fun buildPlugins(
   val entries = coroutineScope {
     plugins.map { plugin ->
       if (plugin.mainModule != BUILT_IN_HELP_MODULE_NAME) {
-        checkOutputOfPluginModules(
-          mainPluginModule = plugin.mainModule,
-          includedModules = plugin.includedModules,
-          moduleExcludes = plugin.moduleExcludes,
-          context = context,
-        )
+        checkOutputOfPluginModules(mainPluginModule = plugin.mainModule, includedModules = plugin.includedModules, moduleExcludes = plugin.moduleExcludes, context = context)
         patchPluginXml(
           moduleOutputPatcher = moduleOutputPatcher,
           plugin = plugin,
@@ -590,6 +587,7 @@ private suspend fun buildPlugins(
           releaseVersion = context.applicationInfo.releaseVersionForLicensing,
           pluginsToPublish = state.pluginsToPublish,
           context = context,
+          helper = (context as BuildContextImpl).jarPackagerDependencyHelper,
         )
       }
 
@@ -604,7 +602,7 @@ private suspend fun buildPlugins(
             copyFiles = true,
             moduleOutputPatcher = moduleOutputPatcher,
             includedModules = plugin.includedModules,
-            jarsWithSearchableOptions = searchableOptionSetDescriptor,
+            searchableOptionSet = searchableOptionSet,
             context = context,
           )
           pluginBuilt?.invoke(plugin, file)
@@ -615,8 +613,7 @@ private suspend fun buildPlugins(
       if (!plugin.pathsToScramble.isEmpty()) {
         val attributes = Attributes.of(AttributeKey.stringKey("plugin"), directoryName)
         if (scrambleTool == null) {
-          Span.current().addEvent("skip scrambling plugin because scrambleTool isn't defined, but plugin defines paths to be scrambled",
-                                  attributes)
+          Span.current().addEvent("skip scrambling plugin because scrambleTool isn't defined, but plugin defines paths to be scrambled", attributes)
         }
         else if (isScramblingSkipped) {
           Span.current().addEvent("skip scrambling plugin because step is disabled", attributes)
@@ -769,7 +766,7 @@ suspend fun layoutPlatformDistribution(
         copyFiles = copyFiles,
         moduleOutputPatcher = moduleOutputPatcher,
         includedModules = platform.includedModules,
-        jarsWithSearchableOptions = searchableOptionSetDescriptor,
+        searchableOptionSet = searchableOptionSetDescriptor,
         context = context,
       ).first
     }
@@ -1010,7 +1007,7 @@ suspend fun layoutDistribution(
   copyFiles: Boolean = true,
   moduleOutputPatcher: ModuleOutputPatcher,
   includedModules: Collection<ModuleItem>,
-  jarsWithSearchableOptions: SearchableOptionSetDescriptor?,
+  searchableOptionSet: SearchableOptionSetDescriptor?,
   context: BuildContext,
 ): Pair<List<DistributionFileEntry>, Path> {
   if (copyFiles) {
@@ -1047,7 +1044,7 @@ suspend fun layoutDistribution(
           layout = layout,
           platformLayout = platformLayout,
           moduleOutputPatcher = moduleOutputPatcher,
-          jarsWithSearchableOptions = jarsWithSearchableOptions,
+          jarsWithSearchableOptions = searchableOptionSet,
           dryRun = !copyFiles,
           context = context,
         )
