@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.intellij.build.BuildOptions
 import org.jetbrains.intellij.build.BuildPaths
+import org.jetbrains.intellij.build.CompilationTasks
 import org.jetbrains.intellij.build.createBuildTasks
 import org.jetbrains.intellij.build.impl.BuildContextImpl
 import org.jetbrains.intellij.build.impl.buildDistributions
@@ -22,24 +23,24 @@ object ZigZenInstallersBuildTarget {
 
     Files.write(patchNumberPath, "${patchBuild + 1}".toByteArray())
 
+    val options = BuildOptions().apply {
+      buildNumber = "$platformBuild.$patchBuild"
+
+      incrementalCompilation = true
+      useCompiledClassesFromProjectOutput = false
+      buildStepsToSkip = setOf(
+        BuildOptions.MAC_SIGN_STEP,
+      )
+    }
+
     @Suppress("RAW_RUN_BLOCKING")
     runBlocking(Dispatchers.Default) {
-      val options = BuildOptions().apply {
-        buildNumber = "$platformBuild.$patchBuild"
-
-        incrementalCompilation = true
-        useCompiledClassesFromProjectOutput = false
-        buildStepsToSkip = setOf(
-          BuildOptions.MAC_SIGN_STEP,
-        )
-      }
-
       val context = BuildContextImpl.createContext(
         projectHome = BuildPaths.COMMUNITY_ROOT.communityRoot,
         productProperties = ZigZenBuildProperties(BuildPaths.COMMUNITY_ROOT.communityRoot),
         options = options,
       )
-      createBuildTasks(context)
+      CompilationTasks.create(context).compileModules(moduleNames = null)
       buildDistributions(context)
     }
   }
