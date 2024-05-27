@@ -16,14 +16,16 @@ import java.nio.file.Path
 
 class ZigZenBuildProperties(private val home: Path) : JetBrainsProductProperties() {
   init {
-    additionalVmOptions += "-Dide.show.tips.on.startup.default.value=false"
-    applicationInfoModule = "zigzen.resources"
-    brandingResourcePaths = listOf(home.resolve("resources"))
-    buildSourcesArchive = true
-    buildCrossPlatformDistribution = true
-    customJvmMemoryOptions = persistentMapOf("-Xms" to "256m", "-Xmx" to "1500m")
-    embeddedJetBrainsClientMainModule = null
     platformPrefix = "Zig"
+    applicationInfoModule = "zigzen.resources"
+    scrambleMainJar = false
+    useSplash = true
+    buildCrossPlatformDistribution = true
+
+    productLayout.productImplementationModules = listOf(
+      "zigzen.resources",
+      "intellij.platform.starter",
+    )
     productLayout.bundledPluginModules.addAll(listOf(
       "zigzen.ide",
       "zigzen.zig",
@@ -38,14 +40,8 @@ class ZigZenBuildProperties(private val home: Path) : JetBrainsProductProperties
       ZigLanguagePluginLayout.zigLanguagePlugin(),
       ZonLanguagePluginLayout.zonLanguagePlugin(),
     ))
-    productLayout.mainModules = listOf("zigzen.main")
-    productLayout.productImplementationModules = listOf(
-      "zigzen.resources",
-      "intellij.platform.main",
-    )
-    reassignAltClickToMultipleCarets = true
-    useSplash = true
-    scrambleMainJar = false
+
+    additionalVmOptions += "-Dide.show.tips.on.startup.default.value=false"
   }
 
   override val baseFileName: String
