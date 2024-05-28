@@ -17,6 +17,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.toolchain
 import com.intellij.openapi.util.NlsContexts
 import zigzen.lang.toolchain.AbstractZigToolchain
+import zigzen.lang.toolchain.tool.zig
 import zigzen.projectModel.IZigWorkspace
 import zigzen.projectModel.ZigStandardLibrary
 import java.util.concurrent.CompletableFuture
@@ -92,6 +93,7 @@ class ZigSynchronizationTask(
         return@runWithChildProgress TaskResult.Failure("Invalid Zig toolchain")
       }
 
+      val idk = toolchain.zig.queryCompleteProjectInformation()
       TODO()
     }
   }
