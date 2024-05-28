@@ -6,6 +6,7 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDirectory
 import com.intellij.util.text.SemVer
+import kotlinx.ZigResult
 import java.nio.file.Path
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
@@ -30,6 +31,10 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
     val sourceFiles = workingDirectoryVfs.findDirectory("src")!!.children.toList()
 
     return ZigToolchainZigToolGeneratedProjectFiles(buildZig, buildZigZon, sourceFiles)
+  }
+
+  fun queryCompleteProjectInformation(): ZigResult<Unit, Unit> {
+    return ZigResult.Success(Unit)
   }
 
   @OptIn(ExperimentalSerializationApi::class)

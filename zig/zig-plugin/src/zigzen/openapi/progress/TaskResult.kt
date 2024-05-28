@@ -5,6 +5,6 @@ import com.intellij.build.events.BuildEventsNls
 import org.jetbrains.annotations.Nls
 
 sealed class TaskResult<out T> {
-  class Success<out T>(val value: T) : TaskResult<T>()
-  class Failure<out T>(@Nls val reason: String, @BuildEventsNls.Message val message: String? = null) : TaskResult<T>()
+  data class Success<out T>(val value: T) : TaskResult<T>()
+  data class Failure<out T>(@Nls val reason: String, @BuildEventsNls.Message val message: String? = null) : TaskResult<T>()
 }
