@@ -13,15 +13,21 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import zigzen.projectModel.ZigRawWorkspaceMetadata
-import java.nio.file.Files
+import kotlin.io.path.exists
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.createDirectories
+import kotlin.io.path.createFile
 
 class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchainTool("zig", toolchain) {
   private val buildRunner by lazy {
-    val path = PathManager.getConfigDir().resolve("build-runners").resolve("0.12.0.zig")
+    var path = PathManager.getConfigDir().resolve("build-runners")
+    if (!path.exists()) {
+      path.createDirectories()
+    }
 
-    if (!Files.exists(path)) {
-      val file = Files.createFile(path).toFile()
+    path = path.resolve("0.12.0.zig")
+    if (!path.exists()) {
+      val file = path.createFile().toFile()
       val buildRunner = ZigToolchainZigTool::class.java.getResourceAsStream("language-helper/build-runners/0.12.0.zig")!!
       file.writeBytes(buildRunner.readAllBytes())
     }
