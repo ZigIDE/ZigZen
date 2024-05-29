@@ -1,6 +1,7 @@
 // Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package zigzen.lang.toolchain.tool
 
+import com.intellij.openapi.application.PathManager
 import zigzen.lang.toolchain.AbstractZigToolchain
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -11,8 +12,22 @@ import java.nio.file.Path
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
+import zigzen.projectModel.ZigRawWorkspaceMetadata
+import java.nio.file.Files
+import kotlin.io.path.absolutePathString
 
 class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchainTool("zig", toolchain) {
+  private val buildRunner by lazy {
+    val path = PathManager.getConfigDir().resolve("build-runners").resolve("0.12.0.zig")
+
+    if (!Files.exists(path)) {
+      val file = Files.createFile(path).toFile()
+      val buildRunner = ZigToolchainZigTool::class.java.getResourceAsStream("language-helper/build-runners/0.12.0.zig")!!
+      file.writeBytes(buildRunner.readAllBytes())
+    }
+
+    path.absolutePathString()
+  }
   val environment by lazy { queryEnvironment() }
 
   fun initializeProject(workingDirectoryVfs: VirtualFile, workingDirectory: Path? = null, isBinary: Boolean): ZigToolchainZigToolGeneratedProjectFiles {
@@ -34,6 +49,8 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
   }
 
   fun queryCompleteProjectInformation(): ZigResult<Unit, Unit> {
+    val metadata = queryProjectMetadata()
+
     return ZigResult.Success(Unit)
   }
 
@@ -46,6 +63,20 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
 
       val json = Json { ignoreUnknownKeys = true }
       return json.decodeFromStream<ZigToolchainEnvironment>(process.inputStream)
+    } catch (e: Exception) {
+      return null
+    }
+  }
+
+  @OptIn(ExperimentalSerializationApi::class)
+  private fun queryProjectMetadata(): ZigRawWorkspaceMetadata? {
+    val commandLine = createBaseCommandLine("build", "--build-runner", buildRunner)
+    try {
+      val process = commandLine.createProcess()
+      process.waitFor()
+
+      val json = Json { ignoreUnknownKeys = true }
+      return json.decodeFromStream<ZigRawWorkspaceMetadata>(process.inputStream)
     } catch (e: Exception) {
       return null
     }
