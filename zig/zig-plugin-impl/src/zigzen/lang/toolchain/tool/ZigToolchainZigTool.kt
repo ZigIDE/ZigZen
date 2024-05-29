@@ -28,7 +28,7 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
     path = path.resolve("0.12.0.zig")
     if (!path.exists()) {
       val file = path.createFile().toFile()
-      val buildRunner = ZigToolchainZigTool::class.java.getResourceAsStream("language-helper/build-runners/0.12.0.zig")!!
+      val buildRunner = ZigToolchainZigTool::class.java.getResourceAsStream("/language-helper/build-runners/0.12.0.zig")!!
       file.writeBytes(buildRunner.readAllBytes())
     }
 
