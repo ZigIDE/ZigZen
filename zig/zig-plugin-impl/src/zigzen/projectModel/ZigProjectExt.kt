@@ -27,7 +27,7 @@ val ZigProject.libraries: Collection<SyntheticLibrary>
     if (standardLibrary != null)
       ZigSyntheticLibrary(
         "stdlib",
-        project.toolchain!!.zig.environment!!.version.rawVersion,
+        project.toolchain!!.zig.environment.unwrap().version.rawVersion,
         ZigZenIcons.Zig,
         setOf(), // todo
         setOf(), // todo

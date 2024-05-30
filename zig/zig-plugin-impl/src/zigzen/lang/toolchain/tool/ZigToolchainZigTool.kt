@@ -12,6 +12,7 @@ import java.nio.file.Path
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
+import zigzen.ZigException
 import zigzen.projectModel.ZigRawWorkspaceMetadata
 import kotlin.io.path.exists
 import kotlin.io.path.absolutePathString
@@ -37,7 +38,7 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
   val environment by lazy { queryEnvironment() }
 
   fun initializeProject(workingDirectoryVfs: VirtualFile, workingDirectory: Path? = null, isBinary: Boolean): ZigToolchainZigToolGeneratedProjectFiles {
-    val command = if (environment?.version!! < ZIG_VERSION_0_12_0_WITH_MERGED_INIT) {
+    val command = if (environment.unwrap().version < ZIG_VERSION_0_12_0_WITH_MERGED_INIT) {
       if (isBinary) "init-exe" else "init-lib"
     } else "init"
 
@@ -54,37 +55,37 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
     return ZigToolchainZigToolGeneratedProjectFiles(buildZig, buildZigZon, sourceFiles)
   }
 
-  fun queryCompleteProjectInformation(): ZigResult<Unit, Unit> {
+  fun queryCompleteProjectInformation(): ZigResult<Unit, ZigException> {
     val metadata = queryProjectMetadata()
 
     return ZigResult.Success(Unit)
   }
 
   @OptIn(ExperimentalSerializationApi::class)
-  private fun queryEnvironment(): ZigToolchainEnvironment? {
+  private fun queryEnvironment(): ZigResult<ZigToolchainEnvironment, ZigException> {
     val commandLine = createBaseCommandLine("env")
     try {
       val process = commandLine.createProcess()
       process.waitFor()
 
       val json = Json { ignoreUnknownKeys = true }
-      return json.decodeFromStream<ZigToolchainEnvironment>(process.inputStream)
+      return ZigResult.Success(json.decodeFromStream<ZigToolchainEnvironment>(process.inputStream))
     } catch (e: Exception) {
-      return null
+      return ZigResult.Failure(ZigException(e))
     }
   }
 
   @OptIn(ExperimentalSerializationApi::class)
-  private fun queryProjectMetadata(): ZigRawWorkspaceMetadata? {
+  private fun queryProjectMetadata(): ZigResult<ZigRawWorkspaceMetadata, ZigException>  {
     val commandLine = createBaseCommandLine("build", "--build-runner", buildRunner)
     try {
       val process = commandLine.createProcess()
       process.waitFor()
 
       val json = Json { ignoreUnknownKeys = true }
-      return json.decodeFromStream<ZigRawWorkspaceMetadata>(process.inputStream)
+      return ZigResult.Success(json.decodeFromStream<ZigRawWorkspaceMetadata>(process.inputStream))
     } catch (e: Exception) {
-      return null
+      return ZigResult.Failure(ZigException(e))
     }
   }
 
