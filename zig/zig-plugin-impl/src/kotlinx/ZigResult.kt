@@ -5,6 +5,14 @@ sealed class ZigResult<out T, out E> {
   data class Success<T>(val value: T) : ZigResult<T, Nothing>()
   data class Failure<E>(val error: E) : ZigResult<Nothing, E>()
 
-  val isSuccess: Boolean get() = this is Success
-  val isFailure: Boolean get() = this is Failure
+  private val isSuccess: Boolean get() = this is Success
+  private val isFailure: Boolean get() = this is Failure
+
+  fun unwrap(): T {
+    assert(isSuccess) {
+      "called unwrap() on a Failure value"
+    }
+
+    return (this as Success<T>).value
+  }
 }

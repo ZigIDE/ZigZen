@@ -104,8 +104,8 @@ class ZigProjectSettingsPanel(
     versionUpdateDebouncer.run(
       onPooledThread = {
         val toolchain = pathToToolchain?.let { ZigToolchainProvider.provideToolchain(it) }
-        val zigVersion = toolchain?.zig?.environment?.version
-        val zigStdlibPath = toolchain?.zig?.environment?.stdLibPath
+        val zigVersion = toolchain?.zig?.environment?.unwrap()?.version
+        val zigStdlibPath = toolchain?.zig?.environment?.unwrap()?.stdLibPath
 
         Pair(zigVersion, zigStdlibPath)
       },
