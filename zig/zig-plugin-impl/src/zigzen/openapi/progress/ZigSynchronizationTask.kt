@@ -3,8 +3,6 @@ package zigzen.openapi.progress
 
 import com.intellij.build.*
 import zigzen.openapi.project.StopAction
-import zigzen.projectModel.IZigProject
-import zigzen.projectModel.ZigProject
 import com.intellij.build.events.MessageEvent
 import com.intellij.build.progress.BuildProgress
 import com.intellij.build.progress.BuildProgressDescriptor
@@ -18,8 +16,7 @@ import com.intellij.openapi.project.toolchain
 import com.intellij.openapi.util.NlsContexts
 import zigzen.lang.toolchain.AbstractZigToolchain
 import zigzen.lang.toolchain.tool.zig
-import zigzen.projectModel.IZigWorkspace
-import zigzen.projectModel.ZigStandardLibrary
+import zigzen.projectModel.*
 import java.util.concurrent.CompletableFuture
 import javax.swing.JComponent
 import kotlin.io.path.exists
@@ -94,7 +91,7 @@ class ZigSynchronizationTask(
       }
 
       val result = toolchain.zig.queryCompleteProjectInformation()
-      TODO()
+      return@runWithChildProgress TaskResult.Success(ZigWorkspace.deserializeFromMetadata(result.unwrap()))
     }
   }
 

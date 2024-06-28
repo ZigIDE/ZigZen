@@ -47,4 +47,8 @@ class ZigWorkspace(
     override val name: String,
     override val dependencyKind: IZigWorkspace.IZigDependency.ZigDependencyKind,
   ) : IZigWorkspace.IZigDependency
+
+  companion object {
+    fun deserializeFromMetadata(metadata: ZigRawWorkspaceMetadata): ZigWorkspace = TODO()
+  }
 }
