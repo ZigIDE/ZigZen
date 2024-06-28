@@ -55,11 +55,7 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
     return ZigToolchainZigToolGeneratedProjectFiles(buildZig, buildZigZon, sourceFiles)
   }
 
-  fun queryCompleteProjectInformation(): ZigResult<Unit, ZigException> {
-    val metadata = queryProjectMetadata()
-
-    return ZigResult.Success(Unit)
-  }
+  fun queryCompleteProjectInformation(): ZigResult<ZigRawWorkspaceMetadata, ZigException> = queryProjectMetadata()
 
   @OptIn(ExperimentalSerializationApi::class)
   private fun queryEnvironment(): ZigResult<ZigToolchainEnvironment, ZigException> {
