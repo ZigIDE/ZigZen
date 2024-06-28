@@ -93,7 +93,7 @@ class ZigSynchronizationTask(
         return@runWithChildProgress TaskResult.Failure("Invalid Zig toolchain")
       }
 
-      val idk = toolchain.zig.queryCompleteProjectInformation()
+      val result = toolchain.zig.queryCompleteProjectInformation()
       TODO()
     }
   }
