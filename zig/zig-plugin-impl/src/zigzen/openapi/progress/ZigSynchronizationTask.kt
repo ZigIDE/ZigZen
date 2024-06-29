@@ -14,6 +14,7 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.toolchain
 import com.intellij.openapi.util.NlsContexts
+import kotlinx.ZigResult
 import zigzen.lang.toolchain.AbstractZigToolchain
 import zigzen.lang.toolchain.tool.zig
 import zigzen.projectModel.*
@@ -91,6 +92,10 @@ class ZigSynchronizationTask(
       }
 
       val result = toolchain.zig.queryCompleteProjectInformation()
+      if (result is ZigResult.Failure) {
+        return@runWithChildProgress TaskResult.Failure("Failed to query complete project information")
+      }
+
       return@runWithChildProgress TaskResult.Success(ZigWorkspace.deserializeFromMetadata(result.unwrap()))
     }
   }
