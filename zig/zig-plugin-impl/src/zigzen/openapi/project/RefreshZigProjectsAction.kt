@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.*
+import zigzen.openapi.components.ZigProjectsService
 
 class RefreshZigProjectsAction : DumbAwareAction() {
   override fun actionPerformed(e: AnActionEvent) {
@@ -26,7 +27,7 @@ class RefreshZigProjectsAction : DumbAwareAction() {
     FileDocumentManager.getInstance().saveAllDocuments()
 
     if (project.toolchain == null || !project.containsZigProjects)
-      TODO("guess and setup zig projects")
+      ZigProjectsService.guessAndSetupZigProject(project)
     else
       project.zigProjects.refreshAllProjects()
   }
