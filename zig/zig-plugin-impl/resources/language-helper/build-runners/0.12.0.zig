@@ -21,6 +21,35 @@ const Step = std.Build.Step;
 
 pub const dependencies = @import("@dependencies");
 
+// structs
+const BuildConfig = struct {
+    deps_build_roots: []DepsBuildRoots,
+    packages: []Pkg,
+    include_dirs: []const []const u8,
+    available_options: std.json.ArrayHashMap(AvailableOption),
+
+    pub const DepsBuildRoots = Pkg;
+    pub const Pkg = struct {
+        name: []const u8,
+        path: []const u8,
+    };
+    pub const AvailableOption = std.meta.FieldType(std.meta.FieldType(std.Build, .available_options_map).KV, .value);
+};
+
+// ----------- List of Zig versions that introduced breaking changes -----------
+
+const writeFile2_removed_version =
+    std.SemanticVersion.parse("0.13.0-dev.68+b86c4bde6") catch unreachable;
+const std_progress_rework_version =
+    std.SemanticVersion.parse("0.13.0-dev.336+963ffe9d5") catch unreachable;
+
+// -----------------------------------------------------------------------------
+
+const ProgressNode = if (builtin.zig_version.order(std_progress_rework_version) == .lt)
+    *std.Progress.Node
+else
+    std.Progress.Node;
+
 ///! This is a modified build runner to extract information out of build.zig
 ///! Modified version of lib/build_runner.zig
 pub fn main() !void {
@@ -278,13 +307,21 @@ pub fn main() !void {
         }
     }
 
-    var progress: std.Progress = .{ .terminal = null };
-    const main_progress_node = progress.start("", 0);
+    var progress = if (comptime builtin.zig_version.order(std_progress_rework_version) == .lt)
+        std.Progress{ .terminal = null }
+    else {};
+
+    const main_progress_node = if (comptime builtin.zig_version.order(std_progress_rework_version) == .lt)
+        progress.start("", 0)
+    else
+        std.Progress.start(.{
+            .disable_printing = true,
+        });
 
     builder.debug_log_scopes = debug_log_scopes.items;
     builder.resolveInstallPrefix(install_prefix, dir_list);
     {
-        var prog_node = main_progress_node.start("user build.zig logic", 0);
+        var prog_node = main_progress_node.start("Configure", 0);
         defer prog_node.end();
         try builder.runBuild(root);
     }
@@ -298,14 +335,10 @@ pub fn main() !void {
         const s = std.fs.path.sep_str;
         const tmp_sub_path = "tmp" ++ s ++ (output_tmp_nonce orelse fatal("missing -Z arg", .{}));
 
-        const writeFileFn = comptime blk: {
-            const writeFile2_removed_version =
-                std.SemanticVersion.parse("0.13.0-dev.68+b86c4bde6") catch unreachable;
-            break :blk if (builtin.zig_version.order(writeFile2_removed_version) == .lt)
-                std.fs.Dir.writeFile2
-            else
-                std.fs.Dir.writeFile;
-        };
+        const writeFileFn = if (comptime builtin.zig_version.order(writeFile2_removed_version) == .lt)
+            std.fs.Dir.writeFile2
+        else
+            std.fs.Dir.writeFile;
 
         writeFileFn(local_cache_directory.handle, .{
             .sub_path = tmp_sub_path,
@@ -365,7 +398,7 @@ fn runSteps(
     arena: std.mem.Allocator,
     b: *std.Build,
     steps: []const *Step,
-    parent_prog_node: *std.Progress.Node,
+    parent_prog_node: ProgressNode,
     thread_pool_options: std.Thread.Pool.Options,
     run: *Run,
     seed: u32,
@@ -383,7 +416,7 @@ fn runSteps(
 
     const starting_steps = try arena.dupe(*Step, step_stack.keys());
 
-    var rng = std.rand.DefaultPrng.init(seed);
+    var rng = std.Random.DefaultPrng.init(seed);
     const rand = rng.random();
     rand.shuffle(*Step, starting_steps);
 
@@ -428,7 +461,7 @@ fn runSteps(
 
             wait_group.start();
             thread_pool.spawn(workerMakeOneStep, .{
-                &wait_group, &thread_pool, b, step, &step_prog, run,
+                &wait_group, &thread_pool, b, step, if (comptime builtin.zig_version.order(std_progress_rework_version) == .lt) &step_prog else step_prog, run,
             }) catch @panic("OOM");
         }
     }
@@ -503,7 +536,7 @@ fn constructGraphAndCheckForDependencyLoop(
     b: *std.Build,
     s: *Step,
     step_stack: *std.AutoArrayHashMapUnmanaged(*Step, void),
-    rand: std.rand.Random,
+    rand: std.Random,
 ) error{ OutOfMemory, DependencyLoopDetected }!void {
     switch (s.state) {
         .precheck_started => return error.DependencyLoopDetected,
@@ -543,7 +576,7 @@ fn workerMakeOneStep(
     thread_pool: *std.Thread.Pool,
     b: *std.Build,
     s: *Step,
-    prog_node: *std.Progress.Node,
+    prog_node: ProgressNode,
     run: *Run,
 ) void {
     defer wg.finish();
@@ -596,10 +629,10 @@ fn workerMakeOneStep(
     }
 
     var sub_prog_node = prog_node.start(s.name, 0);
-    sub_prog_node.activate();
+    if (comptime builtin.zig_version.order(std_progress_rework_version) == .lt) sub_prog_node.activate();
     defer sub_prog_node.end();
 
-    const make_result = s.make(&sub_prog_node);
+    const make_result = s.make(if (comptime builtin.zig_version.order(std_progress_rework_version) == .lt) &sub_prog_node else sub_prog_node);
 
     handle_result: {
         if (make_result) |_| {
@@ -701,20 +734,6 @@ fn validateSystemLibraryOptions(b: *std.Build) void {
 //
 //
 
-const BuildConfig = struct {
-    deps_build_roots: []DepsBuildRoots,
-    packages: []Pkg,
-    include_dirs: []const []const u8,
-    available_options: std.json.ArrayHashMap(AvailableOption),
-
-    pub const DepsBuildRoots = Pkg;
-    pub const Pkg = struct {
-        name: []const u8,
-        path: []const u8,
-    };
-    pub const AvailableOption = std.meta.FieldType(std.meta.FieldType(std.Build, .available_options_map).KV, .value);
-};
-
 const Packages = struct {
     allocator: std.mem.Allocator,
 
@@ -759,7 +778,7 @@ const Packages = struct {
 fn extractBuildInformation(
     b: *std.Build,
     arena: std.mem.Allocator,
-    main_progress_node: *std.Progress.Node,
+    main_progress_node: ProgressNode,
     thread_pool_options: std.Thread.Pool.Options,
     run: *Run,
     seed: u32,
