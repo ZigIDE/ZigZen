@@ -182,7 +182,7 @@ open class ZigProjectsService(
 
         projects
       }.handle { projects, error ->
-        val status = error.toZigProjectsRefreshStatus()
+        val status = error?.toZigProjectsRefreshStatus() ?: IZigProjectsRefreshListener.ZigProjectsRefreshStatus.SUCCESS
         refreshStatusPublisher.onRefreshFinished(status)
 
         projects
