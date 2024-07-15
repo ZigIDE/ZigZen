@@ -42,7 +42,7 @@ class ZigSynchronizationTask(
       buildProgress.start(createProjectSynchronizationDescriptor(indicator))
       val refreshedProjects = performSynchronization(indicator, buildProgress)
 
-      val isUpdateFailed = refreshedProjects.any { it.stdlibStatus is IZigProject.ProjectUpdateStatus.UpdateFailed }
+      val isUpdateFailed = refreshedProjects.any { it.workspaceStatus is IZigProject.ProjectUpdateStatus.UpdateFailed }
       if (isUpdateFailed) {
         buildProgress.fail()
       } else {
