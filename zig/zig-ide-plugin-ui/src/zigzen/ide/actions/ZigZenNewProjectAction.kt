@@ -2,7 +2,7 @@
 package zigzen.ide.actions
 
 import zigzen.ide.util.projectWizard.ZigZenNewProjectStep
-import com.intellij.icons.ExpUiIcons
+import com.intellij.icons.AllIcons
 import com.intellij.ide.util.projectWizard.AbstractNewProjectDialog
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -22,7 +22,7 @@ class ZigZenNewProjectAction : DumbAwareAction() {
 
   override fun update(e: AnActionEvent) {
     if (ExperimentalUI.isNewUI() && e.place == ActionPlaces.PROJECT_WIDGET_POPUP) {
-      e.presentation.icon = ExpUiIcons.General.Add
+      e.presentation.icon = AllIcons.General.Add
     }
   }
 }
