@@ -8,8 +8,8 @@ import com.intellij.model.Pointer
 import com.intellij.platform.backend.documentation.DocumentationResult
 import com.intellij.platform.backend.documentation.DocumentationTarget
 import com.intellij.psi.PsiElement
+import com.intellij.psi.createSmartPointer
 import com.intellij.psi.util.elementType
-import com.intellij.refactoring.suggested.createSmartPointer
 
 class BuildZigZonDocumentationTarget(private val element: PsiElement, private val originalElement: PsiElement?) : DocumentationTarget {
   override fun createPointer(): Pointer<out DocumentationTarget> {

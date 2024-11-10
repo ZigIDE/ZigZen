@@ -14,11 +14,14 @@
     <orderEntry type="module" module-name="intellij.platform.bootstrap" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.collaborationTools" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.ide.newUiOnboarding" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.platform.kernel" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.platform.kernel.backend" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.lvcs" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.lvcs.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.main" />
     <orderEntry type="module" module-name="intellij.platform.resources" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.starter" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.platform.tips" scope="RUNTIME"/>
     <orderEntry type="module" module-name="intellij.platform.vcs" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.vcs.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.sh" scope="RUNTIME" />

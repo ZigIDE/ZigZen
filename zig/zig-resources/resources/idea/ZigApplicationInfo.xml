@@ -1,6 +1,6 @@
 <!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
 <component xmlns="http://jetbrains.org/intellij/schema/application-info">
-  <version major="2024" minor="2" eap="true"/>
+  <version major="2024" minor="3" eap="true"/>
   <company name="ZigIDE" url="https://github.com/ZigIDE"/>
   <build number="ZZ-__BUILD__" date="__BUILD_DATE__"/>
   <logo url="/zigzen_logo.png"/>
