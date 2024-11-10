@@ -9,8 +9,8 @@ import com.intellij.platform.backend.documentation.DocumentationResult
 import com.intellij.platform.backend.documentation.DocumentationTarget
 import com.intellij.platform.backend.presentation.TargetPresentation
 import com.intellij.psi.PsiElement
+import com.intellij.psi.createSmartPointer
 import com.intellij.psi.util.elementType
-import com.intellij.refactoring.suggested.createSmartPointer
 
 class ZigDocumentationTarget(private val element: PsiElement, private val originalElement: PsiElement?) : DocumentationTarget {
   private val provider = ZigBuiltinFunctionPsiElementProvider(element.project)

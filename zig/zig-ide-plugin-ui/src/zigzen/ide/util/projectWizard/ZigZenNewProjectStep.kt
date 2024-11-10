@@ -11,19 +11,12 @@ import com.intellij.platform.DirectoryProjectGenerator
 @Suppress("ActionPresentationInstantiatedInCtor")
 class ZigZenNewProjectStep : AbstractNewProjectStep<Any>(ZigZenCustomization()) {
   private class ZigZenCustomization<T> : Customization<T>() {
-    private lateinit var zigDirectoryProjectGenerator: DirectoryProjectGenerator<T>
+    @Suppress("UNCHECKED_CAST")
+    private val zigDirectoryProjectGenerator: DirectoryProjectGenerator<T> = ZigDirectoryProjectGenerator() as DirectoryProjectGenerator<T>
 
     override fun createCallback(): AbstractCallback<T> = AbstractCallback()
 
-    override fun createEmptyProjectGenerator(): DirectoryProjectGenerator<T> {
-      val generator = projectGenerators.find { it is ZigDirectoryProjectGenerator }
-
-      @Suppress("UNCHECKED_CAST")
-      if (generator != null)
-        zigDirectoryProjectGenerator = generator as DirectoryProjectGenerator<T>
-
-      return zigDirectoryProjectGenerator
-    }
+    override fun createEmptyProjectGenerator(): DirectoryProjectGenerator<T> = zigDirectoryProjectGenerator
 
     @Suppress("UNCHECKED_CAST")
     override fun createProjectSpecificSettingsStep(

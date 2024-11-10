@@ -1,5 +1,6 @@
 <!-- Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license. -->
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+
   <xi:include href="/META-INF/PlatformLangXmlPlugin.xml"/>
   <xi:include href="/META-INF/common-ide-modules.xml"/>
 </idea-plugin>
