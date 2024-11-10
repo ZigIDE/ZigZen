@@ -45,7 +45,7 @@ fun Collection<ZigProject>.refreshProject(project: Project): CompletableFuture<C
   if (!project.isTrusted())
     return CompletableFuture.completedFuture(this)
 
-  return if (isEmpty())
+  val result = if (isEmpty())
     CompletableFuture.completedFuture(emptyList())
   else {
     val future = CompletableFuture<Collection<ZigProject>>()
@@ -53,7 +53,9 @@ fun Collection<ZigProject>.refreshProject(project: Project): CompletableFuture<C
 
     project.service<ZigProjectTaskQueueService>().run(synchronizationTask)
     future
-  }.thenApply { updatedProjects ->
+  }
+
+  return result.thenApply { updatedProjects ->
     if ((project as? ProjectEx)?.isLight != true) {
       setupProjectRoots(project)
     }
