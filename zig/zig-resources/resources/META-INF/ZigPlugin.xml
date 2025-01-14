@@ -3,4 +3,8 @@
 
   <xi:include href="/META-INF/PlatformLangXmlPlugin.xml"/>
   <xi:include href="/META-INF/common-ide-modules.xml"/>
+
+  <content>
+    <module name="intellij.platform.tips"/>
+  </content>
 </idea-plugin>
