@@ -19,6 +19,8 @@
     <orderEntry type="module" module-name="intellij.platform.lvcs" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.lvcs.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.main" />
+    <orderEntry type="module" module-name="intellij.platform.project" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.platform.project.backend" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.resources" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.starter" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.platform.tips" scope="RUNTIME"/>
