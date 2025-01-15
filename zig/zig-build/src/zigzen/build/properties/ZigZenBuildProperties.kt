@@ -35,7 +35,7 @@ class ZigZenBuildProperties(private val home: Path) : JetBrainsProductProperties
       "intellij.yaml",
     ))
     productLayout.pluginLayouts = CommunityRepositoryModules.COMMUNITY_REPOSITORY_PLUGINS.addAll(listOf(
-      CommunityRepositoryModules.githubPlugin("intellij.vcs.github.community"),
+      CommunityRepositoryModules.githubPlugin("intellij.vcs.github.community", kind = "community"),
       ZigIdePluginLayout.zigIdePlugin(),
       ZigLanguagePluginLayout.zigLanguagePlugin(),
       ZonLanguagePluginLayout.zonLanguagePlugin(),

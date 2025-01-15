@@ -5,7 +5,7 @@ import org.jetbrains.intellij.build.impl.PluginLayout
 
 object ZigIdePluginLayout {
   fun zigIdePlugin(): PluginLayout {
-    return PluginLayout.plugin("zigzen.ide") { spec ->
+    return PluginLayout.pluginAuto("zigzen.ide") { spec ->
       spec.withModules(
         listOf(
           "zigzen.icons",
