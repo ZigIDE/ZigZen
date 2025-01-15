@@ -2,10 +2,12 @@
 package zigzen.lang.toolchain.tool
 
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.diagnostic.thisLogger
 import zigzen.lang.toolchain.AbstractZigToolchain
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDirectory
+import com.intellij.util.io.awaitExit
 import com.intellij.util.text.SemVer
 import kotlinx.ZigResult
 import java.nio.file.Path
@@ -55,7 +57,7 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
     return ZigToolchainZigToolGeneratedProjectFiles(buildZig, buildZigZon, sourceFiles)
   }
 
-  fun queryCompleteProjectInformation(): ZigResult<ZigRawWorkspaceMetadata, ZigException> = queryProjectMetadata()
+  fun queryCompleteProjectInformation(workingDirectory: Path? = null): ZigResult<ZigRawWorkspaceMetadata, ZigException> = queryProjectMetadata(workingDirectory)
 
   @OptIn(ExperimentalSerializationApi::class)
   private fun queryEnvironment(): ZigResult<ZigToolchainEnvironment, ZigException> {
@@ -63,6 +65,7 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
     try {
       val process = commandLine.createProcess()
       process.waitFor()
+      thisLogger().warn(process.inputStream.toString())
 
       val json = Json { ignoreUnknownKeys = true }
       return ZigResult.Success(json.decodeFromStream<ZigToolchainEnvironment>(process.inputStream))
@@ -72,8 +75,8 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
   }
 
   @OptIn(ExperimentalSerializationApi::class)
-  private fun queryProjectMetadata(): ZigResult<ZigRawWorkspaceMetadata, ZigException>  {
-    val commandLine = createBaseCommandLine("build", "--build-runner", buildRunner)
+  private fun queryProjectMetadata(workingDirectory: Path? = null): ZigResult<ZigRawWorkspaceMetadata, ZigException>  {
+    val commandLine = createBaseCommandLine("build", "--build-runner", buildRunner, workingDirectory = workingDirectory)
     try {
       val process = commandLine.createProcess()
       process.waitFor()
