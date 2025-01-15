@@ -14,6 +14,7 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.toolchain
 import com.intellij.openapi.util.NlsContexts
+import com.intellij.openapi.util.io.toNioPathOrNull
 import kotlinx.ZigResult
 import zigzen.lang.toolchain.AbstractZigToolchain
 import zigzen.lang.toolchain.tool.zig
@@ -91,7 +92,7 @@ class ZigSynchronizationTask(
         return@runWithChildProgress TaskResult.Failure("Invalid Zig toolchain")
       }
 
-      val result = toolchain.zig.queryCompleteProjectInformation()
+      val result = toolchain.zig.queryCompleteProjectInformation(context.oldZigProject.project.basePath?.toNioPathOrNull())
       if (result is ZigResult.Failure) {
         return@runWithChildProgress TaskResult.Failure("Failed to query complete project information")
       }
