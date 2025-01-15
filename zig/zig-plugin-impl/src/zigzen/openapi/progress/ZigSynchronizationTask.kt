@@ -97,7 +97,7 @@ class ZigSynchronizationTask(
         return@runWithChildProgress TaskResult.Failure("Failed to query complete project information")
       }
 
-      return@runWithChildProgress TaskResult.Success(ZigWorkspace.deserializeFromMetadata(result.unwrap()))
+      return@runWithChildProgress TaskResult.Success(ZigWorkspace.deserializeFromMetadata(result.unwrap(), context.oldZigProject.buildZig))
     }
   }
 
