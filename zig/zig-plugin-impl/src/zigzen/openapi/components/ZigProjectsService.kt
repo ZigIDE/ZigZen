@@ -175,7 +175,7 @@ class ZigProjectsService(
             directoryIndex.resetIndex()
             if (!ApplicationManager.getApplication().isUnitTestMode) {
               ProjectRootManagerEx.getInstanceEx(project)
-                .makeRootsChange(EmptyRunnable.INSTANCE, false, true)
+                .makeRootsChange(EmptyRunnable.INSTANCE, RootsChangeRescanningInfo.NO_RESCAN_NEEDED)
             }
 
             project.messageBus.syncPublisher(IZigProjectsService.zigProjectsTopic)
