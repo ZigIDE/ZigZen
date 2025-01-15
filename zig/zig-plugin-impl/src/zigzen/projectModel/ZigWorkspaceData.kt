@@ -19,3 +19,9 @@ data class ZigWorkspaceData(
       listOf(IZigWorkspace.IZigDependency.ZigDependencyKind.Unclassified)
   )
 }
+
+fun ZigStandardLibrary.asPackageData(): ZigWorkspaceData.ZigWorkspacePackage = ZigWorkspaceData.ZigWorkspacePackage(
+  "stdlib",
+  path.toString(),
+  "stdlib"
+)
