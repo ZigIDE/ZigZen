@@ -129,7 +129,7 @@ class ZigSynchronizationTask(
           } else {
             ZigProjectWithStandardLibrary(
               zigProject.withWorkspace(fetchWorkspace(ZigSynchronizationContext(toolchain, indicator, progress, zigProject))),
-              ZigStandardLibrary()
+              ZigStandardLibrary(toolchain.zig.environment.unwrap().stdLibPath)
             )
           }
         }
