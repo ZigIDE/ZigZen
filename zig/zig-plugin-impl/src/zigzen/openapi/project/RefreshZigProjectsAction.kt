@@ -6,8 +6,11 @@ import com.intellij.ide.impl.isTrusted
 import com.intellij.ide.trustedProjects.TrustedProjectsDialog
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import zigzen.openapi.components.ZigProjectsService
 
 class RefreshZigProjectsAction : DumbAwareAction() {
@@ -21,20 +24,22 @@ class RefreshZigProjectsAction : DumbAwareAction() {
   override fun update(e: AnActionEvent) {
     val project = e.project ?: return
 
-    if (!project.confirmLoadingUntrustedProject())
-      return
+    project.coroutineScope.launch(Dispatchers.EDT) {
+      if (!project.confirmLoadingUntrustedProject())
+        return@launch
 
-    FileDocumentManager.getInstance().saveAllDocuments()
+      FileDocumentManager.getInstance().saveAllDocuments()
 
-    if (project.toolchain == null || !project.containsZigProjects)
-      ZigProjectsService.guessAndSetupZigProject(project)
-    else
-      project.zigProjects.refreshAllProjects()
+      if (project.toolchain == null || !project.containsZigProjects)
+        ZigProjectsService.guessAndSetupZigProject(project)
+      else
+        project.zigProjects.refreshAllProjects()
+    }
   }
 }
 
-fun Project.confirmLoadingUntrustedProject(): Boolean {
-  return isTrusted() || TrustedProjectsDialog.confirmLoadingUntrustedProject(
+suspend fun Project.confirmLoadingUntrustedProject(): Boolean {
+  return isTrusted() || TrustedProjectsDialog.confirmLoadingUntrustedProjectAsync(
     this,
     IdeBundle.message("untrusted.project.dialog.title", "Zig", 1),
     IdeBundle.message("untrusted.project.dialog.text", "Zig", 1),
