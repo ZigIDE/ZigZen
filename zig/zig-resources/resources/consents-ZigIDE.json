@@ -1,0 +1,9 @@
+[
+  {
+    "consentId": "rsch.send.usage.stat",
+    "version": "1.1",
+    "text": "Lorem ipsum dolor sit amet",
+    "printableName": "Lorem Ipsum",
+    "accepted": "false"
+  }
+]
