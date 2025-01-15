@@ -14,18 +14,19 @@ import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTracker
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.*
-import com.intellij.openapi.project.ex.ProjectEx
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.ex.ProjectRootManagerEx
 import com.intellij.openapi.util.EmptyRunnable
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.indexing.LightDirectoryIndex
+import kotlinx.coroutines.CoroutineScope
 import org.jdom.Element
 import zigzen.lang.toolchain.AbstractZigToolchain
 import zigzen.notification.ZigNotificationUtil.showBalloon
@@ -42,8 +43,10 @@ import kotlin.io.path.invariantSeparatorsPathString
   storages = [Storage(StoragePathMacros.WORKSPACE_FILE)]
 )
 @Suppress("LeakingThis")
-open class ZigProjectsService(
-  final override val project: Project
+@Service(Service.Level.PROJECT)
+class ZigProjectsService(
+  override val project: Project,
+  override val coroutineScope: CoroutineScope,
 ) : Disposable, IZigProjectsService, PersistentStateComponent<Element> {
   init {
     registerProject(project, this)
