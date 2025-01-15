@@ -49,6 +49,6 @@ class ZigWorkspace(
   ) : IZigWorkspace.IZigDependency
 
   companion object {
-    fun deserializeFromMetadata(metadata: ZigRawWorkspaceMetadata): ZigWorkspace = TODO()
+    fun deserializeFromMetadata(metadata: ZigRawWorkspaceMetadata, buildZig: Path): ZigWorkspace = ZigWorkspace(buildZig, buildZig.parent.toString(), emptyList())
   }
 }
