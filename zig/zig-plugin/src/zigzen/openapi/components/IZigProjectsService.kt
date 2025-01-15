@@ -5,6 +5,7 @@ import zigzen.projectModel.IZigProject
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.messages.Topic
+import kotlinx.coroutines.CoroutineScope
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
 
@@ -14,6 +15,8 @@ interface IZigProjectsService {
 
   val hasAtLeastOneValidProject: Boolean
   val initialized: Boolean
+
+  val coroutineScope: CoroutineScope
 
   fun attachZigProject(buildZig: Path): Boolean
 
