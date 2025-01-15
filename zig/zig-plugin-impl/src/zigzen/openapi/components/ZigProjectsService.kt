@@ -9,6 +9,7 @@ import zigzen.projectModel.isExistingProject
 import zigzen.projectModel.refreshProject
 import zigzen.util.concurrency.AsyncValue
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runWriteAction
@@ -169,7 +170,7 @@ open class ZigProjectsService(
             }
 
             directoryIndex.resetIndex()
-            if ((project as? ProjectEx)?.isLight != true) {
+            if (!ApplicationManager.getApplication().isUnitTestMode) {
               ProjectRootManagerEx.getInstanceEx(project)
                 .makeRootsChange(EmptyRunnable.INSTANCE, false, true)
             }
