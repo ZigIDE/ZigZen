@@ -65,7 +65,6 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
     try {
       val process = commandLine.createProcess()
       process.waitFor()
-      thisLogger().warn(process.inputStream.toString())
 
       val json = Json { ignoreUnknownKeys = true }
       return ZigResult.Success(json.decodeFromStream<ZigToolchainEnvironment>(process.inputStream))
@@ -79,10 +78,12 @@ class ZigToolchainZigTool(toolchain: AbstractZigToolchain) : AbstractZigToolchai
     val commandLine = createBaseCommandLine("build", "--build-runner", buildRunner, workingDirectory = workingDirectory)
     try {
       val process = commandLine.createProcess()
+
+      @Suppress("JSON_FORMAT_REDUNDANT")
+      val json = Json { ignoreUnknownKeys = true }.decodeFromStream<ZigRawWorkspaceMetadata>(process.inputStream)
       process.waitFor()
 
-      val json = Json { ignoreUnknownKeys = true }
-      return ZigResult.Success(json.decodeFromStream<ZigRawWorkspaceMetadata>(process.inputStream))
+      return ZigResult.Success(json)
     } catch (e: Exception) {
       return ZigResult.Failure(ZigException(e))
     }
