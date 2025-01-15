@@ -5,10 +5,10 @@ import zigzen.openapi.components.ZigProjectTaskQueueService
 import zigzen.openapi.progress.ZigSynchronizationTask
 import com.intellij.execution.RunManager
 import com.intellij.ide.impl.isTrusted
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ex.ProjectEx
 import com.intellij.openapi.project.toolchain
 import com.intellij.openapi.project.zigProjects
 import com.intellij.openapi.roots.ProjectFileIndex
@@ -56,7 +56,7 @@ fun Collection<ZigProject>.refreshProject(project: Project): CompletableFuture<C
   }
 
   return result.thenApply { updatedProjects ->
-    if ((project as? ProjectEx)?.isLight != true) {
+    if (!ApplicationManager.getApplication().isUnitTestMode) {
       setupProjectRoots(project)
     }
 
