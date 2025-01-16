@@ -33,6 +33,7 @@
     <projectOpenProcessor implementation="zigzen.projectImport.ZigProjectOpenProcessor"/>
     <projectService serviceImplementation="zigzen.openapi.components.ZigProjectsService"
                     serviceInterface="zigzen.openapi.components.IZigProjectsService"/>
+    <projectViewPane implementation="com.intellij.ide.projectView.impl.ProjectViewPane"/>
     <runConfigurationProducer implementation="zigzen.execution.configurations.ZigBuildLazyRunConfigurationProducer"/>
     <runConfigurationProducer implementation="zigzen.execution.configurations.ZigRunLazyRunConfigurationProducer"/>
     <runConfigurationProducer implementation="zigzen.execution.configurations.ZigTestLazyRunConfigurationProducer"/>
