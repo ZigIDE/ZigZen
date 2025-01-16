@@ -83,6 +83,17 @@ class ZigSynchronizationTask(
     }
   }
 
+  private fun fetchStandardLibrary(context: ZigSynchronizationContext): TaskResult<ZigStandardLibrary> {
+    return context.runWithChildProgress("Fetching Zig stdlib") { childContext ->
+      val std = ZigStandardLibrary.fromPath(project.toolchain!!.zig.environment.unwrap().stdLibPath)
+
+      if (std != null)
+        return@runWithChildProgress TaskResult.Success(std)
+      else
+        return@runWithChildProgress TaskResult.Failure("Failed to fetch Zig stdlib")
+    }
+  }
+
   private fun fetchWorkspace(
     context: ZigSynchronizationContext
   ): TaskResult<IZigWorkspace> {
@@ -127,9 +138,11 @@ class ZigSynchronizationTask(
             val stdlibStatus = IZigProject.ProjectUpdateStatus.UpdateFailed("Project directory does not exist")
             ZigProjectWithStandardLibrary(zigProject.copy(stdlibStatus = stdlibStatus), null)
           } else {
+            val context = ZigSynchronizationContext(toolchain, indicator, progress, zigProject)
+
             ZigProjectWithStandardLibrary(
-              zigProject.withWorkspace(fetchWorkspace(ZigSynchronizationContext(toolchain, indicator, progress, zigProject))),
-              ZigStandardLibrary(toolchain.zig.environment.unwrap().stdLibPath)
+              zigProject.withWorkspace(fetchWorkspace(context)),
+              fetchStandardLibrary(context)
             )
           }
         }
@@ -142,7 +155,11 @@ class ZigSynchronizationTask(
       if (it.stdlib == null)
         return@mapNotNull null
 
-      it.zigProject.withStandardLibrary(it.stdlib)
+      if (it.stdlib is TaskResult.Failure) {
+        return@mapNotNull null
+      }
+
+      it.zigProject.withStandardLibrary((it.stdlib as TaskResult.Success).value)
       it.zigProject
     }
   }
@@ -175,7 +192,7 @@ class ZigSynchronizationTask(
 
   data class ZigProjectWithStandardLibrary(
     val zigProject: ZigProject,
-    val stdlib: ZigStandardLibrary?
+    val stdlib: TaskResult<ZigStandardLibrary>?
   )
 
   companion object {
