@@ -28,13 +28,13 @@ val IZigProject.libraries: Collection<SyntheticLibrary>
     val stdlib = workspace.packages.find { it.name == "stdlib" }
 
     return buildList {
-      ZigSyntheticLibrary(
+      add(ZigSyntheticLibrary(
         "stdlib",
         project.toolchain!!.zig.environment.unwrap().version.toString(),
         ZigZenIcons.Zig,
         setOf(stdlib!!.contentRoot!!),
         emptySet()
-      )
+      ))
     }
   }
 
