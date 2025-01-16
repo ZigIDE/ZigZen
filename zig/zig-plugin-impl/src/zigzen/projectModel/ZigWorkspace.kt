@@ -10,7 +10,7 @@ import java.nio.file.Paths
 
 class ZigWorkspace(
   override val buildZig: Path,
-  workspaceRootUrl: String?,
+  val workspaceRootUrl: String?,
   packageData: Collection<ZigWorkspaceData.ZigWorkspacePackage>,
 ) : IZigWorkspace {
   override val root: VirtualFile? by CachedVirtualFile(workspaceRootUrl)
@@ -25,7 +25,9 @@ class ZigWorkspace(
   }
 
   override fun withStandardLibrary(stdlib: ZigStandardLibrary): IZigWorkspace {
-    TODO("Not yet implemented")
+    val packages = this.packages.map { it.asPackageData() } + stdlib.asPackageData()
+
+    return ZigWorkspace(buildZig, workspaceRootUrl, packages)
   }
 
   inner class ZigPackage(
@@ -40,6 +42,12 @@ class ZigWorkspace(
       get() = Paths.get(VirtualFileManager.extractPath(contentRootUrl))
 
     override val dependencies: MutableList<ZigDependency> = ArrayList()
+
+    fun asPackageData(): ZigWorkspaceData.ZigWorkspacePackage = ZigWorkspaceData.ZigWorkspacePackage(
+      id,
+      contentRootUrl,
+      name,
+    )
   }
 
   inner class ZigDependency(
