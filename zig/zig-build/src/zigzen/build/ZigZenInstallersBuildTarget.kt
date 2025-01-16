@@ -7,7 +7,6 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.intellij.build.BuildOptions
 import org.jetbrains.intellij.build.BuildPaths
 import org.jetbrains.intellij.build.CompilationTasks
-import org.jetbrains.intellij.build.createBuildTasks
 import org.jetbrains.intellij.build.impl.BuildContextImpl
 import org.jetbrains.intellij.build.impl.buildDistributions
 import java.nio.file.Files
