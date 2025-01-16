@@ -8,5 +8,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="kotlin-stdlib.jar" level="project" />
+    <orderEntry type="library" name="jsoup" level="project" />
+    <orderEntry type="module" module-name="intellij.platform.util" />
   </component>
 </module>
