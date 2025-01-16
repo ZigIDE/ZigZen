@@ -14,7 +14,6 @@ import com.intellij.openapi.project.zigProjects
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.roots.SyntheticLibrary
 import com.intellij.openapi.roots.ex.ProjectRootManagerEx
-import com.intellij.openapi.vfs.refreshAndFindVirtualDirectory
 import com.intellij.openapi.vfs.setupContentRoots
 import com.intellij.util.ui.EdtInvocationManager.invokeAndWaitIfNeeded
 import zigzen.icons.ZigZenIcons
@@ -23,15 +22,18 @@ import zigzen.openapi.roots.ZigSyntheticLibrary
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
 
-val ZigProject.libraries: Collection<SyntheticLibrary>
-  get() = buildList {
-    standardLibrary?.let {
+val IZigProject.libraries: Collection<SyntheticLibrary>
+  get() {
+    val workspace = workspace ?: return emptyList()
+    val stdlib = workspace.packages.find { it.name == "stdlib" }
+
+    return buildList {
       ZigSyntheticLibrary(
         "stdlib",
-        project.toolchain!!.zig.environment.unwrap().version.rawVersion,
+        project.toolchain!!.zig.environment.unwrap().version.toString(),
         ZigZenIcons.Zig,
-        setOf(it.path.refreshAndFindVirtualDirectory()!!),
-        setOf(),
+        setOf(stdlib!!.contentRoot!!),
+        emptySet()
       )
     }
   }

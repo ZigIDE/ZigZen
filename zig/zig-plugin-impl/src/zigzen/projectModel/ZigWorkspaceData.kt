@@ -22,6 +22,6 @@ data class ZigWorkspaceData(
 
 fun ZigStandardLibrary.asPackageData(): ZigWorkspaceData.ZigWorkspacePackage = ZigWorkspaceData.ZigWorkspacePackage(
   "stdlib",
-  path.toString(),
+  sources.url,
   "stdlib"
 )
