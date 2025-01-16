@@ -34,6 +34,7 @@
     <projectService serviceImplementation="zigzen.openapi.components.ZigProjectsService"
                     serviceInterface="zigzen.openapi.components.IZigProjectsService"/>
     <projectViewPane implementation="com.intellij.ide.projectView.impl.ProjectViewPane"/>
+    <readerModeMatcher implementation="zigzen.codeInsight.actions.ZigNonProjectFilesReaderModeMatcher"/>
     <runConfigurationProducer implementation="zigzen.execution.configurations.ZigBuildLazyRunConfigurationProducer"/>
     <runConfigurationProducer implementation="zigzen.execution.configurations.ZigRunLazyRunConfigurationProducer"/>
     <runConfigurationProducer implementation="zigzen.execution.configurations.ZigTestLazyRunConfigurationProducer"/>
