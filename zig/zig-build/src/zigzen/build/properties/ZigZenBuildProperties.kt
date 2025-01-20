@@ -4,7 +4,6 @@ package zigzen.build.properties
 import zigzen.build.plugins.ZigIdePluginLayout
 import zigzen.build.plugins.ZigLanguagePluginLayout
 import zigzen.build.plugins.ZonLanguagePluginLayout
-import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.plus
 import org.jetbrains.intellij.build.ApplicationInfoProperties
 import org.jetbrains.intellij.build.CommunityRepositoryModules
@@ -26,20 +25,21 @@ class ZigZenBuildProperties(private val home: Path) : JetBrainsProductProperties
       "zigzen.resources",
       "intellij.platform.starter",
     )
-    productLayout.bundledPluginModules.addAll(listOf(
+    productLayout.bundledPluginModules += listOf(
       "zigzen.ide",
       "zigzen.zig",
       "zigzen.zon",
+      "intellij.json",
       "intellij.vcs.git",
       "intellij.vcs.github.community",
       "intellij.yaml",
-    ))
-    productLayout.pluginLayouts = CommunityRepositoryModules.COMMUNITY_REPOSITORY_PLUGINS.addAll(listOf(
-      CommunityRepositoryModules.githubPlugin("intellij.vcs.github.community", kind = "community"),
+    )
+
+    productLayout.pluginLayouts += listOf(
       ZigIdePluginLayout.zigIdePlugin(),
       ZigLanguagePluginLayout.zigLanguagePlugin(),
       ZonLanguagePluginLayout.zonLanguagePlugin(),
-    ))
+    )
 
     additionalVmOptions += "-Dide.show.tips.on.startup.default.value=false"
   }
