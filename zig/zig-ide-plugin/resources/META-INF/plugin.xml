@@ -26,13 +26,6 @@
       <add-to-group group-id="NewProjectOrModuleGroup"/>
       <add-to-group group-id="ProjectWidget.Actions"/>
     </action>
-    <action id="ProjectFromVersionControl"
-            class="com.intellij.openapi.wm.impl.welcomeScreen.ProjectFromVersionControlAction"
-            text="Project from Version Control...">
-      <override-text place="ProjectWidgetPopup"/>
-      <add-to-group group-id="NewProjectOrModuleGroup"/>
-      <add-to-group group-id="ProjectWidget.Actions"/>
-    </action>
 
     <action class="zigzen.ide.actions.ZigCreateFileFromTemplateAction"
             id="NewZigFile">
