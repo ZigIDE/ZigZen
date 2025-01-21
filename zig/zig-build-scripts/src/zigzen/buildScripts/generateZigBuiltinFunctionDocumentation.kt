@@ -2,6 +2,7 @@
 package zigzen.buildScripts
 
 import com.intellij.util.concurrency.AppExecutorUtil
+import org.jsoup.Jsoup
 
 fun main() {
   try {
@@ -11,7 +12,16 @@ fun main() {
   }
 }
 
-internal fun generateZigBuiltinFunctionDocumentation() {}
+internal fun generateZigBuiltinFunctionDocumentation() {
+  val document = Jsoup.connect("https://ziglang.org/documentation/master").get()
+  val elements = document.select("div#main-wrapper > div#contents-wrapper > main#contents > *")
+  elements
+    .dropWhile { element -> !element.`is`("h2#Builtin-Functions") }
+    .dropLastWhile { element -> !element.`is`("h2#Build-Mode") }
+    .drop(2)
+    .dropLast(1)
+    .forEach { element -> println(element) }
+}
 
 internal fun shutdownAppScheduledExecutorService() {
   try {
