@@ -27,7 +27,7 @@ object ZigZenInstallersBuildTarget {
 
       incrementalCompilation = true
       useCompiledClassesFromProjectOutput = false
-      buildStepsToSkip = setOf(
+      buildStepsToSkip += setOf(
         BuildOptions.MAC_SIGN_STEP,
       )
     }
