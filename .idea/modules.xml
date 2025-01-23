@@ -1457,7 +1457,6 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/kotlin/util/test-generator-fe10/kotlin.util.test-generator-fe10.iml" filepath="$PROJECT_DIR$/plugins/kotlin/util/test-generator-fe10/kotlin.util.test-generator-fe10.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/kotlin/util/test-generator-fir/kotlin.util.test-generator-fir.iml" filepath="$PROJECT_DIR$/plugins/kotlin/util/test-generator-fir/kotlin.util.test-generator-fir.iml" />
       <module fileurl="file://$PROJECT_DIR$/zig/zig-build/zigzen.build.iml" filepath="$PROJECT_DIR$/zig/zig-build/zigzen.build.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zig/zig-build-scripts/zigzen.buildScripts.iml" filepath="$PROJECT_DIR$/zig/zig-build-scripts/zigzen.buildScripts.iml" />
       <module fileurl="file://$PROJECT_DIR$/zig/zig-icons/zigzen.icons.iml" filepath="$PROJECT_DIR$/zig/zig-icons/zigzen.icons.iml" />
       <module fileurl="file://$PROJECT_DIR$/zig/zig-ide-plugin/zigzen.ide.iml" filepath="$PROJECT_DIR$/zig/zig-ide-plugin/zigzen.ide.iml" />
       <module fileurl="file://$PROJECT_DIR$/zig/zig-ide-plugin-ui/zigzen.ide.ui.iml" filepath="$PROJECT_DIR$/zig/zig-ide-plugin-ui/zigzen.ide.ui.iml" />

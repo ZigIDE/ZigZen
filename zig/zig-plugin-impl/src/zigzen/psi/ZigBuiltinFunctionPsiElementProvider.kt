@@ -8,16 +8,39 @@ import com.intellij.lang.documentation.DocumentationMarkup
 import com.intellij.lang.documentation.QuickDocHighlightingHelper
 import com.intellij.markdown.utils.doc.DocMarkdownToHtmlConverter
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.toolchain
 import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.util.elementType
 import com.intellij.util.LocalTimeCounter
+import com.intellij.util.text.asZigVersionString
+import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.NotNull
+import org.jsoup.Jsoup
+import zigzen.lang.toolchain.tool.zig
 
 class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
+  @Deprecated("deprecated since 2025.1")
+  @ApiStatus.ScheduledForRemoval
   private val BUILTINS_FILE = String(this.javaClass.getResourceAsStream("/language-helper/builtinFunctions.zig")!!.readAllBytes())
 
+  @ApiStatus.Experimental
+  private val DOCS_JSOUP = {
+    val document = Jsoup.connect(
+      "https://ziglang.org/documentation/${project.toolchain!!.zig.environment.unwrap().version.asZigVersionString()}"
+    ).get()
+    val elements = document.select("div#main-wrapper > div#contents-wrapper > main#contents > *")
+    val relevantElements = elements
+      .dropWhile { element -> !element.`is`("h2#Builtin-Functions") }
+      .dropLastWhile { element -> !element.`is`("h2#Build-Mode") }
+      .drop(2)
+      .dropLast(1)
+      .filter { element -> !element.`is`("h3") }
+  }()
+
+  @Deprecated("deprecated since 2025.1")
+  @ApiStatus.ScheduledForRemoval
   private val PSI_FILE = PsiFileFactory.getInstance(project).createFileFromText(
     "builtinFunctions.zig",
     ZigFileType,
@@ -27,12 +50,18 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
     true,
   ) as ZigPsiFile
 
+  @Deprecated("deprecated since 2025.1")
+  @ApiStatus.ScheduledForRemoval
   private val FN_PROTOS = PSI_FILE.children
     .filterIsInstance<ZigContainerDeclaration>()
     .mapNotNull { it.decl?.fnProto }
 
+  @Deprecated("deprecated since 2025.1")
+  @ApiStatus.ScheduledForRemoval
   fun getBuiltinFunctionNames(): List<String> = FN_PROTOS.mapNotNull { it.identifier?.text?.trimEnd('_') }
 
+  @Deprecated("deprecated since 2025.1")
+  @ApiStatus.ScheduledForRemoval
   fun getBuiltinFunctionAsFnProtoByName(name: String): ZigFnProto? = FN_PROTOS.find {
     it.identifier?.text?.trimEnd('_') == name
   }
