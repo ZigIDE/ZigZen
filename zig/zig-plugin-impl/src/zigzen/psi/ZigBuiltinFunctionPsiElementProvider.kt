@@ -7,6 +7,8 @@ import zigzen.openapi.ZigFileType
 import com.intellij.lang.documentation.DocumentationMarkup
 import com.intellij.lang.documentation.QuickDocHighlightingHelper
 import com.intellij.markdown.utils.doc.DocMarkdownToHtmlConverter
+import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.progress.mapWithProgress
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.toolchain
 import com.intellij.openapi.util.text.HtmlChunk
@@ -36,7 +38,20 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
       .dropLastWhile { element -> !element.`is`("h2#Build-Mode") }
       .drop(2)
       .dropLast(1)
-      .filter { element -> !element.`is`("h3") }
+      .toMutableList()
+
+    val map = buildMap {
+      while (!relevantElements.isEmpty()) {
+        val first = relevantElements.removeAt(0)
+
+        if (first.`is`("h3")) {
+          val everythingElse = relevantElements.takeWhile { element -> !element.`is`("h3") }
+          put(first.text().let { text -> text.substring(1, text.length - 2) }, everythingElse)
+        }
+      }
+    }
+
+    // logger<ZigBuiltinFunctionPsiElementProvider>().warn(map.toString())
   }()
 
   @Deprecated("deprecated since 2025.1")
