@@ -8,7 +8,6 @@ import com.intellij.lang.documentation.DocumentationMarkup
 import com.intellij.lang.documentation.QuickDocHighlightingHelper
 import com.intellij.markdown.utils.doc.DocMarkdownToHtmlConverter
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.progress.mapWithProgress
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.toolchain
 import com.intellij.openapi.util.text.HtmlChunk
@@ -46,12 +45,25 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
 
         if (first.`is`("h3")) {
           val everythingElse = relevantElements.takeWhile { element -> !element.`is`("h3") }
-          put(first.text().let { text -> text.substring(1, text.length - 2) }, everythingElse)
+
+          val docsString = buildString {
+            append(DocumentationMarkup.DEFINITION_START)
+
+            assert(everythingElse.first().`is`("pre"))
+            append(QuickDocHighlightingHelper.getStyledCodeFragment(
+              project,
+              ZigLanguage.INSTANCE,
+              everythingElse.first().text(),
+            ))
+            append(DocumentationMarkup.DEFINITION_END)
+          }
+
+          put(first.text().let { text -> text.substring(1, text.length - 2) }, docsString)
         }
       }
     }
 
-    // logger<ZigBuiltinFunctionPsiElementProvider>().warn(map.toString())
+    map
   }()
 
   @Deprecated("deprecated since 2025.1")
@@ -82,7 +94,7 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
   }
 
   fun getDocumentationForBuiltinFunction(name: String): String? {
-    val sibling = FN_PROTOS.find { it.identifier?.text?.trimEnd('_') == name }?.parent?.parent?.prevSibling ?: return null
+    /*val sibling = FN_PROTOS.find { it.identifier?.text?.trimEnd('_') == name }?.parent?.parent?.prevSibling ?: return null
 
     if (sibling !is PsiComment) return null
     if (sibling.elementType != ZigTypes.DOC_COMMENT) return null
@@ -121,7 +133,8 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
           )
         )
       )
-    }
+    }*/
+    return DOCS_JSOUP.getOrDefault(name, "No documentation available")
   }
 
   companion object {

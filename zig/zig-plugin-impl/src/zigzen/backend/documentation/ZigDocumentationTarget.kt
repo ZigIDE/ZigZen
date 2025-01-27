@@ -30,9 +30,10 @@ class ZigDocumentationTarget(private val element: PsiElement, private val origin
 
   override fun computeDocumentation(): DocumentationResult? {
     val docs = when  {
-      element is ZigBuiltinIdentifier || element.elementType == ZigTypes.BUILTINIDENTIFIER -> {
+      element is ZigBuiltinIdentifier ->
         provider.getDocumentationForBuiltinFunction(element.text.substring(1)) ?: return null
-      }
+      element.elementType == ZigTypes.BUILTINIDENTIFIER ->
+        provider.getDocumentationForBuiltinFunction(element.text.substring(1)) ?: return null
       else -> return null
     }
 
