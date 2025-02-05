@@ -27,44 +27,7 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
   private val BUILTINS_FILE = String(this.javaClass.getResourceAsStream("/language-helper/builtinFunctions.zig")!!.readAllBytes())
 
   @ApiStatus.Experimental
-  private val DOCS_JSOUP = {
-    val document = Jsoup.connect(
-      "https://ziglang.org/documentation/${project.toolchain!!.zig.environment.unwrap().version.asZigVersionString()}"
-    ).get()
-    val elements = document.select("div#main-wrapper > div#contents-wrapper > main#contents > *")
-    val relevantElements = elements
-      .dropWhile { element -> !element.`is`("h2#Builtin-Functions") }
-      .dropLastWhile { element -> !element.`is`("h2#Build-Mode") }
-      .drop(2)
-      .dropLast(1)
-      .toMutableList()
-
-    val map = buildMap {
-      while (!relevantElements.isEmpty()) {
-        val first = relevantElements.removeAt(0)
-
-        if (first.`is`("h3")) {
-          val everythingElse = relevantElements.takeWhile { element -> !element.`is`("h3") }
-
-          val docsString = buildString {
-            append(DocumentationMarkup.DEFINITION_START)
-
-            assert(everythingElse.first().`is`("pre"))
-            append(QuickDocHighlightingHelper.getStyledCodeFragment(
-              project,
-              ZigLanguage.INSTANCE,
-              everythingElse.first().text(),
-            ))
-            append(DocumentationMarkup.DEFINITION_END)
-          }
-
-          put(first.text().let { text -> text.substring(1, text.length - 2) }, docsString)
-        }
-      }
-    }
-
-    map
-  }()
+  private val DOCS_JSOUP: Map<String, String>
 
   @Deprecated("deprecated since 2025.1")
   @ApiStatus.ScheduledForRemoval
@@ -139,5 +102,42 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
 
   companion object {
     fun createInstance(@NotNull project: Project) = ZigBuiltinFunctionPsiElementProvider(project)
+  }
+
+  init {
+    val document = Jsoup.connect(
+      "https://ziglang.org/documentation/${project.toolchain!!.zig.environment.unwrap().version.asZigVersionString()}"
+    ).get()
+    val elements = document.select("div#main-wrapper > div#contents-wrapper > main#contents > *")
+    val relevantElements = elements
+      .dropWhile { element -> !element.`is`("h2#Builtin-Functions") }
+      .dropLastWhile { element -> !element.`is`("h2#Build-Mode") }
+      .drop(2)
+      .dropLast(1)
+      .toMutableList()
+
+    DOCS_JSOUP = buildMap {
+      while (!relevantElements.isEmpty()) {
+        val first = relevantElements.removeAt(0)
+
+        if (first.`is`("h3")) {
+          val everythingElse = relevantElements.takeWhile { element -> !element.`is`("h3") }
+
+          val docsString = buildString {
+            append(DocumentationMarkup.DEFINITION_START)
+
+            assert(everythingElse.first().`is`("pre"))
+            append(QuickDocHighlightingHelper.getStyledCodeFragment(
+              project,
+              ZigLanguage.INSTANCE,
+              everythingElse.first().text(),
+            ))
+            append(DocumentationMarkup.DEFINITION_END)
+          }
+
+          put(first.text().let { text -> text.substring(1, text.length - 2) }, docsString)
+        }
+      }
+    }
   }
 }
