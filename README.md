@@ -2,7 +2,7 @@
 Welcome! ZigZen is an IDE based off [IntelliJ IDEA Community Edition](https://github.com/JetBrains/intellij-community) which provides tight
 integration with the Zig language. These instructions will help you build it from source code. The following conventions will be used to
 refer to directories on your machine:
->>>>>>> 68b678b7a8c4 ([zig] Re-organize Zig color settings page + add features)
+
 * `<USER_HOME>` is your home directory.
 * `<ZIGZEN_HOME>` is the root directory for the ZigZen source code.
 
