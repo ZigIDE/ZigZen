@@ -9,6 +9,7 @@ import com.intellij.lang.documentation.QuickDocHighlightingHelper
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.toolchain
 import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.util.childrenOfType
 import com.intellij.util.LocalTimeCounter
 import com.intellij.util.text.asZigVersionString
 import org.jetbrains.annotations.ApiStatus
@@ -17,39 +18,13 @@ import org.jsoup.Jsoup
 import zigzen.lang.toolchain.tool.zig
 
 class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
-  @Deprecated("deprecated since 2025.1")
-  @ApiStatus.ScheduledForRemoval
-  private val BUILTINS_FILE = String(this.javaClass.getResourceAsStream("/language-helper/builtinFunctions.zig")!!.readAllBytes())
-
-  @ApiStatus.Experimental
   private val DOCS_JSOUP: Map<String, String>
+  @ApiStatus.Experimental
+  private val EXPR_FN_PROTOS: Map<String, ZigFnProto>
 
-  @Deprecated("deprecated since 2025.1")
-  @ApiStatus.ScheduledForRemoval
-  private val PSI_FILE = PsiFileFactory.getInstance(project).createFileFromText(
-    "builtinFunctions.zig",
-    ZigFileType,
-    BUILTINS_FILE,
-    LocalTimeCounter.currentTime(),
-    false,
-    true,
-  ) as ZigPsiFile
+  fun getBuiltinFunctionNames(): List<String> = DOCS_JSOUP.keys.toList()
 
-  @Deprecated("deprecated since 2025.1")
-  @ApiStatus.ScheduledForRemoval
-  private val FN_PROTOS = PSI_FILE.children
-    .filterIsInstance<ZigContainerDeclaration>()
-    .mapNotNull { it.decl?.fnProto }
-
-  @Deprecated("deprecated since 2025.1")
-  @ApiStatus.ScheduledForRemoval
-  fun getBuiltinFunctionNames(): List<String> = FN_PROTOS.mapNotNull { it.identifier?.text?.trimEnd('_') }
-
-  @Deprecated("deprecated since 2025.1")
-  @ApiStatus.ScheduledForRemoval
-  fun getBuiltinFunctionAsFnProtoByName(name: String): ZigFnProto? = FN_PROTOS.find {
-    it.identifier?.text?.trimEnd('_') == name
-  }
+  fun getBuiltinFunctionAsFnProtoByName(name: String): ZigFnProto? = EXPR_FN_PROTOS[name]
 
   fun getDocumentationForBuiltinFunction(name: String): String? {
     return DOCS_JSOUP.getOrDefault(name, "No documentation available")
@@ -70,14 +45,14 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
       .drop(2)
       .dropLast(1)
       .toMutableList()
+    val relevantElementsToo = relevantElements.map { it.clone() }.toMutableList()
 
     DOCS_JSOUP = buildMap {
-      while (!relevantElements.isEmpty()) {
-        val first = relevantElements.removeAt(0)
+      while (!relevantElementsToo.isEmpty()) {
+        val first = relevantElementsToo.removeAt(0)
 
         if (first.`is`("h3")) {
-          val everythingElse = relevantElements.takeWhile { element -> !element.`is`("h3") }
-          println(everythingElse)
+          val everythingElse = relevantElementsToo.takeWhile { element -> !element.`is`("h3") }
 
           val docsString = buildString {
             append(DocumentationMarkup.DEFINITION_START)
@@ -100,6 +75,34 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
           put(first.text().let { text -> text.substring(1, text.length - 2) }, docsString)
         }
       }
+    }
+
+    EXPR_FN_PROTOS = buildMap {
+      while (!relevantElements.isEmpty()) {
+        val first = relevantElements.removeAt(0)
+
+        if (first.`is`("h3")) {
+          val everythingElse = relevantElements.takeWhile { element -> !element.`is`("h3") }
+          val builtinDef = everythingElse.first().text()
+          val fnProto = builtinDef.replace("@", "fn ")
+
+          val name = builtinDef.let { text -> text.substring(1, text.length - 2) }
+          val file = PsiFileFactory.getInstance(project).createFileFromText(
+            "${name}.zig",
+            ZigFileType,
+            fnProto,
+            LocalTimeCounter.currentTime(),
+            false,
+            true,
+          ) as ZigPsiFile
+
+          // todo: fix this
+          val actualFnProto = file.childrenOfType<ZigContainerDeclaration>().firstNotNullOf { it.decl?.fnProto }
+          put(name, actualFnProto)
+        }
+      }
+
+      print("already empty")
     }
   }
 }
