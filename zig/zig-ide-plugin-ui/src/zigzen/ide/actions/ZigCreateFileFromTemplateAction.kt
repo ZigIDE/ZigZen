@@ -17,5 +17,5 @@ class ZigCreateFileFromTemplateAction : CreateFileFromTemplateAction("Zig File",
 
   override fun getActionName(directory: PsiDirectory?, newName: String, templateName: String?) = "Zig File"
 
-  override fun isAvailable(dataContext: DataContext?) = true
+  override fun isAvailable(dataContext: DataContext) = true
 }

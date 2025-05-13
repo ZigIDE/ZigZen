@@ -6,14 +6,9 @@ import zigzen.lang.ZigLanguage
 import zigzen.openapi.ZigFileType
 import com.intellij.lang.documentation.DocumentationMarkup
 import com.intellij.lang.documentation.QuickDocHighlightingHelper
-import com.intellij.markdown.utils.doc.DocMarkdownToHtmlConverter
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.toolchain
-import com.intellij.openapi.util.text.HtmlChunk
-import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.util.elementType
 import com.intellij.util.LocalTimeCounter
 import com.intellij.util.text.asZigVersionString
 import org.jetbrains.annotations.ApiStatus
@@ -57,46 +52,6 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
   }
 
   fun getDocumentationForBuiltinFunction(name: String): String? {
-    /*val sibling = FN_PROTOS.find { it.identifier?.text?.trimEnd('_') == name }?.parent?.parent?.prevSibling ?: return null
-
-    if (sibling !is PsiComment) return null
-    if (sibling.elementType != ZigTypes.DOC_COMMENT) return null
-
-    val protoText = getBuiltinFunctionAsFnProtoByName(name)?.text ?: return null
-
-    return buildString {
-      append(DocumentationMarkup.DEFINITION_START)
-      append(QuickDocHighlightingHelper.getStyledCodeFragment(
-        sibling.project,
-        ZigLanguage.INSTANCE,
-        protoText.replace("fn ", "@").replace("_", "")
-      ))
-      append(DocumentationMarkup.DEFINITION_END)
-      append(DocumentationMarkup.CONTENT_START)
-      append(
-        DocMarkdownToHtmlConverter.convert(
-          sibling.project,
-          sibling.text.lines().joinToString("\n") {
-            if (it.length == 3)
-              ""
-            else
-              it.replaceFirst("/// ", "")
-          },
-          ZigLanguage.INSTANCE
-        )
-      )
-      append(DocumentationMarkup.CONTENT_END)
-
-      append(
-        DocumentationMarkup.BOTTOM_ELEMENT.children(
-          HtmlChunk.link(
-            "https://ziglang.org/documentation/master/#$name",
-            HtmlChunk.fragment(DocumentationMarkup.EXTERNAL_LINK_ICON,
-                               HtmlChunk.text("Zig Language Reference"))
-          )
-        )
-      )
-    }*/
     return DOCS_JSOUP.getOrDefault(name, "No documentation available")
   }
 
@@ -122,6 +77,7 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
 
         if (first.`is`("h3")) {
           val everythingElse = relevantElements.takeWhile { element -> !element.`is`("h3") }
+          println(everythingElse)
 
           val docsString = buildString {
             append(DocumentationMarkup.DEFINITION_START)
@@ -133,6 +89,12 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
               everythingElse.first().text(),
             ))
             append(DocumentationMarkup.DEFINITION_END)
+
+            append(DocumentationMarkup.CONTENT_START)
+            everythingElse
+              .takeLast(everythingElse.count() - 1)
+              .forEach { append(it.outerHtml()) }
+            append(DocumentationMarkup.CONTENT_END)
           }
 
           put(first.text().let { text -> text.substring(1, text.length - 2) }, docsString)
