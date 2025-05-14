@@ -12,25 +12,24 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.util.LocalTimeCounter
 import com.intellij.util.text.asZigVersionString
 import kotlinx.replaceLast
-import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.NotNull
 import org.jsoup.Jsoup
 import zigzen.lang.toolchain.tool.zig
 
 class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
   private val DOCS_JSOUP: Map<String, String>
-  @ApiStatus.Experimental
-  private val EXPR_FN_PROTOS: Map<String, ZigFnProto>
+  private val FN_PROTOS: Map<String, ZigFnProto>
 
   fun getBuiltinFunctionNames(): List<String> = DOCS_JSOUP.keys.toList()
 
-  fun getBuiltinFunctionAsFnProtoByName(name: String): ZigFnProto? = EXPR_FN_PROTOS[name]
+  fun getBuiltinFunctionAsFnProtoByName(name: String): ZigFnProto? = FN_PROTOS[name]
 
   fun getDocumentationForBuiltinFunction(name: String): String? {
     return DOCS_JSOUP.getOrDefault(name, "No documentation available")
   }
 
   companion object {
+    // todo: avoid creating a new instance every time we need completion
     fun createInstance(@NotNull project: Project) = ZigBuiltinFunctionPsiElementProvider(project)
   }
 
@@ -77,7 +76,7 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
       }
     }
 
-    EXPR_FN_PROTOS = buildMap {
+    FN_PROTOS = buildMap {
       while (!relevantElements.isEmpty()) {
         val first = relevantElements.removeAt(0)
 
@@ -91,7 +90,7 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
           // todo: hack #3 for fixing export and extern keywords
           fnProto = fnProto.replace("export(", "export_(").replace("extern(", "extern_(")
 
-          val name = builtinDef.let { text -> text.substring(1, text.length - 2) }
+          val name = first.text().let { text -> text.substring(1, text.length - 2) }
           val file = PsiFileFactory.getInstance(project).createFileFromText(
             "${name}.zig",
             ZigFileType,
