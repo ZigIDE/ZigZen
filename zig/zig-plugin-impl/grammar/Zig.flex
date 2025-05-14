@@ -1,20 +1,7 @@
-/*
- * Copyright 2023-2024 FalsePattern
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 package zigzen.lang.lexer;
 
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 
 import static com.intellij.psi.TokenType.WHITE_SPACE;
@@ -27,6 +14,7 @@ import static zigzen.psi.ZigTypes.*;
 %implements FlexLexer
 %function advance
 %type IElementType
+%unicode
 
 CRLF=\R
 WHITE_SPACE=[\s]+
@@ -45,57 +33,19 @@ oct_int={oct} {oct_}*
 dec_int={dec} {dec_}*
 hex_int={hex} {hex_}*
 
-ox80_oxBF=[\200-\277]
-oxF4=\364
-ox80_ox8F=[\200-\217]
-oxF1_oxF3=[\361-\363]
-oxF0=\360
-ox90_0xBF=[\220-\277]
-oxEE_oxEF=[\356-\357]
-oxED=\355
-ox80_ox9F=[\200-\237]
-oxE1_oxEC=[\341-\354]
-oxE0=\340
-oxA0_oxBF=[\240-\277]
-oxC2_oxDF=[\302-\337]
-
-// From https://lemire.me/blog/2018/05/09/how-quickly-can-you-check-that-a-string-is-valid-unicode-utf-8/
-// First Byte      Second Byte     Third Byte      Fourth Byte
-// [0x00,0x7F]
-// [0xC2,0xDF]     [0x80,0xBF]
-//    0xE0         [0xA0,0xBF]     [0x80,0xBF]
-// [0xE1,0xEC]     [0x80,0xBF]     [0x80,0xBF]
-//    0xED         [0x80,0x9F]     [0x80,0xBF]
-// [0xEE,0xEF]     [0x80,0xBF]     [0x80,0xBF]
-//    0xF0         [0x90,0xBF]     [0x80,0xBF]     [0x80,0xBF]
-// [0xF1,0xF3]     [0x80,0xBF]     [0x80,0xBF]     [0x80,0xBF]
-//    0xF4         [0x80,0x8F]     [0x80,0xBF]     [0x80,0xBF]
-
-mb_utf8_literal= {oxF4}      {ox80_ox8F} {ox80_oxBF} {ox80_oxBF}
-               | {oxF1_oxF3} {ox80_oxBF} {ox80_oxBF} {ox80_oxBF}
-               | {oxF0}      {ox90_0xBF} {ox80_oxBF} {ox80_oxBF}
-               | {oxEE_oxEF} {ox80_oxBF} {ox80_oxBF}
-               | {oxED}      {ox80_ox9F} {ox80_oxBF}
-               | {oxE1_oxEC} {ox80_oxBF} {ox80_oxBF}
-               | {oxE0}      {oxA0_oxBF} {ox80_oxBF}
-               | {oxC2_oxDF} {ox80_oxBF}
-
-ascii_char_not_nl_slash_squote=[\000-\011\013-\046\050-\133\135-\177]
-
 char_escape= "\\x" {hex} {hex}
            | "\\u{" {hex}+ "}"
-           | "\\" [nr\\t'\"]
-char_char= {mb_utf8_literal}
-         | {char_escape}
-         | {ascii_char_not_nl_slash_squote}
+           | "\\" [nr\\t\'\"]
+
+char_char= {char_escape}
+         | [^\'\r\n\u0085\u2028\u2029]
 
 string_char= {char_escape}
-           | [^\\\"\n]
+           | [^\"\r\n\u0085\u2028\u2029]
 
-CONTAINER_DOC_COMMENT=("//!" [^\n]* [ \n]*)+
-DOC_COMMENT=("///" [^\n]* [ \n]*)+
-LINE_COMMENT="//" [^\n]* | "////" [^\n]*
-line_string=("\\\\" [^\n]* [ \n]*)+
+nl_wrap={CRLF} (\s|{CRLF})*
+all_no_nl=[^\r\n\u0085\u2028\u2029]+
+
 
 FLOAT= "0x" {hex_int} "." {hex_int} ([pP] [-+]? {dec_int})?
      |      {dec_int} "." {dec_int} ([eE] [-+]? {dec_int})?
@@ -111,26 +61,41 @@ IDENTIFIER_PLAIN=[A-Za-z_][A-Za-z0-9_]*
 BUILTINIDENTIFIER="@"[A-Za-z_][A-Za-z0-9_]*
 
 %state STR_LIT
+%state STR_MULT_LINE
 %state CHAR_LIT
 
 %state ID_QUOT
 %state UNT_QUOT
 
-%state CDOC_CMT
-%state DOC_CMT
-%state LINE_CMT
+%state CMT_LINE
+%state CMT_DOC
+%state CMT_CDOC
 %%
 
-//Comments
+// Comments
 
-<YYINITIAL>      "//!"                    { yypushback(3); yybegin(CDOC_CMT); }
-<CDOC_CMT>       {CONTAINER_DOC_COMMENT}  { yybegin(YYINITIAL); return CONTAINER_DOC_COMMENT; }
+<YYINITIAL>      "//!"                    { yybegin(CMT_CDOC); }
+<YYINITIAL>      "////"                   { yybegin(CMT_LINE); }
+<YYINITIAL>      "///"                    { yybegin(CMT_DOC); }
+<YYINITIAL>      "//"                     { yybegin(CMT_LINE); }
 
-<YYINITIAL>      "///"                    { yypushback(3); yybegin(DOC_CMT); }
-<DOC_CMT>        {DOC_COMMENT}            { yybegin(YYINITIAL); return DOC_COMMENT; }
+<CMT_LINE>       {all_no_nl}              { }
+<CMT_LINE>       {nl_wrap} "////"         { }
+<CMT_LINE>       {nl_wrap} "///"          { yypushback(yylength()); yybegin(YYINITIAL); return LINE_COMMENT; }
+<CMT_LINE>       {nl_wrap} "//"           { }
+<CMT_LINE>       {CRLF}                     { yybegin(YYINITIAL); return LINE_COMMENT; }
+<CMT_LINE>       <<EOF>>                  { yybegin(YYINITIAL); return LINE_COMMENT; }
 
-<YYINITIAL>      "//"                     { yypushback(2); yybegin(LINE_CMT); }
-<LINE_CMT>       {LINE_COMMENT}           { yybegin(YYINITIAL); return LINE_COMMENT; }
+<CMT_DOC>        {all_no_nl}              { }
+<CMT_DOC>        {nl_wrap} "////"         { yypushback(yylength()); yybegin(YYINITIAL); return DOC_COMMENT; }
+<CMT_DOC>        {nl_wrap} "///"          { }
+<CMT_DOC>        {CRLF}                     { yybegin(YYINITIAL); return DOC_COMMENT; }
+<CMT_DOC>        <<EOF>>                  { yybegin(YYINITIAL); return DOC_COMMENT; }
+
+<CMT_CDOC>       {all_no_nl}              { }
+<CMT_CDOC>       {nl_wrap} "//!"          { }
+<CMT_CDOC>       {CRLF}                     { yybegin(YYINITIAL); return CONTAINER_DOC_COMMENT; }
+<CMT_CDOC>       <<EOF>>                  { yybegin(YYINITIAL); return CONTAINER_DOC_COMMENT; }
 
 //Symbols
 <YYINITIAL>      "&"                      { return AMPERSAND; }
@@ -199,7 +164,7 @@ BUILTINIDENTIFIER="@"[A-Za-z_][A-Za-z0-9_]*
 <YYINITIAL>      "/="                     { return SLASHEQUAL; }
 <YYINITIAL>      "~"                      { return TILDE; }
 
-// keywords
+// Keywords
 <YYINITIAL>      "addrspace"              { return KEYWORD_ADDRSPACE; }
 <YYINITIAL>      "align"                  { return KEYWORD_ALIGN; }
 <YYINITIAL>      "allowzero"              { return KEYWORD_ALLOWZERO; }
@@ -250,23 +215,35 @@ BUILTINIDENTIFIER="@"[A-Za-z_][A-Za-z0-9_]*
 <YYINITIAL>      "volatile"               { return KEYWORD_VOLATILE; }
 <YYINITIAL>      "while"                  { return KEYWORD_WHILE; }
 
+// Strings
+
 <YYINITIAL>      "'"                      { yybegin(CHAR_LIT); }
-<CHAR_LIT>       {char_char}"'"           { yybegin(YYINITIAL); return CHAR_LITERAL; }
+<CHAR_LIT>       {char_char}*"'"          { yybegin(YYINITIAL); return CHAR_LITERAL; }
+<CHAR_LIT>       <<EOF>>                  { yybegin(UNT_QUOT); }
 <CHAR_LIT>       [^]                      { yypushback(1); yybegin(UNT_QUOT); }
+
+<YYINITIAL>      "\""                     { yybegin(STR_LIT); }
+<STR_LIT>        {string_char}*"\""       { yybegin(YYINITIAL); return STRING_LITERAL_SINGLE; }
+<STR_LIT>        <<EOF>>                  { yybegin(UNT_QUOT); }
+<STR_LIT>        [^]                      { yypushback(1); yybegin(UNT_QUOT); }
+
+<YYINITIAL>      "\\\\"                   { yybegin(STR_MULT_LINE); }
+<STR_MULT_LINE>  {all_no_nl}              { }
+<STR_MULT_LINE>  {nl_wrap} "\\\\"         { }
+<STR_MULT_LINE>  {CRLF}                   { yybegin(YYINITIAL); return STRING_LITERAL_MULTI; }
+<STR_MULT_LINE>  <<EOF>>                  { yybegin(YYINITIAL); return STRING_LITERAL_MULTI; }
+
+// Numbers
 
 <YYINITIAL>      {FLOAT}                  { return FLOAT; }
 <YYINITIAL>      {INTEGER}                { return INTEGER; }
 
-<YYINITIAL>      "\""                     { yybegin(STR_LIT); }
-<STR_LIT>        {string_char}*"\""       { yybegin(YYINITIAL); return STRING_LITERAL_SINGLE; }
-// TODO: Fix escape character export because I'm bad with lexers (and parsers) :)
-<STR_LIT>        {char_escape}            { return CHAR_ESCAPE; }
-<STR_LIT>        [^]                      { yypushback(1); yybegin(UNT_QUOT); }
-<YYINITIAL>      {line_string}+           { return STRING_LITERAL_MULTI; }
+// Identifiers
 
 <YYINITIAL>      {IDENTIFIER_PLAIN}       { return IDENTIFIER; }
 <YYINITIAL>      "@\""                    { yybegin(ID_QUOT); }
 <ID_QUOT>        {string_char}*"\""       { yybegin(YYINITIAL); return IDENTIFIER; }
+<ID_QUOT>        <<EOF>>                  { yybegin(UNT_QUOT); }
 <ID_QUOT>        [^]                      { yypushback(1); yybegin(UNT_QUOT); }
 
 <YYINITIAL>      {BUILTINIDENTIFIER}      { return BUILTINIDENTIFIER; }

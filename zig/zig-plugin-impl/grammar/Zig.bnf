@@ -1,19 +1,4 @@
-/*
- * Copyright 2023-2024 FalsePattern
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+// Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
 {
   parserClass = "zigzen.lang.parser.ZigParser"
 
@@ -95,6 +80,7 @@
     SLASHEQUAL='/='
     TILDE='~'
 
+    // Keywords
     KEYWORD_ADDRSPACE='addrspace'
     KEYWORD_ALIGN='align'
     KEYWORD_ALLOWZERO='allowzero'
@@ -167,42 +153,41 @@
 Root ::= CONTAINER_DOC_COMMENT? ContainerMembers?
 
 // *** Top level ***
-private ContainerMembers ::= ContainerDeclaration* (ContainerField COMMA)* (ContainerField | ContainerDeclaration*)?
+ContainerMembers ::= ContainerDeclaration* (ContainerField COMMA)* (ContainerField | ContainerDeclaration*)
 
-ContainerDeclaration
-::= TestDecl
-  | ComptimeDecl
-  | DOC_COMMENT? KEYWORD_PUB? Decl
+ContainerDeclaration ::= TestDecl | ComptimeDecl | DOC_COMMENT? KEYWORD_PUB? Decl
 
-
-TestDecl ::= DOC_COMMENT? KEYWORD_TEST (STRING_LITERAL_SINGLE | IDENTIFIER)? Block
+TestDecl ::= KEYWORD_TEST (STRING_LITERAL_SINGLE | IDENTIFIER)? Block {pin=1}
 
 ComptimeDecl ::= KEYWORD_COMPTIME Block
 
 Decl
-::= (KEYWORD_EXPORT | KEYWORD_EXTERN STRING_LITERAL_SINGLE? | (KEYWORD_INLINE | KEYWORD_NOILINE))? FnProto (SEMICOLON | Block)
-  | (KEYWORD_EXPORT | KEYWORD_EXTERN STRING_LITERAL_SINGLE?)? KEYWORD_THREADLOCAL? VarDecl
+::= (KEYWORD_EXPORT | KEYWORD_EXTERN STRING_LITERAL_SINGLE? | KEYWORD_INLINE | KEYWORD_NOINLINE)? FnProto (SEMICOLON | Block)
+  | (KEYWORD_EXPORT | KEYWORD_EXTERN STRING_LITERAL_SINGLE?)? KEYWORD_THREADLOCAL? GlobalVarDecl
   | KEYWORD_USINGNAMESPACE Expr SEMICOLON
 
-FnProto ::= KEYWORD_FN IDENTIFIER? LPAREN ParamDeclList RPAREN ByteAlign? AddrSpace? LinkSection? CallConv? EXCLAMATIONMARK? TypeExpr
+FnProto ::= KEYWORD_FN IDENTIFIER? LPAREN ParamDeclList RPAREN ByteAlign? AddrSpace? LinkSection? CallConv? EXCLAMATIONMARK? TypeExpr {pin=1}
 
-VarDecl ::= (KEYWORD_CONST | KEYWORD_VAR) IDENTIFIER (COLON TypeExpr)? ByteAlign? AddrSpace? LinkSection? (EQUAL Expr)? SEMICOLON
+VarDeclProto ::= (KEYWORD_CONST | KEYWORD_VAR) IDENTIFIER (COLON TypeExpr)? ByteAlign? AddrSpace? LinkSection? {pin=1}
 
-ContainerField
-::= DOC_COMMENT? KEYWORD_COMPTIME? IDENTIFIER (COLON (KEYWORD_ANYTYPE | TypeExpr) ByteAlign?)? (EQUAL Expr)?
-  | DOC_COMMENT? KEYWORD_COMPTIME? (IDENTIFIER COLON)? !KEYWORD_FN TypeExpr ByteAlign? (EQUAL Expr)?
+GlobalVarDecl ::= VarDeclProto (EQUAL Expr)? SEMICOLON {pin=1}
+
+ContainerField ::= DOC_COMMENT? KEYWORD_COMPTIME? !KEYWORD_FN (IDENTIFIER COLON)? TypeExpr ByteAlign? (EQUAL Expr)? {pin=5}
 
 // *** Block Level ***
 Statement
-::= KEYWORD_COMPTIME? VarDecl
-  | KEYWORD_COMPTIME BlockExprStatement
+::= KEYWORD_COMPTIME ComptimeStatement
   | KEYWORD_NOSUSPEND BlockExprStatement
+  | KEYWORD_SUSPEND BlockExprStatement
   | KEYWORD_DEFER BlockExprStatement
   | KEYWORD_ERRDEFER Payload? BlockExprStatement
   | IfStatement
   | LabeledStatement
-  | SwitchExpr
-  | AssignExpr SEMICOLON
+  | VarDeclExprStatement
+
+ComptimeStatement
+::= BlockExpr
+  | VarDeclExprStatement
 
 IfStatement
 ::= IfPrefix BlockExpr ( KEYWORD_ELSE Payload? Statement )?
@@ -225,6 +210,11 @@ BlockExprStatement
   | AssignExpr SEMICOLON
 
 BlockExpr ::= BlockLabel? Block
+
+//An expression, assignment, or any destructure, as a statement.
+VarDeclExprStatement
+::= VarDeclProto (COMMA (VarDeclProto | Expr))* EQUAL Expr SEMICOLON
+  | Expr (AssignOp Expr | (COMMA (VarDeclProto | Expr))+ EQUAL Expr)? SEMICOLON {pin(".*")=1}
 
 // *** Expression Level ***
 AssignExpr ::= Expr (AssignOp Expr)?
@@ -253,7 +243,7 @@ PrimaryExpr
   | KEYWORD_BREAK BreakLabel? Expr?
   | KEYWORD_COMPTIME Expr
   | KEYWORD_NOSUSPEND Expr
-  | KEYWORD_CONTINUE BreakLabel?
+  | KEYWORD_CONTINUE BreakLabel? Expr?
   | KEYWORD_RESUME Expr
   | KEYWORD_RETURN Expr?
   | BlockLabel? LoopExpr
@@ -286,7 +276,7 @@ SuffixExpr
   | PrimaryTypeExpr (SuffixOp | FnCallArguments)*
 
 PrimaryTypeExpr
-::= BuiltinIdentifier FnCallArguments
+::= BUILTINIDENTIFIER FnCallArguments
   | CHAR_LITERAL
   | ContainerDecl
   | DOT IDENTIFIER
@@ -304,7 +294,6 @@ PrimaryTypeExpr
   | KEYWORD_ANYFRAME
   | KEYWORD_UNREACHABLE
   | StringLiteral
-  | SwitchExpr
 
 ContainerDecl ::= (KEYWORD_EXTERN | KEYWORD_PACKED)? ContainerDeclAuto
 
@@ -317,6 +306,7 @@ IfTypeExpr ::= IfPrefix TypeExpr (KEYWORD_ELSE Payload? TypeExpr)?
 LabeledTypeExpr
 ::= BlockLabel Block
   | BlockLabel? LoopTypeExpr
+  | BlockLabel? SwitchExpr
 
 LoopTypeExpr ::= KEYWORD_INLINE? (ForTypeExpr | WhileTypeExpr)
 
@@ -324,7 +314,7 @@ ForTypeExpr ::= ForPrefix TypeExpr (KEYWORD_ELSE TypeExpr)?
 
 WhileTypeExpr ::= WhilePrefix TypeExpr (KEYWORD_ELSE Payload? TypeExpr)?
 
-SwitchExpr ::= KEYWORD_SWITCH LPAREN Expr RPAREN LBRACE SwitchProngList RBRACE
+SwitchExpr ::= KEYWORD_SWITCH LPAREN Expr RPAREN LBRACE SwitchProngList RBRACE {pin=1}
 
 // *** Assembly ***
 AsmExpr ::= KEYWORD_ASM KEYWORD_VOLATILE? LPAREN Expr AsmOutput? RPAREN
@@ -381,7 +371,7 @@ PtrPayload ::= PIPE ASTERISK? IDENTIFIER PIPE
 PtrIndexPayload ::= PIPE (ASTERISK? IDENTIFIER COMMA)* (ASTERISK? IDENTIFIER) PIPE
 
 // Switch specific
-SwitchProng ::= KEYWORD_INLINE? SwitchCase EQUALRARROW PtrIndexPayload? AssignExpr
+SwitchProng ::= KEYWORD_INLINE? SwitchCase EQUALRARROW PtrIndexPayload? SingleAssignExpr {pin=3}
 
 SwitchCase
 ::= SwitchItem (COMMA SwitchItem)* COMMA?
@@ -470,7 +460,7 @@ SuffixOp
   | DOTASTERISK
   | DOTQUESTIONMARK
 
-FnCallArguments ::= LPAREN ExprList RPAREN
+FnCallArguments ::= LPAREN ExprList RPAREN {pin=1}
 
 // Ptr specific
 SliceTypeStart ::= LBRACKET (COLON Expr)? RBRACKET
@@ -509,6 +499,4 @@ ParamDeclList ::= (ParamDecl COMMA)* ParamDecl?
 
 ExprList ::= (Expr COMMA)* Expr?
 
-BuiltinIdentifier ::= BUILTINIDENTIFIER
-
-StringLiteral ::= STRING_LITERAL_SINGLE | STRING_LITERAL_MULTI
+StringLiteral ::= STRING_LITERAL_SINGLE | (STRING_LITERAL_MULTI)+

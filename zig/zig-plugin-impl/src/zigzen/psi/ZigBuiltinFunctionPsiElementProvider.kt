@@ -9,9 +9,9 @@ import com.intellij.lang.documentation.QuickDocHighlightingHelper
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.toolchain
 import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.util.childrenOfType
 import com.intellij.util.LocalTimeCounter
 import com.intellij.util.text.asZigVersionString
+import kotlinx.replaceLast
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.NotNull
 import org.jsoup.Jsoup
@@ -84,7 +84,12 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
         if (first.`is`("h3")) {
           val everythingElse = relevantElements.takeWhile { element -> !element.`is`("h3") }
           val builtinDef = everythingElse.first().text()
-          val fnProto = builtinDef.replace("@", "fn ")
+          // todo: hack for returning anytype not being allowed
+          var fnProto = "${builtinDef.replaceFirst("@", "fn ").replaceLast("anytype", "void")}{}"
+          // todo: hack #2 for fixing "ellipsis" thing
+          fnProto = fnProto.replace(": ...", ": anytype")
+          // todo: hack #3 for fixing export and extern keywords
+          fnProto = fnProto.replace("export(", "export_(").replace("extern(", "extern_(")
 
           val name = builtinDef.let { text -> text.substring(1, text.length - 2) }
           val file = PsiFileFactory.getInstance(project).createFileFromText(
@@ -96,13 +101,10 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
             true,
           ) as ZigPsiFile
 
-          // todo: fix this
-          val actualFnProto = file.childrenOfType<ZigContainerDeclaration>().firstNotNullOf { it.decl?.fnProto }
+          val actualFnProto = file.children.filterIsInstance<ZigContainerDeclaration>().firstNotNullOf { it.decl?.fnProto }
           put(name, actualFnProto)
         }
       }
-
-      print("already empty")
     }
   }
 }
