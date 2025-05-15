@@ -51,7 +51,6 @@ class ZigBuiltinFunctionPsiElementProvider private constructor(@NotNull val proj
     val relevantElementsToo = relevantElements.map { it.clone() }.toMutableList()
 
     DOCS_JSOUP = buildMap {
-
       while (!relevantElementsToo.isEmpty()) {
         val first = relevantElementsToo.removeAt(0)
 

@@ -15,7 +15,7 @@ class ZigProjectOpenProcessor : ProjectOpenProcessor() {
 
   override fun canOpenProject(file: VirtualFile): Boolean {
     return FileUtil.namesEqual(file.name, "build.zig") ||
-      file.isDirectory && file.findChild("build.zig") != null
+      (file.isDirectory && file.findChild("build.zig") != null)
   }
 
   override fun doOpenProject(virtualFile: VirtualFile, projectToClose: Project?, forceOpenInNewFrame: Boolean): Project? {
