@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull
 import org.jsoup.Jsoup
 import zigzen.lang.toolchain.tool.zig
 
-class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
+class ZigBuiltinFunctionPsiElementProvider private constructor(@NotNull val project: Project) {
   private val DOCS_JSOUP: Map<String, String>
   private val FN_PROTOS: Map<String, ZigFnProto>
 
@@ -29,8 +29,12 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
   }
 
   companion object {
-    // todo: avoid creating a new instance every time we need completion
-    fun createInstance(@NotNull project: Project) = ZigBuiltinFunctionPsiElementProvider(project)
+    @Volatile
+    private var instance: ZigBuiltinFunctionPsiElementProvider? = null
+
+    fun getInstance(@NotNull project: Project) = instance ?: synchronized(this) {
+      instance ?: ZigBuiltinFunctionPsiElementProvider(project).also { instance = it }
+    }
   }
 
   init {
@@ -47,6 +51,7 @@ class ZigBuiltinFunctionPsiElementProvider(@NotNull val project: Project) {
     val relevantElementsToo = relevantElements.map { it.clone() }.toMutableList()
 
     DOCS_JSOUP = buildMap {
+
       while (!relevantElementsToo.isEmpty()) {
         val first = relevantElementsToo.removeAt(0)
 

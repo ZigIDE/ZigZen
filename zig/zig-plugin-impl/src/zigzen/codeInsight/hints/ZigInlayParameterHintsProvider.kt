@@ -112,7 +112,7 @@ class ZigInlayParameterHintsProvider : InlayParameterHintsProvider {
     builtinIdentifier: ZigBuiltinIdentifier,
     callArguments: ZigFnCallArguments
   ): List<InlayInfo> {
-    val psiElementProvider = ZigBuiltinFunctionPsiElementProvider(builtinIdentifier.project)
+    val psiElementProvider = ZigBuiltinFunctionPsiElementProvider.getInstance(builtinIdentifier.project)
 
     val name = builtinIdentifier.text.substring(1)
     if (name in builtinsWithTrivialParams)

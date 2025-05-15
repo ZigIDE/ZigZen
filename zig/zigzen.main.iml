@@ -32,6 +32,8 @@
     <orderEntry type="module" module-name="intellij.platform.vcs.impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.sh" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.terminal" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.terminal.frontend" scope="RUNTIME" />
+    <orderEntry type="module" module-name="intellij.terminal.backend" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.terminal.sh" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.vcs.changeReminder" scope="RUNTIME" />
     <orderEntry type="module" module-name="intellij.vcs.git" scope="RUNTIME" />

@@ -12,7 +12,7 @@ import com.intellij.util.ProcessingContext
 
 class ZigBuiltinFunctionCompletionProvider : CompletionProvider<CompletionParameters>() {
   override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-    val provider = ZigBuiltinFunctionPsiElementProvider.createInstance(parameters.originalFile.project)
+    val provider = ZigBuiltinFunctionPsiElementProvider.getInstance(parameters.originalFile.project)
 
     result.addAllElements(provider.getBuiltinFunctionNames().map { name ->
       val fnProto = provider.getBuiltinFunctionAsFnProtoByName(name)!!

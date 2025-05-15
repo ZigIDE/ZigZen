@@ -14,7 +14,7 @@ import com.intellij.psi.createSmartPointer
 import com.intellij.psi.util.elementType
 
 class ZigDocumentationTarget(private val element: PsiElement, private val originalElement: PsiElement?) : DocumentationTarget {
-  private val provider = ZigBuiltinFunctionPsiElementProvider(element.project)
+  private val provider = ZigBuiltinFunctionPsiElementProvider.getInstance(element.project)
 
   override fun createPointer(): Pointer<out DocumentationTarget> {
     val elementPtr = element.createSmartPointer()
