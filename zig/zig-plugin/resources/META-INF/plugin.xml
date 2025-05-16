@@ -21,6 +21,7 @@
     <configurationType implementation="zigzen.execution.configurations.ZigBuildConfigurationType"/>
     <configurationType implementation="zigzen.execution.configurations.ZigRunConfigurationType"/>
     <configurationType implementation="zigzen.execution.configurations.ZigTestConfigurationType"/>
+    <consoleFilterProvider implementation="zigzen.execution.filters.ZigConsoleFilterProvider"/>
     <editorNotificationProvider implementation="zigzen.ui.ZigNoProjectNotificationProvider"/>
     <enterHandlerDelegate implementation="zigzen.codeInsight.editorActions.enter.ZigInCommentEnterHandlerDelegate"/>
     <fileType language="ZIG"
