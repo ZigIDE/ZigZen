@@ -2,6 +2,7 @@
 package zigzen.psi
 
 import zigzen.extapi.psi.ZigPsiFile
+import zigzen.lang.toolchain.tool.zig
 import zigzen.lang.ZigLanguage
 import zigzen.openapi.ZigFileType
 import com.intellij.lang.documentation.DocumentationMarkup
@@ -14,7 +15,6 @@ import com.intellij.util.text.asZigVersionString
 import kotlinx.replaceLast
 import org.jetbrains.annotations.NotNull
 import org.jsoup.Jsoup
-import zigzen.lang.toolchain.tool.zig
 
 class ZigBuiltinFunctionPsiElementProvider private constructor(@NotNull val project: Project) {
   private val DOCS_JSOUP: Map<String, String>
