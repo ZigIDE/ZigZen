@@ -9,30 +9,35 @@ import zigzen.psi.mixin.ZonStructMixin;
 public class ZonVisitor extends PsiElementVisitor {
 
   public void visitIdentifier(@NotNull ZonIdentifier o) {
-    visitPsiElement(o);
+    visitElement(o);
   }
 
   public void visitIncompleteStructProperty(@NotNull ZonIncompleteStructProperty o) {
-    visitPsiElement(o);
+    visitElement(o);
   }
 
   public void visitStringLiteral(@NotNull ZonStringLiteral o) {
-    visitPsiElement(o);
+    visitElement(o);
   }
 
   public void visitStruct(@NotNull ZonStruct o) {
     visitStructMixin(o);
+    // visitElement(o);
   }
 
   public void visitStructProperty(@NotNull ZonStructProperty o) {
-    visitPsiElement(o);
+    visitElement(o);
   }
 
   public void visitStructPropertyMap(@NotNull ZonStructPropertyMap o) {
-    visitPsiElement(o);
+    visitElement(o);
   }
 
   public void visitStructStringArray(@NotNull ZonStructStringArray o) {
+    visitElement(o);
+  }
+
+  public void visitElement(@NotNull ZonElement o) {
     visitPsiElement(o);
   }
 

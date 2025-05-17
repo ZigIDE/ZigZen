@@ -20,6 +20,7 @@
     <foldingBuilder language="ZON" implementationClass="zigzen.lang.folding.ZonFoldingBuilder"/>
     <formatter language="ZON" implementationClass="zigzen.formatting.ZonFormattingModelBuilder"/>
     <parserDefinition language="ZON" implementationClass="zigzen.lang.parser.ZonParserDefinition"/>
+    <psiStructureViewFactory language="ZON" implementationClass="zigzen.ide.ZonPsiStructureViewFactory"/>
     <quoteHandler language="ZON" implementationClass="zigzen.codeInsight.editorActions.ZonQuoteHandler"/>
     <syntaxHighlighter language="ZON" implementationClass="zigzen.openapi.fileTypes.ZonSyntaxHighlighter"/>
     <syntaxHighlighterFactory language="ZON" implementationClass="zigzen.openapi.fileTypes.ZonSyntaxHighlighterFactory"/>

@@ -1,5 +1,3 @@
-// Copyright 2024 ZigIDE and contributors. Use of this source code is governed by the Apache 2.0 license.
-
 // This is a generated file. Not intended for manual editing.
 package zigzen.lang.parser;
 
@@ -9,6 +7,7 @@ import static zigzen.psi.ZonTypes.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
 
@@ -103,7 +102,7 @@ public class ZonParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DOT LBRACE (StructPropertyMap | StructStringArray | ()) RBRACE
+  // DOT LBRACE (StructStringArray | StructPropertyMap | ()) RBRACE
   public static boolean Struct(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Struct")) return false;
     if (!nextTokenIs(b, DOT)) return false;
@@ -116,13 +115,13 @@ public class ZonParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // StructPropertyMap | StructStringArray | ()
+  // StructStringArray | StructPropertyMap | ()
   private static boolean Struct_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Struct_2")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = StructPropertyMap(b, l + 1);
-    if (!r) r = StructStringArray(b, l + 1);
+    r = StructStringArray(b, l + 1);
+    if (!r) r = StructPropertyMap(b, l + 1);
     if (!r) r = Struct_2_2(b, l + 1);
     exit_section_(b, m, null, r);
     return r;

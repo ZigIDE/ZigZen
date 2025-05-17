@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ZonStructStringArray extends PsiElement {
+public interface ZonStructStringArray extends ZonElement {
 
   @NotNull
   List<ZonStringLiteral> getStringLiteralList();

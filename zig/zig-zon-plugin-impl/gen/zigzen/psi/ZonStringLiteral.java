@@ -5,6 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ZonStringLiteral extends PsiElement {
+public interface ZonStringLiteral extends ZonElement {
 
 }

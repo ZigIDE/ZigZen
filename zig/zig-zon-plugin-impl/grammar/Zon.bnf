@@ -27,6 +27,8 @@
 
   mixin("Struct") = "zigzen.psi.mixin.impl.ZonStructMixinImpl"
   implements("Struct") = "zigzen.psi.mixin.ZonStructMixin"
+
+  implements(".*")="zigzen.psi.ZonElement"
 }
 
 Root ::= Struct
