@@ -10,6 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static zigzen.psi.ZonTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import zigzen.psi.*;
+import com.intellij.navigation.ItemPresentation;
 
 public class ZonStructPropertyImpl extends ASTWrapperPsiElement implements ZonStructProperty {
 
@@ -43,6 +44,11 @@ public class ZonStructPropertyImpl extends ASTWrapperPsiElement implements ZonSt
   @Nullable
   public ZonStruct getStruct() {
     return findChildByClass(ZonStruct.class);
+  }
+
+  @Override
+  public @NotNull ItemPresentation getPresentation() {
+    return ZonPsiImplUtils.getPresentation(this);
   }
 
 }

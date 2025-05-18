@@ -10,6 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static zigzen.psi.ZonTypes.*;
 import zigzen.psi.mixin.impl.ZonStructMixinImpl;
 import zigzen.psi.*;
+import com.intellij.navigation.ItemPresentation;
 
 public class ZonStructImpl extends ZonStructMixinImpl implements ZonStruct {
 
@@ -37,6 +38,11 @@ public class ZonStructImpl extends ZonStructMixinImpl implements ZonStruct {
   @Nullable
   public ZonStructStringArray getStructStringArray() {
     return findChildByClass(ZonStructStringArray.class);
+  }
+
+  @Override
+  public @NotNull ItemPresentation getPresentation() {
+    return ZonPsiImplUtils.getPresentation(this);
   }
 
 }

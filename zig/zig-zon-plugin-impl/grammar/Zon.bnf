@@ -25,6 +25,8 @@
     BAD_STRING='unterminated string'
   ]
 
+  psiImplUtilClass="zigzen.psi.impl.ZonPsiImplUtils"
+
   mixin("Struct") = "zigzen.psi.mixin.impl.ZonStructMixinImpl"
   implements("Struct") = "zigzen.psi.mixin.ZonStructMixin"
 
@@ -33,13 +35,21 @@
 
 Root ::= Struct
 
-Struct ::= DOT LBRACE (StructStringArray | StructPropertyMap | ()) RBRACE
+Struct ::= DOT LBRACE (StructStringArray | StructPropertyMap | ()) RBRACE {
+  methods=[
+    getPresentation
+  ]
+}
 
 StructPropertyMap ::= (StructProperty | IncompleteStructProperty) (COMMA (IncompleteStructProperty? StructProperty IncompleteStructProperty? | IncompleteStructProperty))* COMMA?
 
 StructStringArray ::= STRING_LITERAL (COMMA STRING_LITERAL)* COMMA?
 
-StructProperty ::= DOT Identifier EQUAL StructPropertyValue
+StructProperty ::= DOT Identifier EQUAL StructPropertyValue {
+  methods=[
+    getPresentation
+  ]
+}
 
 Identifier ::= ID
 

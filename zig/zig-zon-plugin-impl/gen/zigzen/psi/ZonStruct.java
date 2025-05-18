@@ -5,6 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import zigzen.psi.mixin.ZonStructMixin;
+import com.intellij.navigation.ItemPresentation;
 
 public interface ZonStruct extends ZonStructMixin, ZonElement {
 
@@ -13,5 +14,7 @@ public interface ZonStruct extends ZonStructMixin, ZonElement {
 
   @Nullable
   ZonStructStringArray getStructStringArray();
+
+  @NotNull ItemPresentation getPresentation();
 
 }

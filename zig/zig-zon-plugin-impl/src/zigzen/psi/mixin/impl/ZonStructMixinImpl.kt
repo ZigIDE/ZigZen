@@ -5,6 +5,7 @@ import zigzen.psi.ZonStruct
 import zigzen.psi.mixin.ZonStructMixin
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
+import com.intellij.navigation.ItemPresentation
 
 abstract class ZonStructMixinImpl(node: ASTNode) : ASTWrapperPsiElement(node), ZonStruct, ZonStructMixin {
   override val definedFields: Set<String>
@@ -14,4 +15,8 @@ abstract class ZonStructMixinImpl(node: ASTNode) : ASTWrapperPsiElement(node), Z
 
       return structPropertyMap!!.structPropertyList.map { it.identifier.text }.toSet()
     }
+
+  override fun getPresentation(): ItemPresentation {
+    return super.getPresentation()!!
+  }
 }
